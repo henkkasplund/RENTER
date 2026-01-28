@@ -13,13 +13,13 @@
 Sovelluksen pääasiallinen tietokohde on asuntoilmoitus ja toissijainen on luokittelu.
 
 ## Sovelluksen asennus
-Asenna 'flask'-kirjasto:
+Asenna `flask`-kirjasto:
 ```bash
 pip install flask
 ```
 Luo tietokannan taulut ja lisää alkutiedot
 ```bash
-sqlite3 database.db > schema.sql
+sqlite3 database.db < schema.sql
 ```
 Käynnistä sovellus
 ```bash
