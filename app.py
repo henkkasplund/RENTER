@@ -34,6 +34,22 @@ def create_listing():
 
     return redirect("/")
 
+@app.route("/edit_listing/<int:listing_id>")
+def edit_listing(listing_id):
+    listing = listings.get_listing(listing_id)
+    return render_template("edit_listing.html", listing=listing)
+
+@app.route("/update_listing", methods=["POST"])
+def update_listing():
+    listing_id = request.form["listing_id"]
+    title = request.form["title"]
+    description = request.form["description"]
+    price = request.form["price"]
+
+    listings.update_listing(listing_id, title, description, price)
+
+    return redirect("/listing/" + str(listing_id))
+
 @app.route("/register")
 def register():
     return render_template("register.html")
