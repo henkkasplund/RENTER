@@ -27,3 +27,7 @@ def update_listing(listing_id, title, description, price):
                                 price = ?
                             WHERE id = ?"""
     db.execute(sql, [title, description, price, listing_id])
+
+def remove_listing(listing_id):
+    sql = "DELETE FROM listings WHERE id = ?"
+    db.execute(sql, [listing_id])

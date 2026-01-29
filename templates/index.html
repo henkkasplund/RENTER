@@ -12,14 +12,15 @@
   <p>
     Olet kirjautunut nimellä {{ session.username }}, id numerosi on  {{ session.user_id }} <!-- tähän vielä rating mukaan -->
   </p>
-  {% endif %}
-  <p>
-    <a href="/login">Kirjaudu sisään</a>
-    <a href="/register">Luo tunnus</a>
-    <a href="/logout">Kirjaudu ulos</a>
-  </p>
   <p>
     <a href="/new_listing">Uusi ilmoitus</a>
+  </p>
+  {% endif %}
+  <p>
+    {% if not session.username %}
+    <a href="/login">Kirjaudu sisään</a>
+    <a href="/register">Luo tunnus</a>
+    {% endif %}
   </p>
   <h2>Vuokrattavat kohteet</h2>
   <ul>
@@ -27,6 +28,12 @@
     <li><a href="/listing/{{ listing.id }}">{{ listing.title }}</a></li>
     {% endfor %}
   </ul>
+  <p>
+    {% if session.username %}
+    <br />
+    <a href="/logout">Kirjaudu ulos</a>
+    {% endif %}
+  </p>
 </body>
 
 </html>

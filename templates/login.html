@@ -20,7 +20,7 @@
   <form action="/login" method="post">
     <p>
       Tunnus: <br />
-      <input type="text" name="username" />
+      <input type="text" name="username" value="{{ username }}"/>
     </p>
     <p>
       Salasana: <br />
@@ -28,6 +28,9 @@
     </p>
     <input type="submit" value="Kirjaudu" />
   </form>
+  <p>
+  <a href="/">Takaisin</a>
+  </p>
   {% endif %}
 </body>
 

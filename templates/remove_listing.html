@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Ilmoituksen poisto</title>
+</head>
+
+<body>
+  <h1>Ilmoituksen poisto</h1>
+  <p>
+    Vuokrakohde: {{listing.title}} </br >
+    Haluatko varmasti poistaa tämän ilmoituksen?
+  </p>
+  <form action="/remove_listing/{{ listing.id }}" method="post">
+    <input type="submit" name="remove" value="Poista ilmoitus">
+    <input type="submit" name="back" value="Takaisin">
+  </form>
+</body>
+
+</html>
