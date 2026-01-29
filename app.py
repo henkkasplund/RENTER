@@ -4,12 +4,14 @@ from flask import redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 import db
 import config
+import listings
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
 @app.route("/")
 def index():
+
     return render_template("index.html")
 
 @app.route("/new_listing")
@@ -22,9 +24,8 @@ def create_listing():
     description = request.form["description"]
     price = request.form["price"]
     user_id = session["user_id"]
-
-    sql = """INSERT INTO listings (title, description, price, user_id) VALUES (?, ?, ?, ?)"""
-    db.execute(sql, [title, description, price, user_id])
+    
+    listings.add_listing(title, description, price, user_id)
 
     return redirect("/")
 
