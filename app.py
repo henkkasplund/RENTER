@@ -11,8 +11,13 @@ app.secret_key = config.secret_key
 
 @app.route("/")
 def index():
+    all_listings = listings.get_listings()
+    return render_template("index.html", listings=all_listings)
 
-    return render_template("index.html")
+@app.route("/listing/<int:listing_id>")
+def show_listing(listing_id):
+    listing = listings.get_listing(listing_id)
+    return render_template("show_listing.html", listing=listing)
 
 @app.route("/new_listing")
 def new_listing():

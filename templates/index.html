@@ -10,7 +10,7 @@
 
   {% if session.username %}
   <p>
-    Olet kirjautunut nimellä {{ session.username }}, id numerosi on  {{ session.user_id }}
+    Olet kirjautunut nimellä {{ session.username }}, id numerosi on  {{ session.user_id }} <!-- tähän vielä rating mukaan -->
   </p>
   {% endif %}
   <p>
@@ -21,6 +21,12 @@
   <p>
     <a href="/new_listing">Uusi ilmoitus</a>
   </p>
+  <h2>Vuokrattavat kohteet</h2>
+  <ul>
+    {% for listing in listings %}
+    <li><a href="/listing/{{ listing.id }}">{{ listing.title }}</a></li>
+    {% endfor %}
+  </ul>
 </body>
 
 </html>
