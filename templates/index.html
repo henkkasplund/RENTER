@@ -8,6 +8,10 @@
 <body>
   <h1>RENTER</h1>
 
+  {% for message in get_flashed_messages() %}
+  <p>{{ message }}</p>
+  {% endfor %}
+
   {% if session.username %}
   <p>
     Olet kirjautunut nimellä {{ session.username }}, id numerosi on  {{ session.user_id }} <!-- tähän vielä rating mukaan -->

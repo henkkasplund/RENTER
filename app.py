@@ -1,6 +1,7 @@
 import sqlite3
 from flask import Flask
 from flask import redirect, render_template, request, session
+from flask import flash
 from werkzeug.security import check_password_hash, generate_password_hash
 import db
 import config
@@ -90,7 +91,14 @@ def create():
     except sqlite3.IntegrityError:
         return "VIRHE: tunnus on jo varattu<br><a href='/register'>Takaisin</a>"
 
-    return "Tunnus luotu"
+    sql = "SELECT id FROM users WHERE username = ?"
+    user_id = db.query(sql, [username])[0]["id"]
+
+    session["user_id"] = user_id
+    session["username"] = username
+
+    flash("Tunnus luotu!")
+    return redirect("/")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
