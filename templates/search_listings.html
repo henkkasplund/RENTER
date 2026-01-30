@@ -20,7 +20,7 @@
 
   <ul>
     {% for listing in results %}
-    <li><a href="/listing/{{ listing.id }}">{{ listing.title }}</a></li>
+    <li><a href="/listing/{{ listing.id }}">{{ listing.municipality }} {{ listing.rooms }} h, {{ listing.size }} m², {{ listing.rent }} €</a></li>
     {% endfor %}
   </ul>
 
@@ -29,7 +29,7 @@
   <p>
   <a href="/">Takaisin</a>
   </p>
-  
+
 </body>
 
 </html>

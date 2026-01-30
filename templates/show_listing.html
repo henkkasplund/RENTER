@@ -2,27 +2,72 @@
 <html>
 
 <head>
-  <title>{{ listing.title }}</title>
+  <title>
+    {{ listing.municipality }} {{ listing.rooms }} h, {{ listing.size }} m², {{ listing.rent }} €
+  </title>
 </head>
 
 <body>
-  <h1>{{ listing.title }}</h1>
+  <h1>
+    {{ listing.municipality }} {{ listing.rooms }} h, {{ listing.size }} m², {{ listing.rent }} €
+  </h1>
+
   {% if session.user_id == listing.user_id %}
   <p>
     <a href="/edit_listing/{{ listing.id }}">Muokkaa</a>
     <a href="/remove_listing/{{ listing.id }}">Poista</a>
   </p>
   {% endif %}
-  <h3>Vuokrakohde</h3>
-  <p>
-    Vuokrahinta: {{ listing.price }} €
-  </p>
+
   <p>
     Ilmoittaja: {{ listing.username }} <!-- luokitus tähän {{listing.rating}} -->
   </p>
+
+  <h3>Asunnon tiedot</h3>
+
   <p>
-    {{ listing.description }}
+    Huonemäärä: {{ listing.rooms }} h
   </p>
+  <p>
+    Neliömäärä: {{ listing.size }} m²
+  </p>
+  <p>
+    Vuokrahinta: {{ listing.rent }} €
+  </p>
+  <p>
+    Osoite: {{ listing.address }}, {{ listing.postcode }} {{ listing.municipality }}
+  </p>
+  <p>
+    Kerros: {{ listing.floor }} / {{ listing.floors }}
+  </p>
+  <p>
+    Sauna: {{ "Kyllä" if listing.sauna else "Ei" }}
+  </p>
+  <p>
+    Parveke: {{ "Kyllä" if listing.balcony else "Ei" }}
+  </p>
+  <p>
+    Kuvaus: {{ listing.description }}
+  </p>
+
+  <h3>Taloyhtiön tiedot</h3>
+
+  <p>
+    Sauna: {{ "Kyllä" if listing.bath else "Ei" }}
+  </p>
+  <p>
+    Hissi: {{ "Kyllä" if listing.elevator else "Ei" }}
+  </p>
+  <p>
+    Pyykkitupa: {{ "Kyllä" if listing.laundry else "Ei" }}
+  </p>
+  <p>
+    Häkkikellari: {{ "Kyllä" if listing.cellar else "Ei" }}
+  </p>
+  <p>
+    Uima-allas: {{ "Kyllä" if listing.pool else "Ei" }}
+  </p>
+
   <p>
   <a href="/">Takaisin</a>
   </p>

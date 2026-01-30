@@ -6,25 +6,69 @@
 </head>
 
 <body>
-  <h1>Uusi ilmoitus</h1>
+  <h1>Uusi ilmoitus</h1><br />
+
+  <h3>Asunnon tiedot</h3>
+
   <form action="/create_listing" method="post">
     <p>
-      Vuokrakohde: <br />
-      <input type="text" name="title" />
+      Huonemäärä: <br />
+      <input type="radio" name="rooms" value="1"/> 1 h
+      <input type="radio" name="rooms" value="2"/> 2 h
+      <input type="radio" name="rooms" value="3"/> 3 h
+      <input type="radio" name="rooms" value="4"/> 4+ h
     </p>
     <p>
-      Hinta: <br />
-      <input type="text" name="price" size="6"/> €
+      Neliömäärä: <br />
+      <input type="number" name="size" size="6"/> m²
+    </p>
+    <p>
+      Vuokrahinta: <br />
+      <input type="number" name="rent" size="6"/> €
+    </p>
+    <p>
+      Paikkakunta: <br />
+      <input type="text" name="municipality" size="12"/>
+    </p>
+    <p>
+      Katuosoite: <br />
+      <input type="text" name="address" size="24"/>
+    </p>
+    <p>
+      Postinumero: <br />
+      <input type="text" name="postcode" size="6"/>
+    </p>
+    <p>
+      Kerros: <br />
+      <input type="number" name="floor" size="3"/> / 
+      <input type="number" name="floors" size="3"/>
+    </p>
+    <p>
+      Sauna: <input type="checkbox" name="sauna"/><br />
+      Parveke: <input type="checkbox" name="balcony"/>
     </p>
     <p>
       Kuvaus: <br />
       <textarea name="description" rows="20" cols="50"></textarea>
     </p>
+
+    <h3>Taloyhtiön tiedot</h3>
+
+    <p>
+      Sauna: <input type="checkbox" name="bath"/><br />
+      Hissi: <input type="checkbox" name="elevator"/><br />
+      Pyykkitupa: <input type="checkbox" name="laundry"/><br />
+      Häkkikellari: <input type="checkbox" name="cellar"/><br />
+      Uima-allas: <input type="checkbox" name="pool"/>
+    </p>
+
     <input type="submit" value="Luo ilmoitus" />
+
   </form>
   <p>
-  <a href="/">Takaisin</a>
+    <a href="/">Takaisin</a>
   </p>
+
 </body>
 
 </html>

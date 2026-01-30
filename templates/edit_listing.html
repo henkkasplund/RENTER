@@ -6,23 +6,77 @@
 </head>
 
 <body>
+
   <h1>Ilmoituksen muokkaus</h1>
+
   <form action="/edit_listing/{{ listing.id }}" method="post">
     <p>
-      Vuokrakohde: <br />
-      <input type="text" name="title" value="{{ listing.title}}"/>
+      Huonemäärä:<br />
+      <input type="radio" name="rooms" value="1" {% if listing.rooms == 1 %}checked{% endif %}> 1 h
+      <input type="radio" name="rooms" value="2" {% if listing.rooms == 2 %}checked{% endif %}> 2 h
+      <input type="radio" name="rooms" value="3" {% if listing.rooms == 3 %}checked{% endif %}> 3 h
+      <input type="radio" name="rooms" value="4" {% if listing.rooms == 4 %}checked{% endif %}> 4+ h
     </p>
     <p>
-      Hinta: <br />
-      <input type="text" name="price" size="6" value="{{ listing.price}}"/> €
+      Neliömäärä:<br />
+      <input type="text" name="size" step="0.5" value="{{ listing.size }}"> m²
     </p>
     <p>
-      Kuvaus: <br />
-      <textarea name="description" rows="20" cols="50">{{ listing.description }}</textarea>
+      Vuokrahinta:<br />
+      <input type="number" name="rent" value="{{ listing.rent }}"> €
     </p>
-    <input type="hidden" name="listing_id" value="{{ listing.id }}" />
-    <input type="submit" name="edit" value="Päivitä ilmoitusta" />
+    <p>
+      Kunta / kaupunki:<br />
+      <input type="text" name="municipality" value="{{ listing.municipality }}">
+    </p>
+    <p>
+      Katuosoite:<br />
+      <input type="text" name="address" value="{{ listing.address }}">
+    </p>
+    <p>
+      Postinumero:<br />
+      <input type="text" name="postcode" value="{{ listing.postcode }}">
+    </p>
+    <p>
+      Kerros:<br />
+      <input type="number" name="floor" value="{{ listing.floor }}"> /
+      <input type="number" name="floors" value="{{ listing.floors }}">
+    </p>
+    <p>
+      Sauna:
+      <input type="checkbox" name="sauna" {% if listing.sauna %}checked{% endif %}><br />
+      Parveke:
+      <input type="checkbox" name="balcony" {% if listing.balcony %}checked{% endif %}>
+    </p>
+    <p>
+      Kuvaus:<br/>
+      <textarea name="description" rows="10" cols="50">{{ listing.description }}</textarea>
+    </p>
+
+    <h3>Taloyhtiön tiedot</h3>
+
+    <p>
+      Sauna:
+      <input type="checkbox" name="bath" {% if listing.bath %}checked{% endif %}><br />
+      Hissi:
+      <input type="checkbox" name="elevator" {% if listing.elevator %}checked{% endif %}><br />
+      Pyykkitupa:
+      <input type="checkbox" name="laundry" {% if listing.laundry %}checked{% endif %}><br />
+      Häkkikellari:
+      <input type="checkbox" name="cellar" {% if listing.cellar %}checked{% endif %}><br />
+      Uima-allas:
+      <input type="checkbox" name="pool" {% if listing.pool %}checked{% endif %}>
+    </p>
+
+    <input type="hidden" name="listing_id" value="{{ listing.id }}">
+    <input type="submit" name="edit" value="Päivitä ilmoitusta">
+
   </form>
+
+  <p>
+  <a href="/">Takaisin</a>
+  </p>
+
 </body>
 
 </html>

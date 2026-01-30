@@ -1,19 +1,37 @@
 import db
 
-def add_listing(title, description, price, user_id):
-    sql = """INSERT INTO listings (title, description, price, user_id) VALUES (?, ?, ?, ?)"""
+def add_listing(user_id, rooms, size, rent, municipality, address, postcode, floor,
+                floors, sauna, balcony, bath, elevator, laundry, cellar, pool, description):
+    sql = """INSERT INTO listings (user_id, rooms, size,rent, municipality,
+                                address, postcode,floor,floors, sauna, balcony,
+                                bath, elevator, laundry, cellar, pool, description)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
-    db.execute(sql, [title, description, price, user_id])
+    db.execute(sql, [user_id, rooms, size, rent, municipality, address, postcode, floor, floors, sauna, balcony,
+                                bath, elevator, laundry, cellar, pool, description])
 
 def get_listings():
-    sql = "SELECT id, title FROM listings ORDER BY id DESC"
+    sql = "SELECT id, municipality, rooms, rent, size FROM listings ORDER BY id DESC"
     return db.query(sql)
 
 def get_listing(listing_id): #tähän vielä rating mukaan
     sql = """SELECT listings.id,
-                    listings.title,
+                    listings.rooms,
+                    listings.size,
+                    listings.rent,
+                    listings.municipality,
+                    listings.address,
+                    listings.postcode,
+                    listings.floor,
+                    listings.floors,
+                    listings.sauna,
+                    listings.balcony,
+                    listings.bath,
+                    listings.elevator,
+                    listings.laundry,
+                    listings.cellar,
+                    listings.pool,
                     listings.description,
-                    listings.price,
                     users.id user_id,
                     users.username
              FROM listings, users
@@ -21,21 +39,25 @@ def get_listing(listing_id): #tähän vielä rating mukaan
                     listings.id = ?"""
     return db.query(sql, [listing_id])[0]
 
-def update_listing(listing_id, title, description, price):
-    sql = """UPDATE listings SET title = ?,
-                                description = ?,
-                                price = ?
-                            WHERE id = ?"""
-    db.execute(sql, [title, description, price, listing_id])
+def update_listing(listing_id, rooms, size, rent, municipality, address, postcode, floor,
+                floors, sauna, balcony, bath, elevator, laundry, cellar, pool, description):
+    sql = """UPDATE listings SET rooms = ?, size = ?, rent = ?,
+                    municipality = ?, address = ?, postcode = ?,
+                    floor = ?, floors = ?, sauna = ?, balcony = ?,
+                    bath = ?, elevator = ?, laundry = ?, cellar = ?,
+                    pool = ?, description = ?
+            WHERE id = ?"""
+    db.execute(sql, [rooms, size, rent, municipality, address, postcode, floor, floors, sauna, balcony,
+                                bath, elevator, laundry, cellar, pool, description, listing_id])
 
 def remove_listing(listing_id):
     sql = "DELETE FROM listings WHERE id = ?"
     db.execute(sql, [listing_id])
 
 def search_listings(query):
-    sql = """SELECT id, title
+    sql = """SELECT id, rooms, municipality, rent, size
             FROM listings
-            WHERE description LIKE ? OR title LIKE ?
+            WHERE municipality LIKE ? OR description LIKE ?
             ORDER BY id DESC"""
     result = "%" + query + "%"
     return db.query(sql, [result, result])

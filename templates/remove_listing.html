@@ -8,7 +8,7 @@
 <body>
   <h1>Ilmoituksen poisto</h1>
   <p>
-    Vuokrakohde: {{listing.title}} </br >
+    Vuokrakohde: {{ listing.municipality }} {{ listing.rooms }} h, {{ listing.size }} m², {{ listing.rent }} €</br >
     Haluatko varmasti poistaa tämän ilmoituksen?
   </p>
   <form action="/remove_listing/{{ listing.id }}" method="post">
