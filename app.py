@@ -19,6 +19,14 @@ def show_listing(listing_id):
     listing = listings.get_listing(listing_id)
     return render_template("show_listing.html", listing=listing)
 
+@app.route("/search_listings")
+def search_listings():
+    query = request.args.get("query")
+    if not query:
+        query = ""
+    results = listings.search_listings(query) if query else []
+    return render_template("search_listings.html", query=query, results=results)
+
 @app.route("/new_listing")
 def new_listing():
     return render_template("new_listing.html")
@@ -95,10 +103,10 @@ def login():
         password = request.form["password"]
 
         sql = "SELECT id, password_hash FROM users WHERE username = ?"
-        result_list = db.query(sql, [username])
-        if not result_list:
+        matching_username = db.query(sql, [username])
+        if not matching_username:
             return "VIRHE: väärä tunnus<br><a href='/login'>Takaisin</a>"
-        result = result_list[0]
+        result = matching_username[0]
 
         user_id = result["id"]
         password_hash = result["password_hash"]
@@ -107,8 +115,8 @@ def login():
             session["user_id"] = user_id
             session["username"] = username
             return redirect("/")
-        else:
-            return f"VIRHE: väärä salasana<br><a href='/login?username={username}'>Takaisin</a>"
+        else:                                                                                    # jos tunnus on oikein mutta salasana väärin
+            return f"VIRHE: väärä salasana<br><a href='/login?username={username}'>Takaisin</a>" # täyttää kenttään valmiiksi jo syötetyn tunnuksen
 
 @app.route("/logout")
 def logout():

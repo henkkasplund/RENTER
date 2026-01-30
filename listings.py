@@ -31,3 +31,11 @@ def update_listing(listing_id, title, description, price):
 def remove_listing(listing_id):
     sql = "DELETE FROM listings WHERE id = ?"
     db.execute(sql, [listing_id])
+
+def search_listings(query):
+    sql = """SELECT id, title
+            FROM listings
+            WHERE description LIKE ? OR title LIKE ?
+            ORDER BY id DESC"""
+    result = "%" + query + "%"
+    return db.query(sql, [result, result])

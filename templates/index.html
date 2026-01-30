@@ -23,6 +23,9 @@
     {% endif %}
   </p>
   <h2>Vuokrattavat kohteet</h2>
+  <p>
+    <a href="/search_listings">Etsi vuokrakohteita</a>
+  </p>
   <ul>
     {% for listing in listings %}
     <li><a href="/listing/{{ listing.id }}">{{ listing.title }}</a></li>
