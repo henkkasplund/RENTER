@@ -10,6 +10,10 @@ import listings
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
+def demand_login():
+    if "user_id" not in session:
+        abort(403)
+
 @app.route("/")
 def index():
     all_listings = listings.get_listings()
@@ -22,6 +26,14 @@ def show_listing(listing_id):
         abort(404)
     return render_template("show_listing.html", listing=listing)
 
+@app.route("/my_listings")
+def my_listings():
+    demand_login()
+    user_id = session["user_id"]
+    user_listings = listings.get_user_listings(user_id)
+    return render_template("my_listings.html", listings=user_listings)
+
+
 @app.route("/search_listings")
 def search_listings():
     query = request.args.get("query")
@@ -32,13 +44,12 @@ def search_listings():
 
 @app.route("/new_listing")
 def new_listing():
+    demand_login()
     return render_template("new_listing.html")
 
 @app.route("/create_listing", methods=["POST"])
 def create_listing():
-    if "user_id" not in session:
-        abort(403)
-
+    demand_login()
     user_id = session["user_id"]
     rooms = request.form["rooms"]
     size = request.form["size"]
@@ -56,16 +67,15 @@ def create_listing():
     cellar = 1 if "cellar" in request.form else 0
     pool = 1 if "pool" in request.form else 0
     description = request.form["description"]
-
     listings.add_listing(user_id, rooms, size, rent, municipality, address,
                          postcode, floor, floors, sauna, balcony, bath,
                          elevator, laundry, cellar, pool, description)
-
     return redirect("/")
 
 @app.route("/edit_listing/<int:listing_id>", methods=["GET", "POST"])
 def edit_listing(listing_id):
     listing = listings.get_listing(listing_id)
+    demand_login()
     if not listing:
         abort(404)
     if listing["user_id"] != session["user_id"]:
@@ -94,11 +104,11 @@ def edit_listing(listing_id):
             listing_id, rooms, size, rent, municipality, address,
             postcode, floor, floors, sauna, balcony, bath,
             elevator, laundry, cellar, pool, description)
-
         return redirect("/listing/" + str(listing_id))
 
 @app.route("/remove_listing/<int:listing_id>", methods=["GET", "POST"])
 def remove_listing(listing_id):
+    demand_login()
     listing = listings.get_listing(listing_id)
     if not listing:
         abort(404)
@@ -136,10 +146,8 @@ def create():
 
     sql = "SELECT id FROM users WHERE username = ?"
     user_id = db.query(sql, [username])[0]["id"]
-
     session["user_id"] = user_id
     session["username"] = username
-
     flash("Tunnus luotu!")
     return redirect("/")
 
@@ -148,20 +156,16 @@ def login():
     if request.method == "GET":
         username = request.args.get("username", "")
         return render_template("login.html", username=username)
-
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-
         sql = "SELECT id, password_hash FROM users WHERE username = ?"
         matching_username = db.query(sql, [username])
         if not matching_username:
             return "VIRHE: väärä tunnus<br><a href='/login'>Takaisin</a>"
         result = matching_username[0]
-
         user_id = result["id"]
         password_hash = result["password_hash"]
-
         if check_password_hash(password_hash, password):
             session["user_id"] = user_id
             session["username"] = username
@@ -171,6 +175,7 @@ def login():
 
 @app.route("/logout")
 def logout():
-    del session["user_id"]
-    del session["username"]
+    if "user_id" in session:
+        del session["user_id"]
+        del session["username"]
     return redirect("/")
