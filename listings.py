@@ -40,13 +40,6 @@ def get_listing(listing_id): #tähän vielä rating mukaan
     result = db.query(sql, [listing_id])
     return result[0] if result else None
 
-def get_user_listings(user_id):
-    sql = """SELECT id, rooms, size, rent, municipality
-             FROM listings
-             WHERE user_id = ?
-             ORDER BY id DESC"""
-    return db.query(sql, [user_id])
-
 def update_listing(listing_id, rooms, size, rent, municipality, address, postcode, floor,
                 floors, sauna, balcony, bath, elevator, laundry, cellar, pool, description):
     sql = """UPDATE listings SET rooms = ?, size = ?, rent = ?,

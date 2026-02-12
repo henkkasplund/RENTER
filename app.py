@@ -6,6 +6,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import db
 import config
 import listings
+import users
 import re
 
 app = Flask(__name__)
@@ -27,12 +28,13 @@ def show_listing(listing_id):
         abort(404)
     return render_template("show_listing.html", listing=listing)
 
-@app.route("/my_listings")
-def my_listings():
-    demand_login()
-    user_id = session["user_id"]
-    user_listings = listings.get_user_listings(user_id)
-    return render_template("my_listings.html", listings=user_listings)
+@app.route("/user/<int:user_id>")
+def user(user_id):
+    user = users.get_user(user_id)
+    listings = users.get_user_listings(user_id)
+    if not user:
+        abort(403)
+    return render_template("user.html", user=user, listings=listings)
 
 @app.route("/search_listings")
 def search_listings():

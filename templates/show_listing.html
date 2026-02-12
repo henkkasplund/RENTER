@@ -20,7 +20,7 @@
   {% endif %}
 
   <p>
-    Ilmoittaja: {{ listing.username }} <!-- luokitus tähän {{listing.rating}} -->
+    Ilmoittaja: <a href="/user/{{listing.user_id}}">{{ listing.username }}<a/> <!-- luokitus tähän {{listing.rating}} -->
   </p>
 
   <h3>Asunnon tiedot</h3>
