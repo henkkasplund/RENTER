@@ -37,7 +37,8 @@ def get_listing(listing_id): #tähän vielä rating mukaan
              FROM listings, users
              WHERE listings.user_id = users.id AND
                     listings.id = ?"""
-    return db.query(sql, [listing_id])[0]
+    result = db.query(sql, [listing_id])
+    return result[0] if result else None
 
 def update_listing(listing_id, rooms, size, rent, municipality, address, postcode, floor,
                 floors, sauna, balcony, bath, elevator, laundry, cellar, pool, description):

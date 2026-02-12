@@ -18,6 +18,8 @@ def index():
 @app.route("/listing/<int:listing_id>")
 def show_listing(listing_id):
     listing = listings.get_listing(listing_id)
+    if not listing:
+        abort(404)
     return render_template("show_listing.html", listing=listing)
 
 @app.route("/search_listings")
@@ -64,6 +66,8 @@ def create_listing():
 @app.route("/edit_listing/<int:listing_id>", methods=["GET", "POST"])
 def edit_listing(listing_id):
     listing = listings.get_listing(listing_id)
+    if not listing:
+        abort(404)
     if listing["user_id"] != session["user_id"]:
         abort(403)
     if request.method == "GET":
@@ -96,6 +100,8 @@ def edit_listing(listing_id):
 @app.route("/remove_listing/<int:listing_id>", methods=["GET", "POST"])
 def remove_listing(listing_id):
     listing = listings.get_listing(listing_id)
+    if not listing:
+        abort(404)
     if listing["user_id"] != session["user_id"]:
         abort(403)
     if request.method == "GET":
