@@ -1,6 +1,6 @@
 import sqlite3
 from flask import Flask
-from flask import redirect, render_template, request, session
+from flask import abort, redirect, render_template, request, session
 from flask import flash
 from werkzeug.security import check_password_hash, generate_password_hash
 import db
@@ -34,6 +34,9 @@ def new_listing():
 
 @app.route("/create_listing", methods=["POST"])
 def create_listing():
+    if "user_id" not in session:
+        abort(403)
+
     user_id = session["user_id"]
     rooms = request.form["rooms"]
     size = request.form["size"]
@@ -52,8 +55,6 @@ def create_listing():
     pool = 1 if "pool" in request.form else 0
     description = request.form["description"]
 
-
-
     listings.add_listing(user_id, rooms, size, rent, municipality, address,
                          postcode, floor, floors, sauna, balcony, bath,
                          elevator, laundry, cellar, pool, description)
@@ -62,42 +63,43 @@ def create_listing():
 
 @app.route("/edit_listing/<int:listing_id>", methods=["GET", "POST"])
 def edit_listing(listing_id):
+    listing = listings.get_listing(listing_id)
+    if listing["user_id"] != session["user_id"]:
+        abort(403)
     if request.method == "GET":
-        listing = listings.get_listing(listing_id)
-        return render_template("/edit_listing.html", listing=listing)
-
+        return render_template("edit_listing.html", listing=listing)
     if request.method == "POST":
-        if "edit" in request.form:
-            listing_id = request.form["listing_id"]
-            rooms = request.form["rooms"]
-            size = request.form["size"]
-            rent = request.form["rent"]
-            municipality = request.form["municipality"]
-            address = request.form["address"]
-            postcode = request.form["postcode"]
-            floor = request.form["floor"]
-            floors = request.form["floors"]
-            sauna = 1 if "sauna" in request.form else 0
-            balcony = 1 if "balcony" in request.form else 0
-            bath = 1 if "bath" in request.form else 0
-            elevator = 1 if "elevator" in request.form else 0
-            laundry = 1 if "laundry" in request.form else 0
-            cellar = 1 if "cellar" in request.form else 0
-            pool = 1 if "pool" in request.form else 0
-            description = request.form["description"]
+        rooms = request.form["rooms"]
+        size = request.form["size"]
+        rent = request.form["rent"]
+        municipality = request.form["municipality"]
+        address = request.form["address"]
+        postcode = request.form["postcode"]
+        floor = request.form["floor"]
+        floors = request.form["floors"]
+        sauna = 1 if "sauna" in request.form else 0
+        balcony = 1 if "balcony" in request.form else 0
+        bath = 1 if "bath" in request.form else 0
+        elevator = 1 if "elevator" in request.form else 0
+        laundry = 1 if "laundry" in request.form else 0
+        cellar = 1 if "cellar" in request.form else 0
+        pool = 1 if "pool" in request.form else 0
+        description = request.form["description"]
 
-            listings.update_listing(listing_id, rooms, size, rent, municipality, address,
-                                    postcode, floor, floors, sauna, balcony, bath,
-                                    elevator, laundry, cellar, pool, description)
+        listings.update_listing(
+            listing_id, rooms, size, rent, municipality, address,
+            postcode, floor, floors, sauna, balcony, bath,
+            elevator, laundry, cellar, pool, description)
 
-            return redirect("/listing/" + str(listing_id))
+        return redirect("/listing/" + str(listing_id))
 
 @app.route("/remove_listing/<int:listing_id>", methods=["GET", "POST"])
 def remove_listing(listing_id):
+    listing = listings.get_listing(listing_id)
+    if listing["user_id"] != session["user_id"]:
+        abort(403)
     if request.method == "GET":
-        listing = listings.get_listing(listing_id)
         return render_template("remove_listing.html", listing=listing)
-
     if request.method == "POST":
         if "remove" in request.form:
             listings.remove_listing(listing_id)
@@ -114,6 +116,8 @@ def create():
     username = request.form["username"]
     password1 = request.form["password1"]
     password2 = request.form["password2"]
+    if not username or not password1:
+        return "VIRHE: tyhjä käyttäjänimi tai salasana<br><a href='/register'>Takaisin</a>"
     if password1 != password2:
         return "VIRHE: salasanat eivät ole samat<br><a href='/register'>Takaisin</a>"
     password_hash = generate_password_hash(password1)
