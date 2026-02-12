@@ -3,13 +3,13 @@
 
 <head>
   <title>
-    {{ listing.municipality }} {{ listing.rooms }} h, {{ listing.size }} m², {{ listing.rent }} €
+    {{ listing.municipality }} {{ listing.rooms }} h  {{ listing.size|string|replace(".", ",") }} m²  {{ listing.rent }} €
   </title>
 </head>
 
 <body>
   <h1>
-    {{ listing.municipality }} {{ listing.rooms }} h, {{ listing.size }} m², {{ listing.rent }} €
+    {{ listing.municipality }} {{ listing.rooms }} h  {{ listing.size|string|replace(".", ",") }} m²  {{ listing.rent }} €
   </h1>
 
   {% if session.user_id == listing.user_id %}
@@ -29,7 +29,7 @@
     Huonemäärä: {{ listing.rooms }} h
   </p>
   <p>
-    Neliömäärä: {{ listing.size }} m²
+    Neliömäärä: {{ listing.size|string|replace(".", ",") }} m²
   </p>
   <p>
     Vuokrahinta: {{ listing.rent }} €

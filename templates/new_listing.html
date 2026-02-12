@@ -13,35 +13,35 @@
   <form action="/create_listing" method="post">
     <p>
       Huonemäärä: <br />
-      <input type="radio" name="rooms" value="1"/> 1 h
-      <input type="radio" name="rooms" value="2"/> 2 h
-      <input type="radio" name="rooms" value="3"/> 3 h
-      <input type="radio" name="rooms" value="4"/> 4+ h
+      <input type="radio" name="rooms" value="1" required/> 1 h
+      <input type="radio" name="rooms" value="2" /> 2 h
+      <input type="radio" name="rooms" value="3" /> 3 h
+      <input type="radio" name="rooms" value="4" /> 4+ h
     </p>
     <p>
       Neliömäärä: <br />
-      <input type="number" name="size" size="6"/> m²
+      <input type="text" name="size" size="6" maxlength="10" pattern="^[1-9][0-9]{0,3}(,5)?$" required/> m²
     </p>
     <p>
       Vuokrahinta: <br />
-      <input type="number" name="rent" size="6"/> €
+      <input type="text" name="rent" size="6" maxlength="10" pattern="^[1-9][0-9]{0,4}$" required /> €
     </p>
     <p>
       Paikkakunta: <br />
-      <input type="text" name="municipality" size="12"/>
+      <input type="text" name="municipality" size="12" maxlength="30" required />
     </p>
     <p>
       Katuosoite: <br />
-      <input type="text" name="address" size="24"/>
+      <input type="text" name="address" size="24" maxlength="50" required />
     </p>
     <p>
       Postinumero: <br />
-      <input type="text" name="postcode" size="6"/>
+      <input type="text" name="postcode" size="5" maxlength="5" pattern="^[0-9]{5}$" required/>
     </p>
     <p>
       Kerros: <br />
-      <input type="number" name="floor" size="3"/> / 
-      <input type="number" name="floors" size="3"/>
+      <input type="text" name="floor" size="3" maxlength="2" pattern="^(-1|[0-9]{1,2})$" required/> /
+      <input type="text" name="floors" size="3" maxlength="2" pattern="^[1-9][0-9]?$" required/>
     </p>
     <p>
       Sauna: <input type="checkbox" name="sauna"/><br />
@@ -49,7 +49,7 @@
     </p>
     <p>
       Kuvaus: <br />
-      <textarea name="description" rows="20" cols="50"></textarea>
+      <textarea name="description" rows="20" cols="50" maxlength="300" required></textarea>
     </p>
 
     <h3>Taloyhtiön tiedot</h3>

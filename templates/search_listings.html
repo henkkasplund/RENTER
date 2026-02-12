@@ -10,7 +10,7 @@
 
   <form action="/search_listings" method="get">
     <p>
-      Hakusana: <input type="text" name="query" value={{ query }}>
+      Hakusana: <input type="text" name="query" value={{ query }} maxlength="20">
     </p>
     <input type="submit" value="Hae">
   </form>
@@ -20,7 +20,7 @@
 
   <ul>
     {% for listing in results %}
-    <li><a href="/listing/{{ listing.id }}">{{ listing.municipality }} {{ listing.rooms }} h, {{ listing.size }} m², {{ listing.rent }} €</a></li>
+    <li><a href="/listing/{{ listing.id }}">{{ listing.municipality }} {{ listing.rooms }} h  {{ listing.size|string|replace(".", ",") }} m²  {{ listing.rent }} €</a></li>
     {% endfor %}
   </ul>
 

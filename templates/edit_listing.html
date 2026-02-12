@@ -19,28 +19,28 @@
     </p>
     <p>
       Neliömäärä:<br />
-      <input type="text" name="size" step="0.5" value="{{ listing.size }}"> m²
+      <input type="text" name="size" maxlength="10" pattern="^[1-9][0-9]{0,3}(,5)?$" value="{{ listing.size }}" required> m²
     </p>
     <p>
       Vuokrahinta:<br />
-      <input type="number" name="rent" value="{{ listing.rent }}"> €
+      <input type="text" name="rent" maxlength="10" pattern="^[1-9][0-9]{0,4}$" value="{{ listing.rent }}" required> €
     </p>
     <p>
       Kunta / kaupunki:<br />
-      <input type="text" name="municipality" value="{{ listing.municipality }}">
+      <input type="text" name="municipality" maxlength="30" value="{{ listing.municipality }}" required>
     </p>
     <p>
       Katuosoite:<br />
-      <input type="text" name="address" value="{{ listing.address }}">
+      <input type="text" name="address" maxlength="50" value="{{ listing.address }}" required>
     </p>
     <p>
       Postinumero:<br />
-      <input type="text" name="postcode" value="{{ listing.postcode }}">
+      <input type="text" name="postcode" maxlength="5" pattern="^[0-9]{5}$" value="{{ listing.postcode }}" required>
     </p>
     <p>
       Kerros:<br />
-      <input type="number" name="floor" value="{{ listing.floor }}"> /
-      <input type="number" name="floors" value="{{ listing.floors }}">
+      <input type="text" name="floor" maxlength="2" pattern="^(-1|[0-9]{1,2})$" value="{{ listing.floor }}"> /
+      <input type="text" name="floors" maxlength="2" pattern="^[1-9][0-9]?$" value="{{ listing.floors }}">
     </p>
     <p>
       Sauna:
@@ -50,7 +50,7 @@
     </p>
     <p>
       Kuvaus:<br/>
-      <textarea name="description" rows="10" cols="50">{{ listing.description }}</textarea>
+      <textarea name="description" rows="10" cols="50" maxlength="300" required>{{ listing.description }}</textarea>
     </p>
 
     <h3>Taloyhtiön tiedot</h3>
