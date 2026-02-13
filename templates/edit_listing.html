@@ -26,8 +26,15 @@
       <input type="text" name="rent" maxlength="10" pattern="^[1-9][0-9]{0,4}$" value="{{ listing.rent }}" required> €
     </p>
     <p>
-      Kunta / kaupunki:<br />
-      <input type="text" name="municipality" maxlength="30" value="{{ listing.municipality }}" required>
+      Paikkakunta: <br />
+      <select name="municipality" required>
+        <option value="">Valitse</option>
+        {% for municipality in municipalities %}
+          <option value="{{ municipality.name }}"
+          {% if municipality.name == listing.municipality %}selected{% endif %}>{{ municipality.name }}
+        </option>
+        {% endfor %}
+      </select>
     </p>
     <p>
       Katuosoite:<br />

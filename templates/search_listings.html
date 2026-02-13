@@ -12,6 +12,9 @@
     <p>
       Hakusana: <input type="text" name="query" maxlength="20" value={{ query }}>
     </p>
+    <p>
+      Ilmoittajan luokitus:
+    </p>
     <input type="submit" value="Hae">
   </form>
 
@@ -20,14 +23,23 @@
 
   <ul>
     {% for listing in results %}
-    <li><a href="/listing/{{ listing.id }}">{{ listing.municipality }} {{ listing.rooms }} h  {{ listing.size|string|replace(".", ",") }} m²  {{ listing.rent }} €</a></li>
+    <li>
+      <a href="/listing/{{ listing.id }}">
+        {{ listing.municipality }} {{ listing.rooms }}h
+        {{ listing.size|string|replace(".", ",") }} m²
+        {{ listing.rent }} €
+      </a>
+      <a href="/user/{{ listing.user_id }}">
+        Ilmoittaja: {{ listing.username }}
+      </a>
+    </li>
     {% endfor %}
   </ul>
 
   {% endif %}
 
   <p>
-  <a href="/">Takaisin</a>
+    <a href="/">Takaisin</a>
   </p>
 
 </body>

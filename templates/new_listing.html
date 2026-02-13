@@ -28,7 +28,12 @@
     </p>
     <p>
       Paikkakunta: <br />
-      <input type="text" name="municipality" size="12" maxlength="30" required />
+      <select name="municipality" required>
+        <option value="">Valitse</option>
+        {% for municipality in municipalities %}
+        <option value="{{ municipality.name }}">{{ municipality.name }}</option>
+        {% endfor %}
+      </select>
     </p>
     <p>
       Katuosoite: <br />
