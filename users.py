@@ -7,10 +7,15 @@ def get_user(user_id):
     return result[0] if result else None
 
 def get_user_listings(user_id):
-    sql = """SELECT id, rooms, size, rent, municipality
+    sql = """SELECT listings.id,
+                    listings.rooms,
+                    listings.rent,
+                    listings.size,
+                    m.value AS municipality
             FROM listings
-            WHERE user_id = ?
-            ORDER BY id DESC"""
+            JOIN classes m ON m.id = listings.municipality_id
+            WHERE listings.user_id = ?
+            ORDER BY listings.id DESC"""
     return db.query(sql, [user_id])
 
 def create_user(username, password):

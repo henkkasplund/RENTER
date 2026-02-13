@@ -6,10 +6,10 @@ import db
 import config
 import listings
 import users
-import re
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
+
 
 def demand_login():
     if "user_id" not in session:
@@ -46,8 +46,13 @@ def search_listings():
 @app.route("/new_listing")
 def new_listing():
     demand_login()
-    municipalities = listings.get_municipalities()
-    return render_template("new_listing.html", municipalities=municipalities)
+    municipalities = listings.get_classes("municipality")
+    conditions = listings.get_classes("condition")
+    property_types = listings.get_classes("property_type")
+    return render_template("new_listing.html",
+                       municipalities=municipalities,
+                       conditions=conditions,
+                       property_types=property_types)
 
 @app.route("/create_listing", methods=["POST"])
 def create_listing():
@@ -61,13 +66,17 @@ def create_listing():
 def edit_listing(listing_id):
     demand_login()
     listing = listings.get_listing(listing_id)
-    municipalities = listings.get_municipalities()
     if not listing:
         abort(404)
     if listing["user_id"] != session["user_id"]:
         abort(403)
+    municipalities = listings.get_classes("municipality")
+    conditions = listings.get_classes("condition")
+    property_types = listings.get_classes("property_type")
     if request.method == "GET":
-        return render_template("edit_listing.html", listing=listing, municipalities=municipalities)
+        return render_template("edit_listing.html",
+                               listing=listing, municipalities=municipalities,
+                               conditions=conditions, property_types=property_types)
     listing_data = listings.get_form_data()
     listings.update_listing(listing_id, listing_data)
     return redirect("/listing/" + str(listing_id))

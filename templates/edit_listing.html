@@ -11,6 +11,17 @@
 
   <form action="/edit_listing/{{ listing.id }}" method="post">
     <p>
+      Asuntotyyppi: <br />
+      <select name="property_type_id" required>
+        <option value="">Valitse</option>
+        {% for property_type in property_types %}
+          <option value="{{ property_type.id }}"
+          {% if property_type.id == listing.property_type_id %}selected{% endif %}>{{ property_type.value }}
+        </option>
+        {% endfor %}
+      </select>
+    </p>
+    <p>
       Huonemäärä:<br />
       <input type="radio" name="rooms" value="1" {% if listing.rooms == 1 %}checked{% endif %}> 1 h
       <input type="radio" name="rooms" value="2" {% if listing.rooms == 2 %}checked{% endif %}> 2 h
@@ -27,11 +38,11 @@
     </p>
     <p>
       Paikkakunta: <br />
-      <select name="municipality" required>
+      <select name="municipality_id" required>
         <option value="">Valitse</option>
         {% for municipality in municipalities %}
-          <option value="{{ municipality.name }}"
-          {% if municipality.name == listing.municipality %}selected{% endif %}>{{ municipality.name }}
+          <option value="{{ municipality.id }}"
+          {% if municipality.id == listing.municipality_id %}selected{% endif %}>{{ municipality.value }}
         </option>
         {% endfor %}
       </select>
@@ -48,6 +59,18 @@
       Kerros:<br />
       <input type="text" name="floor" maxlength="2" pattern="^(-1|[0-9]{1,2})$" value="{{ listing.floor }}"> /
       <input type="text" name="floors" maxlength="2" pattern="^[1-9][0-9]?$" value="{{ listing.floors }}">
+    </p>
+    <p>
+      Kunto: <br />
+      <select name="condition_id" required>
+        <option value="">Valitse</option>
+          {% for condition in conditions %}
+        <option value="{{ condition.id }}"
+          {% if condition.id == listing.condition_id %}selected{% endif %}>
+          {{ condition.value }}
+        </option>
+      {% endfor %}
+      </select>
     </p>
     <p>
       Sauna:

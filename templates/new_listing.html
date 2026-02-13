@@ -12,6 +12,15 @@
 
   <form action="/create_listing" method="post">
     <p>
+      Asuntotyyppi: <br />
+      <select name="property_type_id" required>
+        <option value="">Valitse</option>
+        {% for property_type in property_types %}
+        <option value="{{ property_type.id }}">{{ property_type.value }}</option>
+        {% endfor %}
+      </select>
+    </p>
+    <p>
       Huonemäärä: <br />
       <input type="radio" name="rooms" value="1" required/> 1 h
       <input type="radio" name="rooms" value="2" /> 2 h
@@ -28,10 +37,10 @@
     </p>
     <p>
       Paikkakunta: <br />
-      <select name="municipality" required>
+      <select name="municipality_id" required>
         <option value="">Valitse</option>
         {% for municipality in municipalities %}
-        <option value="{{ municipality.name }}">{{ municipality.name }}</option>
+        <option value="{{ municipality.id }}">{{ municipality.value }}</option>
         {% endfor %}
       </select>
     </p>
@@ -47,6 +56,15 @@
       Kerros: <br />
       <input type="text" name="floor" size="3" maxlength="2" pattern="^(-1|[0-9]{1,2})$" required/> /
       <input type="text" name="floors" size="3" maxlength="2" pattern="^[1-9][0-9]?$" required/>
+    </p>
+    <p>
+      Kunto: <br />
+      <select name="condition_id" required>
+        <option value="">Valitse</option>
+        {% for condition in conditions %}
+        <option value="{{ condition.id }}">{{ condition.value }}</option>
+        {% endfor %}
+      </select>
     </p>
     <p>
       Sauna: <input type="checkbox" name="sauna"/><br />

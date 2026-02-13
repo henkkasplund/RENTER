@@ -26,6 +26,9 @@
   <h3>Asunnon tiedot</h3>
 
   <p>
+    Asuntotyyppi: {{ listing.property_type }}
+  </p>
+  <p>
     Huonemäärä: {{ listing.rooms }} h
   </p>
   <p>
@@ -39,6 +42,9 @@
   </p>
   <p>
     Kerros: {{ listing.floor }} / {{ listing.floors }}
+  </p>
+  <p>
+    Kunto: {{ listing.condition }}
   </p>
   <p>
     Sauna: {{ "Kyllä" if listing.sauna else "Ei" }}

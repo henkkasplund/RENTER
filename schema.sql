@@ -10,7 +10,6 @@ CREATE TABLE listings (
     rooms INTEGER,
     size REAL,
     rent INTEGER,
-    municipality TEXT,
     address TEXT,
     postcode TEXT,
     floor TEXT,
@@ -22,9 +21,13 @@ CREATE TABLE listings (
     laundry INTEGER,
     cellar INTEGER,
     pool INTEGER,
-    description TEXT
+    description TEXT,
+    municipality_id INTEGER REFERENCES classes(id),
+    condition_id INTEGER REFERENCES classes(id),
+    property_type_id INTEGER REFERENCES classes(id)
 );
-CREATE TABLE municipalities (
+CREATE TABLE classes (
     id INTEGER PRIMARY KEY,
-    name TEXT UNIQUE
+    title TEXT,
+    value TEXT
 );

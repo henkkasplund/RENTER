@@ -1,312 +1,318 @@
-.read schema.sql
+INSERT INTO classes (title, value) VALUES ('condition', 'Erinomainen');
+INSERT INTO classes (title, value) VALUES ('condition', 'Hyvä');
+INSERT INTO classes (title, value) VALUES ('condition', 'Kohtalainen');
+INSERT INTO classes (title, value) VALUES ('condition', 'Heikko');
 
-INSERT INTO municipalities (name) VALUES
-('Akaa'),
-('Alajärvi'),
-('Alavieska'),
-('Alavus'),
-('Asikkala'),
-('Askola'),
-('Aura'),
-('Brändö'),
-('Eckerö'),
-('Enonkoski'),
-('Enontekiö'),
-('Espoo'),
-('Eura'),
-('Eurajoki'),
-('Evijärvi'),
-('Finström'),
-('Forssa'),
-('Föglö'),
-('Geta'),
-('Haapajärvi'),
-('Haapavesi'),
-('Hailuoto'),
-('Halsua'),
-('Hamina'),
-('Hammarland'),
-('Hankasalmi'),
-('Hanko'),
-('Harjavalta'),
-('Hartola'),
-('Hattula'),
-('Hausjärvi'),
-('Heinola'),
-('Heinävesi'),
-('Helsinki'),
-('Hirvensalmi'),
-('Hollola'),
-('Huittinen'),
-('Humppila'),
-('Hyrynsalmi'),
-('Hyvinkää'),
-('Hämeenkyrö'),
-('Hämeenlinna'),
-('Ii'),
-('Iisalmi'),
-('Iitti'),
-('Ikaalinen'),
-('Ilmajoki'),
-('Ilomantsi'),
-('Imatra'),
-('Inari'),
-('Inkoo'),
-('Isojoki'),
-('Isokyrö'),
-('Janakkala'),
-('Joensuu'),
-('Jokioinen'),
-('Jomala'),
-('Joroinen'),
-('Joutsa'),
-('Juuka'),
-('Juupajoki'),
-('Juva'),
-('Jyväskylä'),
-('Jämijärvi'),
-('Jämsä'),
-('Järvenpää'),
-('Kaarina'),
-('Kaavi'),
-('Kajaani'),
-('Kalajoki'),
-('Kangasala'),
-('Kangasniemi'),
-('Kankaanpää'),
-('Kannonkoski'),
-('Kannus'),
-('Karijoki'),
-('Karkkila'),
-('Karstula'),
-('Karvia'),
-('Kaskinen'),
-('Kauhajoki'),
-('Kauhava'),
-('Kauniainen'),
-('Kaustinen'),
-('Keitele'),
-('Kemi'),
-('Kemijärvi'),
-('Keminmaa'),
-('Kemiönsaari'),
-('Kempele'),
-('Kerava'),
-('Keuruu'),
-('Kihniö'),
-('Kinnula'),
-('Kirkkonummi'),
-('Kitee'),
-('Kittilä'),
-('Kiuruvesi'),
-('Kivijärvi'),
-('Kokemäki'),
-('Kokkola'),
-('Kolari'),
-('Konnevesi'),
-('Kontiolahti'),
-('Korsnäs'),
-('Koski Tl'),
-('Kotka'),
-('Kouvola'),
-('Kristiinankaupunki'),
-('Kruunupyy'),
-('Kuhmo'),
-('Kuhmoinen'),
-('Kumlinge'),
-('Kuopio'),
-('Kuortane'),
-('Kurikka'),
-('Kustavi'),
-('Kuusamo'),
-('Kyyjärvi'),
-('Kärkölä'),
-('Kärsämäki'),
-('Kökar'),
-('Lahti'),
-('Laihia'),
-('Laitila'),
-('Lapinjärvi'),
-('Lapinlahti'),
-('Lappajärvi'),
-('Lappeenranta'),
-('Lapua'),
-('Laukaa'),
-('Lemi'),
-('Lemland'),
-('Lempäälä'),
-('Leppävirta'),
-('Lestijärvi'),
-('Lieksa'),
-('Lieto'),
-('Liminka'),
-('Liperi'),
-('Lohja'),
-('Loimaa'),
-('Loppi'),
-('Loviisa'),
-('Luhanka'),
-('Lumijoki'),
-('Lumparland'),
-('Luoto'),
-('Luumäki'),
-('Maalahti'),
-('Maarianhamina'),
-('Marttila'),
-('Masku'),
-('Merijärvi'),
-('Merikarvia'),
-('Miehikkälä'),
-('Mikkeli'),
-('Muhos'),
-('Multia'),
-('Muonio'),
-('Mustasaari'),
-('Muurame'),
-('Mynämäki'),
-('Myrskylä'),
-('Mäntsälä'),
-('Mänttä-Vilppula'),
-('Mäntyharju'),
-('Naantali'),
-('Nakkila'),
-('Nivala'),
-('Nokia'),
-('Nousiainen'),
-('Nurmes'),
-('Nurmijärvi'),
-('Närpiö'),
-('Orimattila'),
-('Oripää'),
-('Orivesi'),
-('Oulainen'),
-('Oulu'),
-('Outokumpu'),
-('Padasjoki'),
-('Paimio'),
-('Paltamo'),
-('Parainen'),
-('Parikkala'),
-('Parkano'),
-('Pedersören kunta'),
-('Pelkosenniemi'),
-('Pello'),
-('Perho'),
-('Pertunmaa'),
-('Petäjävesi'),
-('Pieksämäki'),
-('Pielavesi'),
-('Pietarsaari'),
-('Pihtipudas'),
-('Pirkkala'),
-('Polvijärvi'),
-('Pomarkku'),
-('Pori'),
-('Pornainen'),
-('Porvoo'),
-('Posio'),
-('Pudasjärvi'),
-('Pukkila'),
-('Punkalaidun'),
-('Puolanka'),
-('Puumala'),
-('Pyhtää'),
-('Pyhäjoki'),
-('Pyhäjärvi'),
-('Pyhäntä'),
-('Pyhäranta'),
-('Pälkäne'),
-('Pöytyä'),
-('Raahe'),
-('Raasepori'),
-('Raisio'),
-('Rantasalmi'),
-('Ranua'),
-('Rauma'),
-('Rautalampi'),
-('Rautavaara'),
-('Rautjärvi'),
-('Reisjärvi'),
-('Riihimäki'),
-('Ristijärvi'),
-('Rovaniemi'),
-('Ruokolahti'),
-('Ruovesi'),
-('Rusko'),
-('Rääkkylä'),
-('Saarijärvi'),
-('Salla'),
-('Salo'),
-('Saltvik'),
-('Sastamala'),
-('Sauvo'),
-('Savitaipale'),
-('Savonlinna'),
-('Savukoski'),
-('Seinäjoki'),
-('Sievi'),
-('Siikainen'),
-('Siikajoki'),
-('Siikalatva'),
-('Siilinjärvi'),
-('Simo'),
-('Sipoo'),
-('Siuntio'),
-('Sodankylä'),
-('Soini'),
-('Somero'),
-('Sonkajärvi'),
-('Sotkamo'),
-('Sottunga'),
-('Sulkava'),
-('Sund'),
-('Suomussalmi'),
-('Suonenjoki'),
-('Sysmä'),
-('Säkylä'),
-('Taipalsaari'),
-('Taivalkoski'),
-('Taivassalo'),
-('Tammela'),
-('Tampere'),
-('Tervo'),
-('Tervola'),
-('Teuva'),
-('Tohmajärvi'),
-('Toholampi'),
-('Toivakka'),
-('Tornio'),
-('Turku'),
-('Tuusniemi'),
-('Tuusula'),
-('Tyrnävä'),
-('Ulvila'),
-('Urjala'),
-('Utajärvi'),
-('Utsjoki'),
-('Uurainen'),
-('Uusikaarlepyy'),
-('Uusikaupunki'),
-('Vaala'),
-('Vaasa'),
-('Valkeakoski'),
-('Vantaa'),
-('Varkaus'),
-('Vehmaa'),
-('Vesanto'),
-('Vesilahti'),
-('Veteli'),
-('Vieremä'),
-('Vihti'),
-('Viitasaari'),
-('Vimpeli'),
-('Virolahti'),
-('Virrat'),
-('Vårdö'),
-('Vöyri'),
-('Ylitornio'),
-('Ylivieska'),
-('Ylöjärvi'),
-('Ypäjä'),
-('Ähtäri'),
-('Äänekoski');
+INSERT INTO classes (title, value) VALUES ('property_type', 'Kerrostalo');
+INSERT INTO classes (title, value) VALUES ('property_type', 'Rivitalo');
+INSERT INTO classes (title, value) VALUES ('property_type', 'Omakotitalo');
+
+INSERT INTO classes (title, value) VALUES ('municipality', 'Akaa');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Alajärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Alavieska');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Alavus');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Asikkala');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Askola');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Aura');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Brändö');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Eckerö');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Enonkoski');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Enontekiö');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Espoo');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Eura');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Eurajoki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Evijärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Finström');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Forssa');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Föglö');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Geta');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Haapajärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Haapavesi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Hailuoto');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Halsua');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Hamina');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Hammarland');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Hankasalmi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Hanko');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Harjavalta');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Hartola');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Hattula');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Hausjärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Heinola');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Heinävesi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Helsinki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Hirvensalmi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Hollola');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Huittinen');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Humppila');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Hyrynsalmi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Hyvinkää');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Hämeenkyrö');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Hämeenlinna');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Ii');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Iisalmi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Iitti');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Ikaalinen');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Ilmajoki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Ilomantsi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Imatra');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Inari');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Inkoo');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Isojoki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Isokyrö');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Janakkala');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Joensuu');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Jokioinen');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Jomala');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Joroinen');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Joutsa');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Juuka');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Juupajoki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Juva');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Jyväskylä');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Jämijärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Jämsä');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Järvenpää');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kaarina');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kaavi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kajaani');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kalajoki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kangasala');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kangasniemi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kankaanpää');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kannonkoski');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kannus');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Karijoki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Karkkila');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Karstula');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Karvia');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kaskinen');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kauhajoki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kauhava');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kauniainen');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kaustinen');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Keitele');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kemi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kemijärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Keminmaa');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kemiönsaari');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kempele');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kerava');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Keuruu');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kihniö');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kinnula');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kirkkonummi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kitee');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kittilä');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kiuruvesi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kivijärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kokemäki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kokkola');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kolari');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Konnevesi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kontiolahti');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Korsnäs');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Koski Tl');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kotka');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kouvola');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kristiinankaupunki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kruunupyy');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kuhmo');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kuhmoinen');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kumlinge');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kuopio');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kuortane');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kurikka');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kustavi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kuusamo');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kyyjärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kärkölä');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kärsämäki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Kökar');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Lahti');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Laihia');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Laitila');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Lapinjärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Lapinlahti');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Lappajärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Lappeenranta');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Lapua');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Laukaa');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Lemi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Lemland');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Lempäälä');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Leppävirta');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Lestijärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Lieksa');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Lieto');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Liminka');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Liperi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Lohja');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Loimaa');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Loppi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Loviisa');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Luhanka');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Lumijoki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Lumparland');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Luoto');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Luumäki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Maalahti');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Maarianhamina');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Marttila');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Masku');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Merijärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Merikarvia');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Miehikkälä');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Mikkeli');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Muhos');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Multia');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Muonio');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Mustasaari');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Muurame');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Mynämäki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Myrskylä');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Mäntsälä');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Mänttä-Vilppula');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Mäntyharju');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Naantali');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Nakkila');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Nivala');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Nokia');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Nousiainen');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Nurmes');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Nurmijärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Närpiö');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Orimattila');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Oripää');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Orivesi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Oulainen');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Oulu');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Outokumpu');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Padasjoki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Paimio');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Paltamo');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Parainen');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Parikkala');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Parkano');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pedersören kunta');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pelkosenniemi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pello');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Perho');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pertunmaa');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Petäjävesi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pieksämäki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pielavesi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pietarsaari');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pihtipudas');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pirkkala');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Polvijärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pomarkku');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pori');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pornainen');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Porvoo');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Posio');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pudasjärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pukkila');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Punkalaidun');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Puolanka');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Puumala');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pyhtää');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pyhäjoki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pyhäjärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pyhäntä');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pyhäranta');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pälkäne');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Pöytyä');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Raahe');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Raasepori');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Raisio');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Rantasalmi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Ranua');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Rauma');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Rautalampi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Rautavaara');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Rautjärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Reisjärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Riihimäki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Ristijärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Rovaniemi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Ruokolahti');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Ruovesi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Rusko');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Rääkkylä');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Saarijärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Salla');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Salo');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Saltvik');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Sastamala');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Sauvo');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Savitaipale');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Savonlinna');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Savukoski');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Seinäjoki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Sievi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Siikainen');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Siikajoki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Siikalatva');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Siilinjärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Simo');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Sipoo');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Siuntio');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Sodankylä');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Soini');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Somero');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Sonkajärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Sotkamo');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Sottunga');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Sulkava');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Sund');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Suomussalmi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Suonenjoki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Sysmä');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Säkylä');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Taipalsaari');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Taivalkoski');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Taivassalo');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Tammela');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Tampere');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Tervo');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Tervola');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Teuva');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Tohmajärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Toholampi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Toivakka');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Tornio');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Turku');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Tuusniemi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Tuusula');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Tyrnävä');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Ulvila');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Urjala');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Utajärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Utsjoki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Uurainen');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Uusikaarlepyy');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Uusikaupunki');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Vaala');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Vaasa');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Valkeakoski');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Vantaa');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Varkaus');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Vehmaa');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Vesanto');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Vesilahti');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Veteli');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Vieremä');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Vihti');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Viitasaari');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Vimpeli');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Virolahti');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Virrat');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Vårdö');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Vöyri');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Ylitornio');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Ylivieska');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Ylöjärvi');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Ypäjä');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Ähtäri');
+INSERT INTO classes (title, value) VALUES ('municipality', 'Äänekoski');
