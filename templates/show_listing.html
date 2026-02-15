@@ -3,13 +3,17 @@
 
 <head>
   <title>
-    {{ listing.municipality }} {{ listing.rooms }} h  {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²  {{ listing.rent }} €
+    {{ listing.municipality }} {{ listing.rooms }} h
+    {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
+    {{ listing.rent }} €
   </title>
 </head>
 
 <body>
   <h1>
-    {{ listing.municipality }} {{ listing.rooms }} h  {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²  {{ listing.rent }} €
+    {{ listing.municipality }} {{ listing.rooms }} h
+    {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
+    {{ listing.rent }} €
   </h1>
 
   {% if session.user_id == listing.user_id %}
@@ -20,7 +24,7 @@
   {% endif %}
 
   <p>
-    Ilmoittaja: <a href="/user/{{listing.user_id}}">{{ listing.username }}<a/> <!-- luokitus tähän {{listing.rating}} -->
+    Ilmoittaja: <a href="/user/{{listing.user_id}}">{{ listing.username }}<a/>
   </p>
   <p>Tykkäyksiä: {{ likes.likes }}</p>
 
@@ -64,7 +68,8 @@
     Parveke: {{ "Kyllä" if listing.balcony else "Ei" }}
   </p>
   <p>
-    Kuvaus: {{ listing.description }}
+    Kuvaus:<br>
+    {{ listing.description | replace("\n", "<br>") | safe }}
   </p>
 
   <h3>Taloyhtiön tiedot</h3>

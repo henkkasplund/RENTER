@@ -6,10 +6,13 @@
 </head>
 
 <body>
+  {% for message in get_flashed_messages() %}
+    <p style="color:red">{{ message }}</p>
+  {% endfor %}
   <form action="/create_account" method="post">
     <p>
       Tunnus: <br />
-      <input type="text" name="username" maxlength="20" required />
+      <input type="text" name="username" value="{{ username }}" maxlength="20" required />
     </p>
     <p>
       Salasana: <br />

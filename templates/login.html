@@ -6,9 +6,12 @@
 </head>
 
 <body>
+  {% for message in get_flashed_messages() %}
+    <p style="color:red">{{ message }}</p>
+  {% endfor %}
   {% if session.username %}
   <p>
-    Olet kirjautunut nimellä {{ session.username }} <!-- tähän vielä rating mukaan -->
+    Olet kirjautunut nimellä {{ session.username }}
   </p>
   <p>
     <a href="/logout">Kirjaudu ulos</a>
@@ -20,11 +23,11 @@
   <form action="/login" method="post">
     <p>
       Tunnus: <br />
-      <input type="text" name="username" value="{{ username }}" maxlength="15"/>
+      <input type="text" name="username" value="{{ username }}" maxlength="15" required/>
     </p>
     <p>
       Salasana: <br />
-      <input type="password" name="password" />
+      <input type="password" name="password" required/>
     </p>
     <input type="submit" value="Kirjaudu" />
   </form>

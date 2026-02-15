@@ -40,7 +40,7 @@
       <select name="municipality_id" required>
         <option value="">Valitse</option>
         {% for municipality in municipalities %}
-        <option value="{{ municipality.id }}">{{ municipality.value }}</option>
+          <option value="{{ municipality.id }}">{{ municipality.value }}</option>
         {% endfor %}
       </select>
     </p>
@@ -62,7 +62,7 @@
       <select name="condition_id" required>
         <option value="">Valitse</option>
         {% for condition in conditions %}
-        <option value="{{ condition.id }}">{{ condition.value }}</option>
+          <option value="{{ condition.id }}">{{ condition.value }}</option>
         {% endfor %}
       </select>
     </p>

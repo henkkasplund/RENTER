@@ -17,7 +17,7 @@
         {% for property_type in property_types %}
           <option value="{{ property_type.id }}"
           {% if property_type.id == listing.property_type_id %}selected{% endif %}>{{ property_type.value }}
-        </option>
+          </option>
         {% endfor %}
       </select>
     </p>

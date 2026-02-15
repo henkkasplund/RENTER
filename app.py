@@ -110,13 +110,16 @@ def create():
     password1 = request.form["password1"]
     password2 = request.form["password2"]
     if not username or not password1:
-        return "VIRHE: tyhjä käyttäjänimi tai salasana<br><a href='/register'>Takaisin</a>"
+        flash("VIRHE: tyhjä käyttäjänimi tai salasana")
+        return render_template("register.html", username=username)
     if password1 != password2:
-        return "VIRHE: salasanat eivät ole samat<br><a href='/register'>Takaisin</a>"
+        flash("VIRHE: salasanat eivät ole samat")
+        return render_template("register.html", username=username)
     try:
         users.create_user(username, password1)
     except sqlite3.IntegrityError:
-        return "VIRHE: tunnus on jo varattu<br><a href='/register'>Takaisin</a>"
+        flash("VIRHE: tunnus on jo varattu")
+        return render_template("register.html")
 
     sql = "SELECT id FROM users WHERE username = ?"
     user_id = db.query(sql, [username])[0]["id"]
@@ -139,7 +142,8 @@ def login():
             session["username"] = username
             return redirect("/")
         else:
-            return f"VIRHE: väärä tunnus tai salasana<br><a href='/login?username={username}'>Takaisin</a>"
+            flash("VIRHE: väärä tunnus tai salasana")
+            return render_template("login.html", username=username)
 
 @app.route("/logout")
 def logout():

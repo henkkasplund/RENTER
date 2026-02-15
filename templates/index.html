@@ -8,6 +8,10 @@
 <body>
   <h1>RENTER</h1>
 
+  {% for message in get_flashed_messages() %}
+  <p style="color:green">{{ message }}</p>
+  {% endfor %}
+
   {% if session.username %}
   <p>
     Olet kirjautunut nimellä {{ session.username }}, id numerosi on  {{ session.user_id }} <!-- tähän vielä rating mukaan -->
@@ -29,7 +33,10 @@
   </p>
   <ul>
     {% for listing in listings %}
-    <li><a href="/listing/{{ listing.id }}">{{ listing.municipality }} {{ listing.rooms }} h  {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²  {{ listing.rent }} €</a></li>
+      <li>
+        <a href="/listing/{{ listing.id }}">{{ listing.municipality }} {{ listing.rooms }} h
+          {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
+          {{ listing.rent }} €</a></li>
     {% endfor %}
   </ul>
   <p>
