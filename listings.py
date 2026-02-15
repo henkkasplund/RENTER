@@ -126,6 +126,24 @@ def get_form_data():
         "description": description
     }
 
+def like_unlike(user_id, listing_id, press_like):
+    if press_like:
+        sql = "INSERT OR IGNORE INTO likes (user_id, listing_id) VALUES (?, ?)"
+        db.execute(sql, [user_id, listing_id])
+    else:
+        sql = "DELETE FROM likes WHERE user_id = ? AND listing_id = ?"
+        db.execute(sql, [user_id, listing_id])
+
+def get_likes(user_id, listing_id):
+    if not user_id:
+        sql = "SELECT COUNT(*) AS likes FROM likes WHERE listing_id = ?"
+        likes = db.query(sql, [listing_id])[0]["likes"]
+        return {"likes": likes, "liked": 0}
+    sql = """SELECT (SELECT COUNT(*) FROM likes WHERE listing_id = ?) AS likes,
+            EXISTS(SELECT 1 FROM likes WHERE listing_id = ? AND user_id = ?) AS liked"""
+    result = db.query(sql, [listing_id, listing_id, user_id])
+    return result[0]
+
 def update_listing(listing_id, listing_data):
     sql = """UPDATE listings SET rooms = ?, size = ?, rent = ?,
                     address = ?, postcode = ?, floor = ?, floors = ?,

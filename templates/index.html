@@ -29,7 +29,7 @@
   </p>
   <ul>
     {% for listing in listings %}
-    <li><a href="/listing/{{ listing.id }}">{{ listing.municipality }} {{ listing.rooms }} h  {{ listing.size|string|replace(".", ",") }} m²  {{ listing.rent }} €</a></li>
+    <li><a href="/listing/{{ listing.id }}">{{ listing.municipality }} {{ listing.rooms }} h  {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²  {{ listing.rent }} €</a></li>
     {% endfor %}
   </ul>
   <p>

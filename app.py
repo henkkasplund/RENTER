@@ -25,7 +25,9 @@ def show_listing(listing_id):
     listing = listings.get_listing(listing_id)
     if not listing:
         abort(404)
-    return render_template("show_listing.html", listing=listing)
+    user_id = session.get("user_id")
+    likes = listings.get_likes(user_id, listing_id)
+    return render_template("show_listing.html", listing=listing, likes=likes)
 
 @app.route("/user/<int:user_id>")
 def user(user_id):
@@ -145,3 +147,14 @@ def logout():
         del session["user_id"]
         del session["username"]
     return redirect("/")
+
+@app.route("/toggle_like/<int:listing_id>", methods=["POST"])
+def toggle_like(listing_id):
+    demand_login()
+    user_id = session["user_id"]
+    likes = listings.get_likes(user_id, listing_id)
+    if likes["liked"]:
+        listings.like_unlike(user_id, listing_id, False)
+    else:
+        listings.like_unlike(user_id, listing_id, True)
+    return redirect("/listing/" + str(listing_id))

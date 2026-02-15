@@ -31,3 +31,9 @@ CREATE TABLE classes (
     title TEXT,
     value TEXT
 );
+CREATE TABLE likes (
+    id INTEGER PRIMARY KEY,
+    user_id INTEGER REFERENCES users,
+    listing_id INTEGER REFERENCES listings,
+    UNIQUE(user_id, listing_id)
+);

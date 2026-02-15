@@ -3,13 +3,13 @@
 
 <head>
   <title>
-    {{ listing.municipality }} {{ listing.rooms }} h  {{ listing.size|string|replace(".", ",") }} m²  {{ listing.rent }} €
+    {{ listing.municipality }} {{ listing.rooms }} h  {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²  {{ listing.rent }} €
   </title>
 </head>
 
 <body>
   <h1>
-    {{ listing.municipality }} {{ listing.rooms }} h  {{ listing.size|string|replace(".", ",") }} m²  {{ listing.rent }} €
+    {{ listing.municipality }} {{ listing.rooms }} h  {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²  {{ listing.rent }} €
   </h1>
 
   {% if session.user_id == listing.user_id %}
@@ -22,6 +22,17 @@
   <p>
     Ilmoittaja: <a href="/user/{{listing.user_id}}">{{ listing.username }}<a/> <!-- luokitus tähän {{listing.rating}} -->
   </p>
+  <p>Tykkäyksiä: {{ likes.likes }}</p>
+
+  {% if session.user_id %}
+    <form action="/toggle_like/{{ listing.id }}" method="post">
+      {% if likes.liked %}
+        <button type="submit">Poista tykkäys</button>
+      {% else %}
+        <button type="submit">Tykkää</button>
+      {% endif %}
+    </form>
+  {% endif %}
 
   <h3>Asunnon tiedot</h3>
 
@@ -32,7 +43,7 @@
     Huonemäärä: {{ listing.rooms }} h
   </p>
   <p>
-    Neliömäärä: {{ listing.size|string|replace(".", ",") }} m²
+    Neliömäärä: {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
   </p>
   <p>
     Vuokrahinta: {{ listing.rent }} €

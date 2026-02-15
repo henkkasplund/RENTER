@@ -26,7 +26,7 @@
     <li>
       <a href="/listing/{{ listing.id }}">
         {{ listing.municipality }} {{ listing.rooms }}h
-        {{ listing.size|string|replace(".", ",") }} m²
+        {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
         {{ listing.rent }} €
       </a>
       <a href="/user/{{ listing.user_id }}">

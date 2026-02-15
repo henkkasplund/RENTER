@@ -6,7 +6,7 @@
 </head>
 
 <body>
-  <h1>Käyttäjä {{ user.username }}:  {{ user.id }}</h1>  <!-- rating coming! -->
+  <h1>Käyttäjä {{ user.username }}, ID:{{ user.id }}</h1>
   {% if session.get(user_id) == user.id %}
   <p>
     <a href="/new_listing">Uusi ilmoitus</a>
@@ -23,7 +23,7 @@
 
   <ul>
     {% for listing in listings %}
-    <li><a href="/listing/{{ listing.id }}">{{ listing.municipality }} {{ listing.rooms }} h  {{ listing.size|string|replace(".", ",") }} m²  {{ listing.rent }} €</a></li>
+    <li><a href="/listing/{{ listing.id }}">{{ listing.municipality }} {{ listing.rooms }} h  {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²  {{ listing.rent }} €</a></li>
     {% endfor %}
   </ul>
   <p>
