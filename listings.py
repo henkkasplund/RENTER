@@ -3,13 +3,13 @@ from flask import abort, request
 import re
 
 def add_listing(user_id, listing_data):
-    sql = """INSERT INTO listings (user_id, rooms, size, rent,
+    sql = """INSERT INTO listings (user_id, rooms_id, size, rent,
                                 address, postcode,floor, floors, sauna, balcony,
                                 bath, elevator, laundry, cellar, pool, description,
                                 municipality_id, condition_id, property_type_id)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
-    db.execute(sql, [user_id, listing_data["rooms"], listing_data["size"],
+    db.execute(sql, [user_id, listing_data["rooms_id"], listing_data["size"],
                      listing_data["rent"], listing_data["address"],
                      listing_data["postcode"],listing_data["floor"],
                      listing_data["floors"], listing_data["sauna"],
@@ -21,11 +21,12 @@ def add_listing(user_id, listing_data):
 
 def get_listings():
     sql = """SELECT listings.id,
-                    listings.rooms,
                     listings.rent,
                     listings.size,
+                    r.value AS rooms,
                     m.value AS municipality
              FROM listings
+             JOIN classes r ON r.id = listings.rooms_id
              JOIN classes m ON m.id = listings.municipality_id
              ORDER BY listings.id DESC"""
     return db.query(sql)
@@ -34,6 +35,8 @@ def get_listing(listing_id):
     sql = """SELECT listings.*,
                     users.id AS user_id,
                     users.username,
+                    r.id AS rooms_id,
+                    r.value AS rooms,
                     m.id AS municipality_id,
                     m.value AS municipality,
                     c.id AS condition_id,
@@ -42,6 +45,7 @@ def get_listing(listing_id):
                     p.value AS property_type
             FROM listings
             JOIN users ON users.id = listings.user_id
+            JOIN classes r ON r.id = listings.rooms_id
             JOIN classes m ON m.id = listings.municipality_id
             JOIN classes c ON c.id = listings.condition_id
             JOIN classes p ON p.id = listings.property_type_id
@@ -54,8 +58,8 @@ def get_classes(title):
     return db.query(sql, [title])
 
 def get_form_data():
-    rooms = request.form["rooms"]
-    if not re.search("^[1-9][0-9]?$", rooms):
+    rooms_id = request.form["rooms_id"]
+    if not re.search("^[0-9]+$", rooms_id):
         abort(403)
     size = request.form["size"]
     if not size or len(size) > 20:
@@ -80,10 +84,11 @@ def get_form_data():
     if not re.search("^[0-9]{5}$", postcode):
         abort(403)
     floor = request.form["floor"]
-    if not floor or len(floor) > 10:
-        abort(403)
-    if not re.search("^(-1|[0-9]{1,2})$", floor):
-        abort(403)
+    if floor:
+        if not re.search("^(-1|[0-9]{1,2})$", floor):
+            abort(403)
+        else:
+            floor = None
     floors = request.form["floors"]
     if not floors or len(floors) > 10:
         abort(403)
@@ -106,7 +111,7 @@ def get_form_data():
     if len(description) > 300:
         abort(403)
     return {
-        "rooms": rooms,
+        "rooms_id": rooms_id,
         "size": size,
         "rent": rent,
         "municipality_id": municipality_id,
@@ -145,13 +150,13 @@ def get_likes(user_id, listing_id):
     return result[0]
 
 def update_listing(listing_id, listing_data):
-    sql = """UPDATE listings SET rooms = ?, size = ?, rent = ?,
+    sql = """UPDATE listings SET rooms_id = ?, size = ?, rent = ?,
                     address = ?, postcode = ?, floor = ?, floors = ?,
                     sauna = ?, balcony = ?, bath = ?, elevator = ?, laundry = ?,
                     cellar = ?, pool = ?, description = ?, municipality_id = ?,
                     condition_id = ?, property_type_id = ?
             WHERE id = ?"""
-    db.execute(sql, [listing_data["rooms"], listing_data["size"],
+    db.execute(sql, [listing_data["rooms_id"], listing_data["size"],
                      listing_data["rent"], listing_data["address"],
                      listing_data["postcode"], listing_data["floor"],
                      listing_data["floors"], listing_data["sauna"],
@@ -164,19 +169,46 @@ def update_listing(listing_id, listing_data):
 def remove_listing(listing_id):
     db.execute("DELETE FROM listings WHERE id = ?", [listing_id])
 
-def search_listings(query):
+def search_listings(size, min_rent, max_rent, rooms_id, property_type_id, municipality_id, condition_id):
+    criteria = []
+    values = []
     sql = """SELECT listings.id,
-                    listings.rooms,
                     listings.rent,
                     listings.size,
                     users.username,
                     users.id AS user_id,
-                    m.value AS municipality
-             FROM listings
-             JOIN users ON listings.user_id = users.id
-             JOIN classes m ON m.id = listings.municipality_id
-             WHERE m.value LIKE ? OR listings.description LIKE ?
-             ORDER BY listings.id DESC"""
-
-    result = "%" + query + "%"
-    return db.query(sql, [result, result])
+                    r.value AS rooms,
+                    m.value AS municipality,
+                    c.value AS condition,
+                    p.value AS property_type
+            FROM listings
+            JOIN users ON listings.user_id = users.id
+            JOIN classes r ON r.id = listings.rooms_id
+            JOIN classes m ON m.id = listings.municipality_id
+            JOIN classes c ON c.id = listings.condition_id
+            JOIN classes p ON p.id = listings.property_type_id"""
+    if size:
+        criteria.append("listings.size >= ?")
+        values.append(size.replace(",", "."))
+    if min_rent:
+        criteria.append("listings.rent >= ?")
+        values.append(min_rent)
+    if max_rent:
+        criteria.append("listings.rent <= ?")
+        values.append(max_rent)
+    if rooms_id:
+        criteria.append("listings.rooms_id = ?")
+        values.append(rooms_id)
+    if property_type_id:
+        criteria.append("listings.property_type_id = ?")
+        values.append(property_type_id)
+    if municipality_id:
+        criteria.append("listings.municipality_id = ?")
+        values.append(municipality_id)
+    if condition_id:
+        criteria.append("listings.condition_id = ?")
+        values.append(condition_id)
+    if criteria:
+        sql += " WHERE " + " AND ".join(criteria)
+    sql += " ORDER BY listings.id DESC"
+    return db.query(sql, values)

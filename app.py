@@ -39,11 +39,25 @@ def user(user_id):
 
 @app.route("/search_listings")
 def search_listings():
-    query = request.args.get("query")
-    if not query:
-        query = ""
-    results = listings.search_listings(query) if query else []
-    return render_template("search_listings.html", query=query, results=results)
+    user = request.args.get("user", "")
+    size = request.args.get("size", "")
+    max_rent = request.args.get("max_rent", "")
+    min_rent = request.args.get("min_rent", "")
+    rooms_id = request.args.get("rooms_id", "" )
+    property_type_id = request.args.get("property_type_id", "")
+    municipality_id = request.args.get("municipality_id", "")
+    condition_id = request.args.get("condition_id", "")
+    searched = any([user, size, max_rent, min_rent, rooms_id, property_type_id, municipality_id, condition_id])
+    results = listings.search_listings(user, size, min_rent, max_rent, rooms_id, property_type_id,
+                                       municipality_id, condition_id) if searched else []
+    return render_template("search_listings.html",
+                           results=results, searched=searched, user=user, size=size, max_rent=max_rent,
+                           min_rent=min_rent, rooms_id=rooms_id, property_type_id=property_type_id,
+                           municipality_id=municipality_id,condition_id=condition_id,
+                           rooms=listings.get_classes("rooms"),
+                           municipalities=listings.get_classes("municipality"),
+                           property_types=listings.get_classes("property_type"),
+                           conditions=listings.get_classes("condition"))
 
 @app.route("/new_listing")
 def new_listing():
@@ -51,10 +65,10 @@ def new_listing():
     municipalities = listings.get_classes("municipality")
     conditions = listings.get_classes("condition")
     property_types = listings.get_classes("property_type")
+    rooms = listings.get_classes("rooms")
     return render_template("new_listing.html",
-                       municipalities=municipalities,
-                       conditions=conditions,
-                       property_types=property_types)
+                           municipalities=municipalities, conditions=conditions,
+                           property_types=property_types, rooms=rooms)
 
 @app.route("/create_listing", methods=["POST"])
 def create_listing():
@@ -73,11 +87,12 @@ def edit_listing(listing_id):
     if listing["user_id"] != session["user_id"]:
         abort(403)
     municipalities = listings.get_classes("municipality")
+    rooms = listings.get_classes("rooms")
     conditions = listings.get_classes("condition")
     property_types = listings.get_classes("property_type")
     if request.method == "GET":
         return render_template("edit_listing.html",
-                               listing=listing, municipalities=municipalities,
+                               listing=listing, municipalities=municipalities, rooms = rooms,
                                conditions=conditions, property_types=property_types)
     listing_data = listings.get_form_data()
     listings.update_listing(listing_id, listing_data)

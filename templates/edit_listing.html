@@ -22,11 +22,15 @@
       </select>
     </p>
     <p>
-      Huonemäärä:<br />
-      <input type="radio" name="rooms" value="1" {% if listing.rooms == 1 %}checked{% endif %}> 1 h
-      <input type="radio" name="rooms" value="2" {% if listing.rooms == 2 %}checked{% endif %}> 2 h
-      <input type="radio" name="rooms" value="3" {% if listing.rooms == 3 %}checked{% endif %}> 3 h
-      <input type="radio" name="rooms" value="4" {% if listing.rooms == 4 %}checked{% endif %}> 4+ h
+      Huonemäärä: <br />
+      <select name="rooms_id" required>
+        <option value="">Valitse</option>
+        {% for room in rooms %}
+          <option value="{{ room.id }}"
+          {% if room.id == listing.rooms_id %}selected{% endif %}>{{ room.value }}
+          </option>
+        {% endfor %}
+      </select>
     </p>
     <p>
       Neliömäärä:<br />
@@ -58,9 +62,9 @@
       <input type="text" name="postcode" maxlength="5" pattern="^[0-9]{5}$" value="{{ listing.postcode }}" required>
     </p>
     <p>
-      Kerros:<br />
+      Kerros/kerroksia:<br />
       <input type="text" name="floor" maxlength="2" pattern="^(-1|[0-9]{1,2})$" value="{{ listing.floor }}"> /
-      <input type="text" name="floors" maxlength="2" pattern="^[1-9][0-9]?$" value="{{ listing.floors }}">
+      <input type="text" name="floors" maxlength="2" pattern="^[1-9][0-9]?$" value="{{ listing.floors }}" required>
     </p>
     <p>
       Kunto: <br />

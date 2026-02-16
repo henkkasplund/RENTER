@@ -7,7 +7,7 @@
 
 <body>
   <h1>Käyttäjä {{ user.username }}, ID:{{ user.id }}</h1>
-  {% if session.get(user_id) == user.id %}
+  {% if session.user_id == user.id %}
   <p>
     <a href="/new_listing">Uusi ilmoitus</a>
   </p>

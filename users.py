@@ -8,14 +8,15 @@ def get_user(user_id):
 
 def get_user_listings(user_id):
     sql = """SELECT listings.id,
-                    listings.rooms,
                     listings.rent,
                     listings.size,
+                    r.value AS rooms,
                     m.value AS municipality
-            FROM listings
-            JOIN classes m ON m.id = listings.municipality_id
-            WHERE listings.user_id = ?
-            ORDER BY listings.id DESC"""
+             FROM listings
+             JOIN classes r ON r.id = listings.rooms_id
+             JOIN classes m ON m.id = listings.municipality_id
+             WHERE listings.user_id = ?
+             ORDER BY listings.id DESC"""
     return db.query(sql, [user_id])
 
 def create_user(username, password):

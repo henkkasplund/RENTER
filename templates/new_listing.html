@@ -22,10 +22,12 @@
     </p>
     <p>
       Huonemäärä: <br />
-      <input type="radio" name="rooms" value="1" required/> 1 h
-      <input type="radio" name="rooms" value="2" /> 2 h
-      <input type="radio" name="rooms" value="3" /> 3 h
-      <input type="radio" name="rooms" value="4" /> 4+ h
+      <select name="rooms_id" required>
+        <option value="">Valitse</option>
+        {% for room in rooms %}
+        <option value="{{ room.id }}">{{ room.value }}</option>
+        {% endfor %}
+      </select>
     </p>
     <p>
       Neliömäärä: <br />
@@ -53,8 +55,8 @@
       <input type="text" name="postcode" size="5" maxlength="5" pattern="^[0-9]{5}$" required/>
     </p>
     <p>
-      Kerros: <br />
-      <input type="text" name="floor" size="3" maxlength="2" pattern="^(-1|[0-9]{1,2})$" required/> /
+      Kerros/kerroksia: <br />
+      <input type="text" name="floor" size="3" maxlength="2" pattern="^(-1|[0-9]{1,2})$"/> /
       <input type="text" name="floors" size="3" maxlength="2" pattern="^[1-9][0-9]?$" required/>
     </p>
     <p>

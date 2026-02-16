@@ -24,7 +24,7 @@
   {% endif %}
 
   <p>
-    Ilmoittaja: <a href="/user/{{listing.user_id}}">{{ listing.username }}<a/>
+    Ilmoittaja: <a href="/user/{{listing.user_id}}">{{ listing.username }}</a>
   </p>
   <p>Tykkäyksiä: {{ likes.likes }}</p>
 
@@ -56,7 +56,11 @@
     Osoite: {{ listing.address }}, {{ listing.postcode }} {{ listing.municipality }}
   </p>
   <p>
-    Kerros: {{ listing.floor }} / {{ listing.floors }}
+    {% if listing.floor %}
+      Kerros: {{ listing.floor }} / {{ listing.floors }}
+    {% else %}
+      Kerroksia: {{ listing.floors }}
+    {% endif %}
   </p>
   <p>
     Kunto: {{ listing.condition }}
@@ -72,6 +76,7 @@
     {{ listing.description | replace("\n", "<br>") | safe }}
   </p>
 
+   {% if listing.floor %}
   <h3>Taloyhtiön tiedot</h3>
 
   <p>
@@ -89,6 +94,7 @@
   <p>
     Uima-allas: {{ "Kyllä" if listing.pool else "Ei" }}
   </p>
+  {% endif %}
 
   <p>
   <a href="/">Takaisin</a>

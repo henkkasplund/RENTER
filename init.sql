@@ -7,6 +7,22 @@ INSERT INTO classes (title, value) VALUES ('property_type', 'Kerrostalo');
 INSERT INTO classes (title, value) VALUES ('property_type', 'Rivitalo');
 INSERT INTO classes (title, value) VALUES ('property_type', 'Omakotitalo');
 
+INSERT INTO classes (title, value) VALUES ('rooms', '1');
+INSERT INTO classes (title, value) VALUES ('rooms', '2');
+INSERT INTO classes (title, value) VALUES ('rooms', '3');
+INSERT INTO classes (title, value) VALUES ('rooms', '4');
+INSERT INTO classes (title, value) VALUES ('rooms', '5');
+INSERT INTO classes (title, value) VALUES ('rooms', '6');
+INSERT INTO classes (title, value) VALUES ('rooms', '7');
+INSERT INTO classes (title, value) VALUES ('rooms', '8');
+INSERT INTO classes (title, value) VALUES ('rooms', '9');
+INSERT INTO classes (title, value) VALUES ('rooms', '10');
+INSERT INTO classes (title, value) VALUES ('rooms', '11');
+INSERT INTO classes (title, value) VALUES ('rooms', '12');
+INSERT INTO classes (title, value) VALUES ('rooms', '13');
+INSERT INTO classes (title, value) VALUES ('rooms', '14');
+INSERT INTO classes (title, value) VALUES ('rooms', '15');
+
 INSERT INTO classes (title, value) VALUES ('municipality', 'Akaa');
 INSERT INTO classes (title, value) VALUES ('municipality', 'Alajärvi');
 INSERT INTO classes (title, value) VALUES ('municipality', 'Alavieska');

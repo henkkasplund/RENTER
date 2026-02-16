@@ -4,10 +4,14 @@ CREATE TABLE users (
     rating INTEGER,
     password_hash TEXT
 );
+CREATE TABLE classes (
+    id INTEGER PRIMARY KEY,
+    title TEXT,
+    value TEXT
+);
 CREATE TABLE listings (
     id INTEGER PRIMARY KEY,
     user_id INTEGER REFERENCES users,
-    rooms INTEGER,
     size REAL,
     rent INTEGER,
     address TEXT,
@@ -22,18 +26,14 @@ CREATE TABLE listings (
     cellar INTEGER,
     pool INTEGER,
     description TEXT,
+    rooms_id INTEGER REFERENCES classes(id),
     municipality_id INTEGER REFERENCES classes(id),
     condition_id INTEGER REFERENCES classes(id),
     property_type_id INTEGER REFERENCES classes(id)
 );
-CREATE TABLE classes (
-    id INTEGER PRIMARY KEY,
-    title TEXT,
-    value TEXT
-);
 CREATE TABLE likes (
     id INTEGER PRIMARY KEY,
-    user_id INTEGER REFERENCES users,
-    listing_id INTEGER REFERENCES listings,
+    user_id INTEGER REFERENCES users ON DELETE CASCADE,
+    listing_id INTEGER REFERENCES listings ON DELETE CASCADE,
     UNIQUE(user_id, listing_id)
 );
