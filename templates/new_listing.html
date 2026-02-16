@@ -86,9 +86,8 @@
       Häkkikellari: <input type="checkbox" name="cellar"/><br />
       Uima-allas: <input type="checkbox" name="pool"/>
     </p>
-
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="submit" value="Luo ilmoitus" />
-
   </form>
   <p>
     <a href="/">Takaisin</a>

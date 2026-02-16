@@ -13,9 +13,10 @@
   <p>
     Olet kirjautunut nimellä {{ session.username }}
   </p>
-  <p>
-    <a href="/logout">Kirjaudu ulos</a>
-  </p>
+  <form action="/logout" method="post">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <button type="submit">Kirjaudu ulos</button>
+  </form>
   <p>
   <a href="/">Takaisin</a>
   </p>
@@ -29,6 +30,7 @@
       Salasana: <br />
       <input type="password" name="password" required/>
     </p>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="submit" value="Kirjaudu" />
   </form>
   <p>

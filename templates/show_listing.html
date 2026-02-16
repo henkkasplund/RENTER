@@ -30,6 +30,7 @@
 
   {% if session.user_id %}
     <form action="/toggle_like/{{ listing.id }}" method="post">
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
       {% if likes.liked %}
         <button type="submit">Poista tykkäys</button>
       {% else %}
@@ -73,7 +74,7 @@
   </p>
   <p>
     Kuvaus:<br>
-    {{ listing.description | replace("\n", "<br>") | safe }}
+    {{ listing.description | show_lines }}
   </p>
 
    {% if listing.floor %}

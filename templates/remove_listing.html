@@ -10,11 +10,12 @@
   <p>
     Vuokrakohde: {{ listing.municipality }} {{ listing.rooms }} h
                  {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
-                 {{ listing.rent }} €</br >
+                 {{ listing.rent }} €<br />
     Haluatko varmasti poistaa tämän ilmoituksen?
   </p>
   <form action="/remove_listing/{{ listing.id }}" method="post">
     <input type="submit" name="remove" value="Poista ilmoitus">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="submit" name="back" value="Takaisin">
   </form>
 </body>

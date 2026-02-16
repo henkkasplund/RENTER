@@ -39,12 +39,12 @@
           {{ listing.rent }} €</a></li>
     {% endfor %}
   </ul>
-  <p>
-    {% if session.username %}
-    <br />
-    <a href="/logout">Kirjaudu ulos</a>
-    {% endif %}
-  </p>
+  {% if session.username %}
+  <form action="/logout" method="post">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <button type="submit">Kirjaudu ulos</button>
+  </form>
+  {% endif %}
 </body>
 
 </html>

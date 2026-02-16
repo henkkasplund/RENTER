@@ -30,13 +30,18 @@
     {% endfor %}
   </ul>
   <p>
-    <br />
     <a href="/">Takaisin</a>
-    {% if session.username %}
-      <br />
-      <a href="/logout">Kirjaudu ulos</a>
-    {% endif %}
   </p>
+
+  {% if session.username %}
+  <p>
+    <form action="/logout" method="post">
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+      <button type="submit">Kirjaudu ulos</button>
+    </form>
+  </p>
+  {% endif %}
+
 </body>
 
 </html>

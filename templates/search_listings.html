@@ -10,6 +10,7 @@
 
   <form action="/search_listings" method="get">
   <p>
+    Ilmoittaja:
     <input type="text" name="user" value="{{ user }}">
   </p>
   <p>
@@ -60,7 +61,6 @@
       {% endfor %}
     </select>
   </p>
-
   <input type="submit" value="Hae">
   </form>
   {% if searched %}

@@ -105,6 +105,7 @@
     </p>
 
     <input type="hidden" name="listing_id" value="{{ listing.id }}">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="submit" name="edit" value="Päivitä ilmoitusta">
 
   </form>

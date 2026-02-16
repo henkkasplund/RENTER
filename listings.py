@@ -87,8 +87,8 @@ def get_form_data():
     if floor:
         if not re.search("^(-1|[0-9]{1,2})$", floor):
             abort(403)
-        else:
-            floor = None
+    else:
+        floor = None
     floors = request.form["floors"]
     if not floors or len(floors) > 10:
         abort(403)
@@ -169,7 +169,7 @@ def update_listing(listing_id, listing_data):
 def remove_listing(listing_id):
     db.execute("DELETE FROM listings WHERE id = ?", [listing_id])
 
-def search_listings(size, min_rent, max_rent, rooms_id, property_type_id, municipality_id, condition_id):
+def search_listings(user, size, min_rent, max_rent, rooms_id, property_type_id, municipality_id, condition_id):
     criteria = []
     values = []
     sql = """SELECT listings.id,
@@ -187,6 +187,9 @@ def search_listings(size, min_rent, max_rent, rooms_id, property_type_id, munici
             JOIN classes m ON m.id = listings.municipality_id
             JOIN classes c ON c.id = listings.condition_id
             JOIN classes p ON p.id = listings.property_type_id"""
+    if user:
+        criteria.append("users.username LIKE ?")
+        values.append("%" + user + "%")
     if size:
         criteria.append("listings.size >= ?")
         values.append(size.replace(",", "."))

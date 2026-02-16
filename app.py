@@ -6,10 +6,22 @@ import db
 import config
 import listings
 import users
+import markupsafe
+import secrets
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
+
+def check_csrf():
+    if request.form["csrf_token"] != session["csrf_token"]:
+        abort(403)
+
+@app.template_filter()
+def show_lines(content):
+    content = str(markupsafe.escape(content))
+    content = content.replace("\n", "<br />")
+    return markupsafe.Markup(content)
 
 def demand_login():
     if "user_id" not in session:
@@ -73,6 +85,7 @@ def new_listing():
 @app.route("/create_listing", methods=["POST"])
 def create_listing():
     demand_login()
+    check_csrf()
     user_id = session["user_id"]
     listing_data = listings.get_form_data()
     listings.add_listing(user_id, listing_data)
@@ -94,9 +107,11 @@ def edit_listing(listing_id):
         return render_template("edit_listing.html",
                                listing=listing, municipalities=municipalities, rooms = rooms,
                                conditions=conditions, property_types=property_types)
-    listing_data = listings.get_form_data()
-    listings.update_listing(listing_id, listing_data)
-    return redirect("/listing/" + str(listing_id))
+    if request.method == "POST":
+        check_csrf()
+        listing_data = listings.get_form_data()
+        listings.update_listing(listing_id, listing_data)
+        return redirect("/listing/" + str(listing_id))
 
 @app.route("/remove_listing/<int:listing_id>", methods=["GET", "POST"])
 def remove_listing(listing_id):
@@ -109,6 +124,7 @@ def remove_listing(listing_id):
     if request.method == "GET":
         return render_template("remove_listing.html", listing=listing)
     if request.method == "POST":
+        check_csrf()
         if "remove" in request.form:
             listings.remove_listing(listing_id)
             return redirect("/")
@@ -140,6 +156,7 @@ def create():
     user_id = db.query(sql, [username])[0]["id"]
     session["user_id"] = user_id
     session["username"] = username
+    session["csrf_token"] = secrets.token_hex(16)
     flash("Tunnus luotu!")
     return redirect("/")
 
@@ -155,21 +172,25 @@ def login():
         if user_id:
             session["user_id"] = user_id
             session["username"] = username
+            session["csrf_token"] = secrets.token_hex(16)
             return redirect("/")
         else:
             flash("VIRHE: väärä tunnus tai salasana")
             return render_template("login.html", username=username)
 
-@app.route("/logout")
+@app.route("/logout", methods=["POST"])
 def logout():
-    if "user_id" in session:
-        del session["user_id"]
-        del session["username"]
+    demand_login()
+    check_csrf()
+    del session["user_id"]
+    del session["username"]
+    del session["csrf_token"]
     return redirect("/")
 
 @app.route("/toggle_like/<int:listing_id>", methods=["POST"])
 def toggle_like(listing_id):
     demand_login()
+    check_csrf()
     user_id = session["user_id"]
     likes = listings.get_likes(user_id, listing_id)
     if likes["liked"]:
