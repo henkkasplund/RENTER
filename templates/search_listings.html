@@ -6,7 +6,12 @@
 </head>
 
 <body>
-  <h1>Etsi vuokrakohteita</h1>
+  <h1><a href="/">RENTER</a></h1>
+  <p>
+    Olet kirjautunut nimellä: {{ session.username }} Luokitus & id: {{ session.rating }}, {{ session.user_id}}
+  </p>
+
+  <h2>Etsi vuokrakohteita</h2>
 
   <form action="/search_listings" method="get">
   <p>

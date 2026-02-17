@@ -10,17 +10,40 @@
 </head>
 
 <body>
-  <h1>
+  <h1><a href="/">RENTER</a></h1>
+  <p>
+    Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a> Luokitus & id: {{ session.rating }}, {{ session.user_id}}
+  </p>
+  <h2>
     {{ listing.municipality }} {{ listing.rooms }} h
     {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
     {{ listing.rent }} €
-  </h1>
+  </h2>
 
   {% if session.user_id == listing.user_id %}
   <p>
     <a href="/edit_listing/{{ listing.id }}">Muokkaa</a>
     <a href="/remove_listing/{{ listing.id }}">Poista</a>
   </p>
+ 
+  <h2>Hakijat:</h2>
+  <ul>
+    {% for offer in offers %}
+      <li>{{ offer.price  }} € <a href="/user/{{ offer.user_id }}">{{ offer.username }}</a></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% if session.username %}
+    {% if session.user_id != listing.user_id %}
+      <h2>Vuokraa kohde:</h2>
+      <form action="/create_offer" method="POST">
+        Tarjous:
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <input type="text" name="price" size="8" pattern="^[1-9][0-9]{0,4}$" required> €
+        <input type="hidden" name="listing_id" value="{{ listing.id }}">
+        <input type="submit" value="Lähetä hakemus">
+      </form>
+    {% endif %}
   {% endif %}
 
   <p>

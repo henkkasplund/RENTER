@@ -2,7 +2,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import db
 
 def get_user(user_id):
-    sql = "SELECT id, username FROM users WHERE id = ?"
+    sql = "SELECT id, username, rating FROM users WHERE id = ?"
     result = db.query(sql, [user_id])
     return result[0] if result else None
 
@@ -25,12 +25,11 @@ def create_user(username, password):
     db.execute(sql, [username, password_hash])
 
 def check_login(username, password):
-    sql = "SELECT id, password_hash FROM users WHERE username = ?"
+    sql = "SELECT id, password_hash, rating FROM users WHERE username = ?"
     matching_username = db.query(sql, [username])
     if not matching_username:
         return None
-    user_id = matching_username[0]["id"]
-    password_hash = matching_username[0]["password_hash"]
-    if check_password_hash(password_hash, password):
-        return user_id
+    user = matching_username[0]
+    if check_password_hash(user["password_hash"], password):
+        return {"id": user["id"], "rating": user["rating"]}
     return None

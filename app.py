@@ -39,7 +39,8 @@ def show_listing(listing_id):
         abort(404)
     user_id = session.get("user_id")
     likes = listings.get_likes(user_id, listing_id)
-    return render_template("show_listing.html", listing=listing, likes=likes)
+    offers = listings.get_offers(listing_id)
+    return render_template("show_listing.html", listing=listing, likes=likes, offers=offers)
 
 @app.route("/user/<int:user_id>")
 def user(user_id):
@@ -152,10 +153,11 @@ def create():
         flash("VIRHE: tunnus on jo varattu")
         return render_template("register.html")
 
-    sql = "SELECT id FROM users WHERE username = ?"
-    user_id = db.query(sql, [username])[0]["id"]
-    session["user_id"] = user_id
+    sql = "SELECT id, rating FROM users WHERE username = ?"
+    user = db.query(sql, [username])[0]
+    session["user_id"] = user["id"]
     session["username"] = username
+    session["rating"] = user["rating"]
     session["csrf_token"] = secrets.token_hex(16)
     flash("Tunnus luotu!")
     return redirect("/")
@@ -168,10 +170,11 @@ def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        user_id = users.check_login(username, password)
-        if user_id:
-            session["user_id"] = user_id
+        user = users.check_login(username, password)
+        if user:
+            session["user_id"] = user["id"]
             session["username"] = username
+            session["rating"] = user["rating"]
             session["csrf_token"] = secrets.token_hex(16)
             return redirect("/")
         else:
@@ -184,6 +187,7 @@ def logout():
     check_csrf()
     del session["user_id"]
     del session["username"]
+    del session["rating"]
     del session["csrf_token"]
     return redirect("/")
 
@@ -198,3 +202,15 @@ def toggle_like(listing_id):
     else:
         listings.like_unlike(user_id, listing_id, True)
     return redirect("/listing/" + str(listing_id))
+
+@app.route("/create_offer", methods=["POST"])
+def create_offer():
+    demand_login()
+    check_csrf()
+    offer_data = listings.get_offer_data()
+    listing = listings.get_listing(offer_data["listing_id"])
+    if not listing:
+        abort(404)
+    user_id = session["user_id"]
+    listings.add_offer(offer_data["listing_id"], user_id, offer_data["price"])
+    return redirect("/listing/" + str(offer_data["listing_id"]))

@@ -9,15 +9,24 @@ def add_listing(user_id, listing_data):
                                 municipality_id, condition_id, property_type_id)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
-    db.execute(sql, [user_id, listing_data["rooms_id"], listing_data["size"],
-                     listing_data["rent"], listing_data["address"],
-                     listing_data["postcode"],listing_data["floor"],
-                     listing_data["floors"], listing_data["sauna"],
-                     listing_data["balcony"], listing_data["bath"],
-                     listing_data["elevator"], listing_data["laundry"],
-                     listing_data["cellar"], listing_data["pool"],
-                     listing_data["description"], listing_data["municipality_id"],
-                     listing_data["condition_id"], listing_data["property_type_id"]])
+    db.execute(sql, [user_id, listing_data["rooms_id"],
+                     listing_data["size"],
+                     listing_data["rent"],
+                     listing_data["address"],
+                     listing_data["postcode"],
+                     listing_data["floor"],
+                     listing_data["floors"],
+                     listing_data["sauna"],
+                     listing_data["balcony"],
+                     listing_data["bath"],
+                     listing_data["elevator"],
+                     listing_data["laundry"],
+                     listing_data["cellar"],
+                     listing_data["pool"],
+                     listing_data["description"],
+                     listing_data["municipality_id"],
+                     listing_data["condition_id"],
+                     listing_data["property_type_id"]])
 
 def get_listings():
     sql = """SELECT listings.id,
@@ -110,26 +119,22 @@ def get_form_data():
     description = request.form["description"]
     if len(description) > 300:
         abort(403)
-    return {
-        "rooms_id": rooms_id,
-        "size": size,
-        "rent": rent,
-        "municipality_id": municipality_id,
-        "address": address,
-        "postcode": postcode,
-        "floor": floor,
-        "floors": floors,
-        "condition_id": condition_id,
-        "property_type_id": property_type_id,
-        "sauna": sauna,
-        "balcony": balcony,
-        "bath": bath,
-        "elevator": elevator,
-        "laundry": laundry,
-        "cellar": cellar,
-        "pool": pool,
-        "description": description
-    }
+    return {"rooms_id": rooms_id,
+            "size": size, "rent": rent,
+            "municipality_id": municipality_id,
+            "address": address,
+            "postcode": postcode,
+            "floor": floor,
+            "floors": floors,
+            "condition_id": condition_id,
+            "property_type_id": property_type_id,
+            "sauna": sauna,
+            "balcony": balcony,
+            "bath": bath, "elevator": elevator,
+            "laundry": laundry,
+            "cellar": cellar,
+            "pool": pool,
+            "description": description}
 
 def like_unlike(user_id, listing_id, press_like):
     if press_like:
@@ -156,15 +161,25 @@ def update_listing(listing_id, listing_data):
                     cellar = ?, pool = ?, description = ?, municipality_id = ?,
                     condition_id = ?, property_type_id = ?
             WHERE id = ?"""
-    db.execute(sql, [listing_data["rooms_id"], listing_data["size"],
-                     listing_data["rent"], listing_data["address"],
-                     listing_data["postcode"], listing_data["floor"],
-                     listing_data["floors"], listing_data["sauna"],
-                     listing_data["balcony"], listing_data["bath"],
-                     listing_data["elevator"], listing_data["laundry"],
-                     listing_data["cellar"], listing_data["pool"],
-                     listing_data["description"], listing_data["municipality_id"],
-                     listing_data["condition_id"], listing_data["property_type_id"],listing_id])
+    db.execute(sql, [listing_data["rooms_id"],
+                     listing_data["size"],
+                     listing_data["rent"],
+                     listing_data["address"],
+                     listing_data["postcode"],
+                     listing_data["floor"],
+                     listing_data["floors"],
+                     listing_data["sauna"],
+                     listing_data["balcony"],
+                     listing_data["bath"],
+                     listing_data["elevator"],
+                     listing_data["laundry"],
+                     listing_data["cellar"],
+                     listing_data["pool"],
+                     listing_data["description"],
+                     listing_data["municipality_id"],
+                     listing_data["condition_id"],
+                     listing_data["property_type_id"],
+                     listing_id])
 
 def remove_listing(listing_id):
     db.execute("DELETE FROM listings WHERE id = ?", [listing_id])
@@ -215,3 +230,28 @@ def search_listings(user, size, min_rent, max_rent, rooms_id, property_type_id, 
         sql += " WHERE " + " AND ".join(criteria)
     sql += " ORDER BY listings.id DESC"
     return db.query(sql, values)
+
+def add_offer(listing_id, user_id, price):
+    sql = """INSERT INTO offers (listing_id, user_id, price)
+            VALUES (?, ?, ?)"""
+
+    db.execute(sql, [listing_id, user_id, price])
+
+def get_offers(listing_id):
+    sql = """SELECT offers.price, users.id AS user_id, users.username
+            FROM offers
+            JOIN users ON offers.user_id = users.id
+            WHERE offers.listing_id = ?
+            ORDER BY offers.id DESC"""
+    return db.query(sql, [listing_id])
+
+def get_offer_data():
+    price = request.form["price"]
+    if not price or len(price) > 20:
+        abort(403)
+    if not re.search("^[1-9][0-9]{0,4}$", price):
+        abort(403)
+    listing_id = request.form["listing_id"]
+    if not re.search("^[0-9]+$", listing_id):
+        abort(403)
+    return {"price": int(price), "listing_id": int(listing_id)}

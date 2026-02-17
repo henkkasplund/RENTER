@@ -1,13 +1,19 @@
 CREATE TABLE users (
     id INTEGER PRIMARY KEY,
     username TEXT UNIQUE,
-    rating INTEGER,
+    rating INTEGER DEFAULT 5,
     password_hash TEXT
 );
 CREATE TABLE classes (
     id INTEGER PRIMARY KEY,
     title TEXT,
     value TEXT
+);
+CREATE TABLE offers (
+    id INTEGER PRIMARY KEY,
+    listing_id REFERENCES listings,
+    user_id REFERENCES users,
+    price INTEGER
 );
 CREATE TABLE listings (
     id INTEGER PRIMARY KEY,

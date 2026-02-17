@@ -1,12 +1,22 @@
 <!DOCTYPE html>
 <html>
-
+<!--
+  - Show rating
+  - Link to liked listings
+  - Show description
+    - Edit description
+  - Show likes
+    - Link from likes where the users who have liked are displayed
+    - -->
 <head>
-  <title>RENTER</title>
+  <title>{{ user.username }}</title>
 </head>
-
 <body>
-  <h1>Käyttäjä {{ user.username }}, ID:{{ user.id }}</h1>
+  <h1><a href="/">RENTER</a></h1>
+  <p>
+    Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a> Luokitus & id: {{ session.rating }}, {{ session.user_id}}
+  </p>
+  <h1>Käyttäjä {{ user.username }}, luokitus: {{ user.rating}} id:{{ user.id }}</h1>
   {% if session.user_id == user.id %}
   <p>
     <a href="/new_listing">Uusi ilmoitus</a>

@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
 
 <head>
@@ -6,8 +5,12 @@
 </head>
 
 <body>
-  <h1>Uusi ilmoitus</h1><br />
 
+  <h1><a href="/">RENTER</a></h1>
+  <h2>Uusi ilmoitus</h2>
+  <p>
+    Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a> Luokitus & id: {{ session.rating }}, {{ session.user_id}}
+  </p>
   <h3>Asunnon tiedot</h3>
 
   <form action="/create_listing" method="post">
