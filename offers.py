@@ -30,9 +30,16 @@ def get_offer_data():
     return {"price": int(price), "listing_id": int(listing_id)}
 
 def handle_offer(offer_id, decision):
+    offer = get_offer(offer_id)
+    if not offer:
+        abort(404)
     if decision == "accept":
         sql = "UPDATE offers SET owner_accepted = 1 WHERE id = ?"
         db.execute(sql, [offer_id])
+        sql = "DELETE FROM offers WHERE user_id = ? AND id != ?"
+        db.execute(sql, [offer["user_id"], offer_id])
+        sql = "DELETE FROM offers WHERE listing_id = ? AND id != ?"
+        db.execute(sql, [offer["listing_id"], offer_id])
     elif decision == "reject":
         sql = "DELETE FROM offers WHERE id = ?"
         db.execute(sql, [offer_id])
@@ -85,3 +92,20 @@ def get_offer(offer_id):
              WHERE id = ?"""
     result = db.query(sql, [offer_id])
     return result[0] if result else None
+
+def get_user_offers(user_id):
+    sql = """SELECT offers.id AS offer_id,
+                    offers.price,
+                    offers.owner_accepted,
+                    listings.id AS listing_id,
+                    listings.rent,
+                    listings.size,
+                    m.value AS municipality,
+                    r.value AS rooms
+            FROM offers
+            JOIN listings ON offers.listing_id = listings.id
+            JOIN classes m ON m.id = listings.municipality_id
+            JOIN classes r ON r.id = listings.rooms_id
+            WHERE offers.user_id = ?
+            ORDER BY offers.id DESC"""
+    return db.query(sql, [user_id])

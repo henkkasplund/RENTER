@@ -41,7 +41,9 @@ def show_listing(listing_id):
     viewer_id = session.get("user_id")
     likes = listings.get_likes(viewer_id, listing_id)
     listing_offers = offers.get_offers(listing_id, viewer_id, listing["user_id"])
-    user_offer = listing_offers[0] if listing_offers else None
+    user_offer = None
+    if viewer_id and viewer_id != listing["user_id"] and listing_offers:
+        user_offer = listing_offers[0]
     rented = offers.rental_status(listing_id)
     return render_template("show_listing.html", listing=listing, likes=likes, offers=listing_offers,
                                                 user_offer=user_offer, rented=rented)
@@ -53,6 +55,8 @@ def user(user_id):
     user_listings = users.get_user_listings(user_id)
     liked = users.get_liked(user_id)
     deals = users.get_deals(user_id)
+    user_offers = offers.get_user_offers(user_id)
+    edit_contact = request.args.get("edit_contact") == "1"
     if not user:
         abort(403)
     if request.method == "POST":
@@ -65,7 +69,8 @@ def user(user_id):
         users.update_contact(user_id, phone, email)
         flash("Yhteystiedot päivitetty!")
         return redirect("/user/" + str(user_id))
-    return render_template("user.html", user=user, listings=user_listings, liked=liked, deals=deals)
+    return render_template("user.html", user=user, listings=user_listings, liked=liked,
+                                        deals=deals, user_offers=user_offers, edit_contact=edit_contact,)
 
 @app.route("/search_listings")
 def search_listings():

@@ -23,20 +23,32 @@
   {% if session.user_id == user.id %}
     <h3>Yhteystiedot</h3>
 
-    <form action="/user/{{ user.id }}" method="post">
+    {% if edit_contact %}
+      <form action="/user/{{ user.id }}" method="post">
+        <p>
+          Puhelin:<br>
+          <input type="text" name="phone" value="{{ user.phone or '' }}" maxlength="30">
+        </p>
+
+        <p>
+          Sähköposti:<br>
+          <input type="text" name="email" value="{{ user.email or '' }}" maxlength="50">
+        </p>
+
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <input type="submit" value="Päivitä yhteystiedot">
+      </form>
+    {% else %}
       <p>
-        Puhelin:<br>
-        <input type="text" name="phone" value="{{ user.phone or '' }}" maxlength="30">
+        Puhelin: {{ user.phone or "-" }}<br>
+        Sähköposti: {{ user.email or "-" }}
       </p>
 
-      <p>
-        Sähköposti:<br>
-        <input type="text" name="email" value="{{ user.email or '' }}" maxlength="50">
-      </p>
-
-      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-      <input type="submit" value="Päivitä yhteystiedot">
-    </form>
+      <form action="/user/{{ user.id }}" method="get">
+        <input type="hidden" name="edit_contact" value="1">
+        <button type="submit">Muokkaa yhteystietoja</button>
+      </form>
+    {% endif %}
 
     <p>
       <a href="/new_listing">Uusi ilmoitus</a>
@@ -65,20 +77,18 @@
   </ul>
 
   {% if session.user_id == user.id %}
-    <h2>Hyväksytyt hakemukset</h2>
+    <h2>Omat hakemukset</h2>
 
     {% if deals %}
       <ul>
         {% for deal in deals %}
           <li>
             <a href="/listing/{{ deal.listing_id }}">
-              {{ deal.size }} m², {{ deal.rent }} €
-            </a>
-            <br>
+              {{ deal.size }} m², {{ deal.rent }} €</a><br>
             {% if user.id == deal.owner_id %}
-              Hakija: <a href="/user/{{ deal.offerer_id }}">{{ deal.offerer_username }}</a><br>
-              Puhelin: {{ deal.offerer_phone }}<br>
-              Sähköposti: {{ deal.offerer_email }}
+              Hakija: <a href="/user/{{ deal.tenant_id }}">{{ deal.tenant_username }}</a><br>
+              Puhelin: {{ deal.tenant_phone }}<br>
+              Sähköposti: {{ deal.tenant_email }}
             {% else %}
               Ilmoittaja: <a href="/user/{{ deal.owner_id }}">{{ deal.owner_username }}</a><br>
               Puhelin: {{ deal.owner_phone }}<br>
@@ -88,8 +98,24 @@
           <br>
         {% endfor %}
       </ul>
+    {% elif user_offers %}
+      <ul>
+        {% for offer in user_offers %}
+          <li>
+            <a href="/listing/{{ offer.listing_id }}">
+              {{ offer.municipality }} {{ offer.rooms }} h
+              {{ offer.size|float|int if offer.size|float == offer.size|float|int else offer.size|string|replace(".", ",") }} m²
+              {{ offer.rent }} €</a>
+            {% if offer.owner_accepted %}
+              <b>Hyväksytty</b>
+            {% else %}
+              <b>Odottaa</b>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
     {% else %}
-      <p>Ei hyväksyttyjä hakemuksia.</p>
+      <p>Et ole lähettänyt vielä yhtään hakemusta.</p>
     {% endif %}
   {% endif %}
 
