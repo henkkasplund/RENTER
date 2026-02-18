@@ -1,10 +1,17 @@
 CREATE TABLE users (
     id INTEGER PRIMARY KEY,
     username TEXT UNIQUE,
-    rating REAL DEFAULT 5,
+    rating INTEGER DEFAULT 5 CHECK(rating BETWEEN 0 AND 5),
     phone TEXT,
     email TEXT,
     password_hash TEXT
+);
+CREATE TABLE ratings (
+    id INTEGER PRIMARY KEY,
+    rater_id INTEGER REFERENCES users ON DELETE SET NULL,
+    target_id INTEGER REFERENCES users ON DELETE CASCADE,
+    rating INTEGER NOT NULL CHECK(rating BETWEEN 0 AND 5),
+    UNIQUE(rater_id, target_id)
 );
 CREATE TABLE classes (
     id INTEGER PRIMARY KEY,

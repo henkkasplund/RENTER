@@ -12,7 +12,7 @@
   {% endfor %}
   {% if session.username %}
   <p>
-    Olet kirjautunut nimellä: {{ session.username }} Luokitus & id: {{ session.rating }}, {{ session.user_id}}
+    Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a> (id: {{ session.user_id }})
   </p>
   <form action="/logout" method="post">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">

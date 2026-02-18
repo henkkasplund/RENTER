@@ -7,6 +7,7 @@ import config
 import listings
 import users
 import offers
+import ratings
 import markupsafe
 import secrets
 
@@ -45,8 +46,9 @@ def show_listing(listing_id):
     if viewer_id and viewer_id != listing["user_id"] and listing_offers:
         user_offer = listing_offers[0]
     rented = offers.rental_status(listing_id)
+    edit_offer = request.args.get("edit_offer") == "1"
     return render_template("show_listing.html", listing=listing, likes=likes, offers=listing_offers,
-                                                user_offer=user_offer, rented=rented)
+                                                user_offer=user_offer, rented=rented, edit_offer=edit_offer)
 
 @app.route("/user/<int:user_id>", methods=["GET", "POST"])
 def user(user_id):
@@ -57,6 +59,8 @@ def user(user_id):
     deals = users.get_deals(user_id)
     user_offers = offers.get_user_offers(user_id)
     edit_contact = request.args.get("edit_contact") == "1"
+    rating_permission = ratings.rating_permission(session["user_id"], user_id) if "user_id" in session else False
+    user_rating = ratings.get_rating(session["user_id"], user_id) if rating_permission else None
     if not user:
         abort(403)
     if request.method == "POST":
@@ -70,7 +74,8 @@ def user(user_id):
         flash("Yhteystiedot päivitetty!")
         return redirect("/user/" + str(user_id))
     return render_template("user.html", user=user, listings=user_listings, liked=liked,
-                                        deals=deals, user_offers=user_offers, edit_contact=edit_contact,)
+                                        deals=deals, user_offers=user_offers, edit_contact=edit_contact,
+                                        rating_permission=rating_permission, user_rating=user_rating)
 
 @app.route("/search_listings")
 def search_listings():
@@ -183,7 +188,6 @@ def create_account():
     user = db.query(sql, [username])[0]
     session["user_id"] = user["id"]
     session["username"] = username
-    session["rating"] = user["rating"]
     session["csrf_token"] = secrets.token_hex(16)
     flash("Tunnus luotu!")
     return redirect("/")
@@ -213,7 +217,6 @@ def logout():
     check_csrf()
     del session["user_id"]
     del session["username"]
-    del session["rating"]
     del session["csrf_token"]
     return redirect("/")
 
@@ -270,8 +273,21 @@ def edit_offer(offer_id):
     if action == "update":
         price = request.form["price"]
         offers.modify_offer(offer_id, user_id, action, price)
+        flash("Hakemus päivitetty!")
     elif action == "delete":
         offers.modify_offer(offer_id, user_id, action)
+        flash("Hakemus poistettu!")
     else:
         abort(403)
     return redirect("/listing/" + str(offer["listing_id"]))
+
+@app.route("/rate_user/<int:user_id>", methods=["POST"])
+def rate_user(user_id):
+    demand_login()
+    check_csrf()
+    rater_id = session["user_id"]
+    rating_value = request.form["rating"]
+    ratings.set_rating(rater_id, user_id, rating_value)
+    users.update_rating(user_id)
+    flash("Luokitus lisätty!")
+    return redirect("/user/" + str(user_id))

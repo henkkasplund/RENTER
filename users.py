@@ -2,6 +2,8 @@ from flask import abort
 from werkzeug.security import check_password_hash, generate_password_hash
 import db
 import re
+import ratings
+
 
 def get_user(user_id):
     sql = "SELECT id, username, rating, phone, email FROM users WHERE id = ?"
@@ -80,3 +82,8 @@ def check_login(username, password):
     if check_password_hash(user["password_hash"], password):
         return {"id": user["id"], "rating": user["rating"]}
     return None
+
+def update_rating(user_id):
+    rating = ratings.calculate_rating(user_id)
+    sql = "UPDATE users SET rating = ? WHERE id = ?"
+    db.execute(sql, [rating, user_id])

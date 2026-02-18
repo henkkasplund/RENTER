@@ -9,7 +9,7 @@
 
   <h1><a href="/">RENTER</a></h1>
   <p>
-    Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a> Luokitus & id: {{ session.rating }}, {{ session.user_id}}
+    Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a> (id: {{ session.user_id }})
   </p>
   <h2>Ilmoituksen muokkaus</h2>
   <form action="/edit_listing/{{ listing.id }}" method="post">

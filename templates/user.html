@@ -13,12 +13,26 @@
   {% endfor %}
 
   <p>
-    Olet kirjautunut nimellä:
-    <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
-    Luokitus & id: {{ session.rating }}, {{ session.user_id }}
+    Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a> (id: {{ session.user_id }})
   </p>
 
-  <h1>Käyttäjä {{ user.username }} Luokitus & id: {{ user.rating }}, {{ user.id }}</h1>
+  <h1>Käyttäjä {{ user.username }} (id:{{ user.id }})</h1>
+  <h2>Luokitus: {{ user.rating }}</h2>
+  {% if rating_permission %}
+    <h3>Anna luokitus</h3>
+
+    <form action="/rate_user/{{ user.id }}" method="post">
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+      <select name="rating">
+        {% for i in range(0, 6) %}
+          <option value="{{ i }}" {% if user_rating == i %}selected{% endif %}>
+            {{ i }}
+          </option>
+        {% endfor %}
+      </select>
+      <button type="submit">Tallenna luokitus</button>
+    </form>
+  {% endif %}
 
   {% if session.user_id == user.id %}
     <h3>Yhteystiedot</h3>
