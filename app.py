@@ -6,6 +6,7 @@ import db
 import config
 import listings
 import users
+import offers
 import markupsafe
 import secrets
 
@@ -37,18 +38,34 @@ def show_listing(listing_id):
     listing = listings.get_listing(listing_id)
     if not listing:
         abort(404)
-    user_id = session.get("user_id")
-    likes = listings.get_likes(user_id, listing_id)
-    offers = listings.get_offers(listing_id)
-    return render_template("show_listing.html", listing=listing, likes=likes, offers=offers)
+    viewer_id = session.get("user_id")
+    likes = listings.get_likes(viewer_id, listing_id)
+    listing_offers = offers.get_offers(listing_id, viewer_id, listing["user_id"])
+    user_offer = listing_offers[0] if listing_offers else None
+    rented = offers.rental_status(listing_id)
+    return render_template("show_listing.html", listing=listing, likes=likes, offers=listing_offers,
+                                                user_offer=user_offer, rented=rented)
 
-@app.route("/user/<int:user_id>")
+@app.route("/user/<int:user_id>", methods=["GET", "POST"])
 def user(user_id):
+    demand_login()
     user = users.get_user(user_id)
     user_listings = users.get_user_listings(user_id)
+    liked = users.get_liked(user_id)
+    deals = users.get_deals(user_id)
     if not user:
         abort(403)
-    return render_template("user.html", user=user, listings=user_listings)
+    if request.method == "POST":
+        demand_login()
+        check_csrf()
+        if session["user_id"] != user_id:
+            abort(403)
+        phone = request.form["phone"]
+        email = request.form["email"]
+        users.update_contact(user_id, phone, email)
+        flash("Yhteystiedot päivitetty!")
+        return redirect("/user/" + str(user_id))
+    return render_template("user.html", user=user, listings=user_listings, liked=liked, deals=deals)
 
 @app.route("/search_listings")
 def search_listings():
@@ -60,13 +77,14 @@ def search_listings():
     property_type_id = request.args.get("property_type_id", "")
     municipality_id = request.args.get("municipality_id", "")
     condition_id = request.args.get("condition_id", "")
-    searched = any([user, size, max_rent, min_rent, rooms_id, property_type_id, municipality_id, condition_id])
-    results = listings.search_listings(user, size, min_rent, max_rent, rooms_id, property_type_id,
-                                       municipality_id, condition_id) if searched else []
+    searched = bool(request.args)
+    results = listings.search_listings(user, size, min_rent, max_rent, rooms_id,
+                                       property_type_id, municipality_id, condition_id)
     return render_template("search_listings.html",
-                           results=results, searched=searched, user=user, size=size, max_rent=max_rent,
-                           min_rent=min_rent, rooms_id=rooms_id, property_type_id=property_type_id,
-                           municipality_id=municipality_id,condition_id=condition_id,
+                           user=user, size=size, max_rent=max_rent, min_rent=min_rent,
+                           rooms_id=rooms_id, property_type_id=property_type_id,
+                           municipality_id=municipality_id, condition_id=condition_id,
+                           searched = searched, results=results,
                            rooms=listings.get_classes("rooms"),
                            municipalities=listings.get_classes("municipality"),
                            property_types=listings.get_classes("property_type"),
@@ -85,10 +103,13 @@ def new_listing():
 
 @app.route("/create_listing", methods=["POST"])
 def create_listing():
+    print("SESSION:", dict(session))
+    print("FORM:", dict(request.form))
+
     demand_login()
     check_csrf()
     user_id = session["user_id"]
-    listing_data = listings.get_form_data()
+    listing_data = listings.get_listings_data()
     listings.add_listing(user_id, listing_data)
     return redirect("/")
 
@@ -110,7 +131,7 @@ def edit_listing(listing_id):
                                conditions=conditions, property_types=property_types)
     if request.method == "POST":
         check_csrf()
-        listing_data = listings.get_form_data()
+        listing_data = listings.get_listings_data()
         listings.update_listing(listing_id, listing_data)
         return redirect("/listing/" + str(listing_id))
 
@@ -137,7 +158,7 @@ def register():
     return render_template("register.html")
 
 @app.route("/create_account", methods=["POST"])
-def create():
+def create_account():
     username = request.form["username"]
     password1 = request.form["password1"]
     password2 = request.form["password2"]
@@ -201,16 +222,51 @@ def toggle_like(listing_id):
         listings.like_unlike(user_id, listing_id, False)
     else:
         listings.like_unlike(user_id, listing_id, True)
-    return redirect("/listing/" + str(listing_id))
+    return redirect(request.referrer)
 
 @app.route("/create_offer", methods=["POST"])
 def create_offer():
     demand_login()
     check_csrf()
-    offer_data = listings.get_offer_data()
+    offer_data = offers.get_offer_data()
     listing = listings.get_listing(offer_data["listing_id"])
     if not listing:
         abort(404)
     user_id = session["user_id"]
-    listings.add_offer(offer_data["listing_id"], user_id, offer_data["price"])
+    offers.add_offer(offer_data["listing_id"], user_id, offer_data["price"])
     return redirect("/listing/" + str(offer_data["listing_id"]))
+
+@app.route("/handle_offer/<int:offer_id>", methods=["POST"])
+def handle_offer(offer_id):
+    demand_login()
+    check_csrf()
+    decision = request.form["decision"]
+    user_id = session["user_id"]
+    offer = offers.get_offer(offer_id)
+    if not offer:
+        abort(404)
+    listing = listings.get_listing(offer["listing_id"])
+    if not listing:
+        abort(404)
+    if listing["user_id"] != user_id:
+        abort(403)
+    offers.handle_offer(offer_id, decision)
+    return redirect("/listing/" + str(offer["listing_id"]))
+
+@app.route("/edit_offer/<int:offer_id>", methods=["POST"])
+def edit_offer(offer_id):
+    demand_login()
+    check_csrf()
+    action = request.form["action"]
+    user_id = session["user_id"]
+    offer = offers.get_offer(offer_id)
+    if not offer:
+        abort(404)
+    if action == "update":
+        price = request.form["price"]
+        offers.modify_offer(offer_id, user_id, action, price)
+    elif action == "delete":
+        offers.modify_offer(offer_id, user_id, action)
+    else:
+        abort(403)
+    return redirect("/listing/" + str(offer["listing_id"]))

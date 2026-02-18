@@ -11,9 +11,11 @@
 
 <body>
   <h1><a href="/">RENTER</a></h1>
-  <p>
-    Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a> Luokitus & id: {{ session.rating }}, {{ session.user_id}}
-  </p>
+  {% if session.username %}
+    <p>
+      Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a> Luokitus & id: {{ session.rating }}, {{ session.user_id}}
+    </p>
+  {% endif %}
   <h2>
     {{ listing.municipality }} {{ listing.rooms }} h
     {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
@@ -21,20 +23,57 @@
   </h2>
 
   {% if session.user_id == listing.user_id %}
-  <p>
-    <a href="/edit_listing/{{ listing.id }}">Muokkaa</a>
-    <a href="/remove_listing/{{ listing.id }}">Poista</a>
-  </p>
- 
-  <h2>Hakijat:</h2>
-  <ul>
-    {% for offer in offers %}
-      <li>{{ offer.price  }} € <a href="/user/{{ offer.user_id }}">{{ offer.username }}</a></li>
-    {% endfor %}
-  </ul>
+    <p>
+      <a href="/edit_listing/{{ listing.id }}">Muokkaa</a>
+      <a href="/remove_listing/{{ listing.id }}">Poista</a>
+    </p>
+    <h2>Hakijat:</h2>
+    <ul>
+      {% for offer in offers %}
+        <li>
+          {{ offer.price }} €
+          <a href="/user/{{ offer.user_id }}">{{ offer.username }}</a>
+          {% if offer.owner_accepted %}
+            (Hyväksytty)
+            <p><b>Hakijan yhteystiedot:</b></p>
+            <p>
+              Puhelin: {{ offer.phone }} <br>
+              Sähköposti: {{ offer.email }}
+            </p>
+          {% else %}
+            (Odottaa vastausta)
+          {% endif %}
+
+          {% if not offer.owner_accepted %}
+             <form action="/handle_offer/{{ offer.id }}" method="post" style="display:inline;">
+              <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+              <button type="submit" name="decision" value="accept">Hyväksy</button>
+            </form>
+            <form action="/handle_offer/{{ offer.id }}" method="post" style="display:inline;">
+              <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+              <button type="submit" name="decision" value="reject">Hylkää</button>
+            </form>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
   {% endif %}
-  {% if session.username %}
-    {% if session.user_id != listing.user_id %}
+
+  {% if session.username and session.user_id != listing.user_id %}
+    {% if rented %}
+      <p><b>Kohde on jo vuokrattu.</b></p>
+    {% elif user_offer %}
+      {% if user_offer.owner_accepted %}
+        <h2>Hakemuksesi on hyväksytty!</h2><br>
+        <h3>Ilmoittajan yhteystiedot:</h3>
+        <p>
+          Puhelin: {{ listing.phone }} <br>
+          Sähköposti: {{ listing.email }}
+        </p>
+      {% else %}
+        <p>Hakemus lähetetty! Odotetaan ilmoittajan vastausta.</p>
+      {% endif %}
+    {% else %}
       <h2>Vuokraa kohde:</h2>
       <form action="/create_offer" method="POST">
         Tarjous:
@@ -46,12 +85,34 @@
     {% endif %}
   {% endif %}
 
-  <p>
-    Ilmoittaja: <a href="/user/{{listing.user_id}}">{{ listing.username }}</a>
-  </p>
-  <p>Tykkäyksiä: {{ likes.likes }}</p>
+  {% if session.user_id and session.user_id != listing.user_id %}
+    {% if offers %}
+      <h3>Oma hakemus:</h3>
+      <ul>
+        {% for offer in offers %}
+          <li>
+            {{ offer.price }} €
+            {% if offer.owner_accepted %}
+              (Hyväksytty)
+            {% else %}
+              (Odottaa)
+              <form action="/edit_offer/{{ offer.id }}" method="post" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                <input type="text" name="price" value="{{ offer.price }}" size="6" pattern="^[1-9][0-9]{0,4}$" required>
+                <button type="submit" name="action" value="update">Päivitä</button>
+                <button type="submit" name="action" value="delete">Poista</button>
+              </form>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endif %}
 
-  {% if session.user_id %}
+  {% if session.username %}
+    <p>
+      Ilmoittaja: <a href="/user/{{listing.user_id}}">{{ listing.username }}</a>
+    </p>
     <form action="/toggle_like/{{ listing.id }}" method="post">
       <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
       {% if likes.liked %}
@@ -60,6 +121,7 @@
         <button type="submit">Tykkää</button>
       {% endif %}
     </form>
+    <p>Tykkäyksiä: {{ likes.likes }}</p>
   {% endif %}
 
   <h3>Asunnon tiedot</h3>
@@ -121,8 +183,9 @@
   {% endif %}
 
   <p>
-  <a href="/">Takaisin</a>
+    <a href="/">Takaisin</a>
   </p>
+
 </body>
 
 </html>

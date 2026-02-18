@@ -65,31 +65,31 @@
         <option value="{{ condition.id }}" {% if condition_id == condition.id|string %}selected{% endif %}>{{ condition.value }}</option>
       {% endfor %}
     </select>
-  </p>
-  <input type="submit" value="Hae">
+    </p>
+    <input type="submit" value="Hae">
   </form>
   {% if searched %}
     {% if results %}
-    <h2>Tulokset</h2>
+      <h2>Tulokset</h2>
 
-    <ul>
-      {% for listing in results %}
-      <li>
-        <a href="/listing/{{ listing.id }}">
-          {{ listing.municipality }} {{ listing.rooms }}h
-          {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
-          {{ listing.rent }} €
-        </a>
-        <a href="/user/{{ listing.user_id }}">
-          Ilmoittaja: {{ listing.username }}
-        </a>
-      </li>
-      {% endfor %}
-    </ul>
-      {% else %}
+      <ul>
+        {% for listing in results %}
+          <li>
+            <a href="/listing/{{ listing.id }}">
+              {{ listing.municipality }} {{ listing.rooms }}h
+              {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
+              {{ listing.rent }} €</a>
+            <a href="/user/{{ listing.user_id }}">
+              Ilmoittaja: {{ listing.username }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+
+    {% else %}
       <p>Hakuehdoilla ei löytynyt tuloksia</p>
     {% endif %}
   {% endif %}
+
   <p>
     <a href="/">Takaisin</a>
   </p>

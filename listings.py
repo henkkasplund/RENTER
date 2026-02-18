@@ -44,6 +44,8 @@ def get_listing(listing_id):
     sql = """SELECT listings.*,
                     users.id AS user_id,
                     users.username,
+                    users.phone,
+                    users.email,
                     r.id AS rooms_id,
                     r.value AS rooms,
                     m.id AS municipality_id,
@@ -66,7 +68,7 @@ def get_classes(title):
     sql = "SELECT id, value FROM classes WHERE title = ? ORDER BY id"
     return db.query(sql, [title])
 
-def get_form_data():
+def get_listings_data():
     rooms_id = request.form["rooms_id"]
     if not re.search("^[0-9]+$", rooms_id):
         abort(403)
@@ -117,7 +119,7 @@ def get_form_data():
     cellar = 1 if "cellar" in request.form else 0
     pool = 1 if "pool" in request.form else 0
     description = request.form["description"]
-    if len(description) > 300:
+    if len(description) > 2000:
         abort(403)
     return {"rooms_id": rooms_id,
             "size": size, "rent": rent,
@@ -192,6 +194,7 @@ def search_listings(user, size, min_rent, max_rent, rooms_id, property_type_id, 
                     listings.size,
                     users.username,
                     users.id AS user_id,
+                    users.rating,
                     r.value AS rooms,
                     m.value AS municipality,
                     c.value AS condition,
@@ -230,28 +233,3 @@ def search_listings(user, size, min_rent, max_rent, rooms_id, property_type_id, 
         sql += " WHERE " + " AND ".join(criteria)
     sql += " ORDER BY listings.id DESC"
     return db.query(sql, values)
-
-def add_offer(listing_id, user_id, price):
-    sql = """INSERT INTO offers (listing_id, user_id, price)
-            VALUES (?, ?, ?)"""
-
-    db.execute(sql, [listing_id, user_id, price])
-
-def get_offers(listing_id):
-    sql = """SELECT offers.price, users.id AS user_id, users.username
-            FROM offers
-            JOIN users ON offers.user_id = users.id
-            WHERE offers.listing_id = ?
-            ORDER BY offers.id DESC"""
-    return db.query(sql, [listing_id])
-
-def get_offer_data():
-    price = request.form["price"]
-    if not price or len(price) > 20:
-        abort(403)
-    if not re.search("^[1-9][0-9]{0,4}$", price):
-        abort(403)
-    listing_id = request.form["listing_id"]
-    if not re.search("^[0-9]+$", listing_id):
-        abort(403)
-    return {"price": int(price), "listing_id": int(listing_id)}

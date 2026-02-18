@@ -1,55 +1,129 @@
 <!DOCTYPE html>
 <html>
-<!--
-  - Show rating
-  - Link to liked listings
-  - Show description
-    - Edit description
-  - Show likes
-    - Link from likes where the users who have liked are displayed
-    - -->
+
 <head>
   <title>{{ user.username }}</title>
 </head>
+
 <body>
   <h1><a href="/">RENTER</a></h1>
+
+  {% for message in get_flashed_messages() %}
+    <p style="color:green">{{ message }}</p>
+  {% endfor %}
+
   <p>
-    Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a> Luokitus & id: {{ session.rating }}, {{ session.user_id}}
+    Olet kirjautunut nimellä:
+    <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
+    Luokitus & id: {{ session.rating }}, {{ session.user_id }}
   </p>
-  <h1>Käyttäjä {{ user.username }}, luokitus: {{ user.rating}} id:{{ user.id }}</h1>
+
+  <h1>Käyttäjä {{ user.username }} Luokitus & id: {{ user.rating }}, {{ user.id }}</h1>
+
   {% if session.user_id == user.id %}
-  <p>
-    <a href="/new_listing">Uusi ilmoitus</a>
-  </p>
+    <h3>Yhteystiedot</h3>
+
+    <form action="/user/{{ user.id }}" method="post">
+      <p>
+        Puhelin:<br>
+        <input type="text" name="phone" value="{{ user.phone or '' }}" maxlength="30">
+      </p>
+
+      <p>
+        Sähköposti:<br>
+        <input type="text" name="email" value="{{ user.email or '' }}" maxlength="50">
+      </p>
+
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+      <input type="submit" value="Päivitä yhteystiedot">
+    </form>
+
+    <p>
+      <a href="/new_listing">Uusi ilmoitus</a>
+    </p>
   {% endif %}
+
   <h2>
     Käyttäjällä {{ user.username }} on {{ listings|length }}
     {% if listings|length == 1 %}
-    ilmoitus:
+      ilmoitus:
     {% else %}
-    ilmoitusta:
+      ilmoitusta:
     {% endif %}
   </h2>
 
   <ul>
     {% for listing in listings %}
       <li>
-        <a href="/listing/{{ listing.id }}">{{ listing.municipality }} {{ listing.rooms }} h
+        <a href="/listing/{{ listing.id }}">
+          {{ listing.municipality }} {{ listing.rooms }} h
           {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
-          {{ listing.rent }} €</a></li>
+          {{ listing.rent }} €
+        </a>
+      </li>
     {% endfor %}
   </ul>
+
+  {% if session.user_id == user.id %}
+    <h2>Hyväksytyt hakemukset</h2>
+
+    {% if deals %}
+      <ul>
+        {% for deal in deals %}
+          <li>
+            <a href="/listing/{{ deal.listing_id }}">
+              {{ deal.size }} m², {{ deal.rent }} €
+            </a>
+            <br>
+            {% if user.id == deal.owner_id %}
+              Hakija: <a href="/user/{{ deal.offerer_id }}">{{ deal.offerer_username }}</a><br>
+              Puhelin: {{ deal.offerer_phone }}<br>
+              Sähköposti: {{ deal.offerer_email }}
+            {% else %}
+              Ilmoittaja: <a href="/user/{{ deal.owner_id }}">{{ deal.owner_username }}</a><br>
+              Puhelin: {{ deal.owner_phone }}<br>
+              Sähköposti: {{ deal.owner_email }}
+            {% endif %}
+          </li>
+          <br>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Ei hyväksyttyjä hakemuksia.</p>
+    {% endif %}
+  {% endif %}
+
+  {% if session.user_id == user.id %}
+  <h2>Tykkäämäsi ilmoitukset</h2>
+    {% if liked %}
+      <ul>
+        {% for listing in liked %}
+          <li>
+            <a href="/listing/{{ listing.id }}">
+              {{ listing.municipality }} {{ listing.rooms }} h
+              {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
+              {{ listing.rent }} €</a>
+            <form action="/toggle_like/{{ listing.id }}" method="post" style="display:inline;">
+              <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+              <button type="submit">Poista tykkäys</button>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Et ole tykännyt vielä yhdestäkään ilmoituksesta.</p>
+    {% endif %}
+  {% endif %}
+
   <p>
     <a href="/">Takaisin</a>
   </p>
 
   {% if session.username %}
-  <p>
     <form action="/logout" method="post">
       <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
       <button type="submit">Kirjaudu ulos</button>
     </form>
-  </p>
   {% endif %}
 
 </body>

@@ -1,7 +1,9 @@
 CREATE TABLE users (
     id INTEGER PRIMARY KEY,
     username TEXT UNIQUE,
-    rating INTEGER DEFAULT 5,
+    rating REAL DEFAULT 5,
+    phone TEXT,
+    email TEXT,
     password_hash TEXT
 );
 CREATE TABLE classes (
@@ -11,9 +13,11 @@ CREATE TABLE classes (
 );
 CREATE TABLE offers (
     id INTEGER PRIMARY KEY,
-    listing_id REFERENCES listings,
-    user_id REFERENCES users,
-    price INTEGER
+    listing_id INTEGER REFERENCES listings ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users ON DELETE CASCADE,
+    price INTEGER,
+    owner_accepted INTEGER DEFAULT 0,
+    UNIQUE(user_id, listing_id)
 );
 CREATE TABLE listings (
     id INTEGER PRIMARY KEY,
