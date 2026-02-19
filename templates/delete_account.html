@@ -1,33 +1,9 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Poista käyttäjä</title>
-</head>
+{% block title %}Tilin poisto{% endblock %}
 
-<body>
-   <h1><a href="/">RENTER</a></h1>
-
-  {% for message in get_flashed_messages() %}
-    <p style="color:green">{{ message }}</p>
-  {% endfor %}
-
-  {% if session.username %}
-    <p>
-      Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
-    <form action="/logout" method="post">
-      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-      <button type="submit">Kirjaudu ulos</button>
-    </form>
-    </p>
-    <p>
-      <a href="/new_listing">Uusi ilmoitus</a>
-      <a href="/search_listings"> Etsi vuokrakohteita</a>
-      <a href="/user/{{ session.user_id }}">Omat sivut</a>
-    </p>
-  {% endif %}
-
-  <h3>Haluatko varmasti poistaa käyttäjän {{ user.username }}?</h3>
+{% block content %}
+  <h3>Haluatko varmasti poistaa tilin? {{ user.username }}?</h3>
 
   <form action="/delete_account" method="post">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
@@ -35,6 +11,4 @@
     <button type="submit" name="cancel">Peruuta</button>
   </form>
 
-</body>
-
-</html>
+{% endblock %}

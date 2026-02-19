@@ -1,53 +1,25 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Etusivu</title>
-</head>
+{% block title %}
+  Etusivu
+{% endblock %}
 
-<body>
-  <h1><a href="/">RENTER</a></h1>
+{% block content %}
+  <h2>Uusimmat vuokrakohteet</h2>
 
-  {% for message in get_flashed_messages() %}
-    <p style="color:green">{{ message }}</p>
-  {% endfor %}
-
-  {% if session.username %}
-    <p>
-      Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
-    <form action="/logout" method="post">
-      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-      <button type="submit">Kirjaudu ulos</button>
-    </form>
-    </p>
-    <p>
-      <a href="/new_listing">Uusi ilmoitus</a>
-      <a href="/search_listings"> Etsi vuokrakohteita</a>
-      <a href="/user/{{ session.user_id }}">Omat sivut</a>
-    </p>
+  {% if listings %}
+    <ul>
+      {% for listing in listings %}
+        <li>
+          <a href="/listing/{{ listing.id }}">
+            {{ listing.municipality }} {{ listing.rooms }} h
+            {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
+            {{ listing.rent }} €
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Ei ilmoituksia.</p>
   {% endif %}
-
-  <p>
-    {% if not session.username %}
-      <a href="/login">Kirjaudu sisään</a>
-      <a href="/register">Luo tunnus</a>
-    {% endif %}
-  </p>
-    <p>
-    <a href="/search_listings"> Etsi vuokrakohteita</a>
-  </p>
-
-  <h2>Vuokrattavat kohteet</h2>
-
-  <ul>
-    {% for listing in listings %}
-      <li>
-        <a href="/listing/{{ listing.id }}">{{ listing.municipality }} {{ listing.rooms }} h
-          {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
-          {{ listing.rent }} €</a></li>
-    {% endfor %}
-  </ul>
-
-</body>
-
-</html>
+{% endblock %}

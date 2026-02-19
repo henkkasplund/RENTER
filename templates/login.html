@@ -1,64 +1,31 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Kirjautuminen</title>
-</head>
+{% block title %}Kirjautuminen{% endblock %}
 
-<body>
-  <h1><a href="/">RENTER</a></h1>
+{% block guest_links %}
+  <p>
+    <a href="/register">Luo tunnus</a>
+    <a href="/search_listings">Etsi vuokrakohteita</a>
+  </p>
+{% endblock %}
 
-  {% for message in get_flashed_messages() %}
-    <p style="color:green">{{ message }}</p>
-  {% endfor %}
-
-  {% if session.username %}
-    <p>
-      Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
-    <form action="/logout" method="post">
-      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-      <button type="submit">Kirjaudu ulos</button>
-    </form>
-    </p>
-    <p>
-      <a href="/new_listing">Uusi ilmoitus</a>
-      <a href="/search_listings"> Etsi vuokrakohteita</a>
-      <a href="/user/{{ session.user_id }}">Omat sivut</a>
-    </p>
-  {% endif %}
-
+{% block content %}
   <h2>Kirjautuminen</h2>
 
-    <form action="/logout" method="post">
-      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-      <button type="submit">Kirjaudu ulos</button>
-    </form>
-
+  <form action="/login" method="post">
     <p>
-      <a href="/">Takaisin</a>
+      Tunnus:<br>
+      <input type="text" name="username" value="{{ username }}" maxlength="15" required>
     </p>
 
-  {% else %}
-    <form action="/login" method="post">
-      <p>
-        Tunnus: <br />
-        <input type="text" name="username" value="{{ username }}" maxlength="15" required />
-      </p>
-      <p>
-        Salasana: <br />
-        <input type="password" name="password" required />
-      </p>
-
-      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-      <input type="submit" value="Kirjaudu" />
-    </form>
-
     <p>
-      <a href="/">Takaisin</a>
-      <a href="/register">Luo tunnus</a>
+      Salasana:<br>
+      <input type="password" name="password" required>
     </p>
-  {% endif %}
 
-</body>
-
-</html>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <input type="submit" value="Kirjaudu">
+  </form>
+  <p>
+    <a href="/">Takaisin</a>
+{% endblock %}

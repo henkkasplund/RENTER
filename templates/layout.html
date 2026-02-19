@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>{% block title %}{% endblock %}</title>
+</head>
+
+<body>
+  <h1><a href="/">RENTER</a></h1>
+
+  {% for message in get_flashed_messages() %}
+    <p style="color:green">{{ message }}</p>
+  {% endfor %}
+
+  {% if session.username %}
+    <p>
+      Olet kirjautunut nimellä:
+      <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
+    </p>
+
+    <form action="/logout" method="post">
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+      <button type="submit">Kirjaudu ulos</button>
+    </form>
+
+    {% block links %}
+      <p>
+        <a href="/new_listing">Uusi ilmoitus</a>
+        <a href="/search_listings">Etsi vuokrakohteita</a>
+        <a href="/user/{{ session.user_id }}">Omat sivut</a>
+      </p>
+    {% endblock %}
+    
+  {% else %}
+    {% block guest_links %}
+      <p>
+        <a href="/login">Kirjaudu sisään</a>
+        <a href="/register">Luo tunnus</a>
+        <a href="/search_listings">Etsi vuokrakohteita</a>
+      </p>
+    {% endblock %}
+  {% endif %}
+
+  <hr>
+
+  {% block content %}{% endblock %}
+
+</body>
+
+</html>

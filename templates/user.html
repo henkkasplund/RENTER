@@ -1,34 +1,19 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>{{ user.username }}</title>
-</head>
+{% block title %}{{ user.username }}{% endblock %}
 
-<body>
-  <h1><a href="/">RENTER</a></h1>
+{% block links %}
+  <p>
+    <a href="/new_listing">Uusi ilmoitus</a>
+    <a href="/search_listings">Etsi vuokrakohteita</a>
 
-  {% for message in get_flashed_messages() %}
-    <p style="color:green">{{ message }}</p>
-  {% endfor %}
+    {% if session.user_id != user.id %}
+      <a href="/user/{{ session.user_id }}">Omat sivut</a>
+    {% endif %}
+  </p>
+{% endblock %}
 
-  {% if session.username %}
-    <p>
-      Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
-    <form action="/logout" method="post">
-      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-      <button type="submit">Kirjaudu ulos</button>
-    </form>
-    </p>
-    <p>
-      <a href="/new_listing">Uusi ilmoitus</a>
-      <a href="/search_listings"> Etsi vuokrakohteita</a>
-      {% if session.user_id != user.id %}
-        <a href="/user/{{ session.user_id }}">Omat sivut</a>
-      {% endif %}
-    </p>
-  {% endif %}
-
+{% block content %}
   <h1>Käyttäjä {{ user.username }} (ID: {{ user.id }})</h1>
 
   <h2>Luokitus: {{ user.rating }}</h2>
@@ -116,7 +101,7 @@
               </a>
 
               {% if offer.owner_accepted %}
-                <b>Hyväksytty hakemus</b>
+                <b>Hyväksytty</b>
               {% else %}
                 <b>Odottaa</b>
               {% endif %}
@@ -134,7 +119,9 @@
           {% for offer in received_offers %}
             <li>
               <a href="/listing/{{ offer.listing_id }}">
-                {{ offer.size }} m², {{ offer.rent }} €
+                {{ offer.municipality }} {{ offer.rooms }}
+                {{ offer.size|float|int if offer.size|float == offer.size|float|int else offer.size|string|replace(".", ",") }} m²
+                {{ offer.rent }} €
               </a><br>
 
               Hakija: <a href="/user/{{ offer.tenant_id }}">{{ offer.tenant_username }}</a><br>
@@ -174,6 +161,4 @@
     <a href="javascript:history.back()">Takaisin</a>
   </p>
 
-</body>
-
-</html>
+{% endblock %}

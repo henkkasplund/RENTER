@@ -1,32 +1,8 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Ilmoituksen poisto</title>
-</head>
+{% block title %}Ilmoituksen poisto{% endblock %}
 
-<body>
-  <h1><a href="/">RENTER</a></h1>
-
-  {% for message in get_flashed_messages() %}
-    <p style="color:green">{{ message }}</p>
-  {% endfor %}
-
-  {% if session.username %}
-    <p>
-      Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
-    <form action="/logout" method="post">
-      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-      <button type="submit">Kirjaudu ulos</button>
-    </form>
-    </p>
-    <p>
-      <a href="/new_listing">Uusi ilmoitus</a>
-      <a href="/search_listings"> Etsi vuokrakohteita</a>
-      <a href="/user/{{ session.user_id }}">Omat sivut</a>
-    </p>
-  {% endif %}
-
+{% block content %}
   <h2>Ilmoituksen poisto</h2>
   <p>
     Vuokrakohde: {{ listing.municipality }} {{ listing.rooms }} h
@@ -39,6 +15,4 @@
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="submit" name="back" value="Takaisin">
   </form>
-</body>
-
-</html>
+{% endblock %}

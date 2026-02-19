@@ -1,36 +1,12 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>
-    {{ listing.municipality }} {{ listing.rooms }} h
-    {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
-    {{ listing.rent }} €
-  </title>
-</head>
+{% block title %}
+  {{ listing.municipality }} {{ listing.rooms }} h
+  {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
+  {{ listing.rent }} €
+{% endblock %}
 
-<body>
-  <h1><a href="/">RENTER</a></h1>
-
-  {% for message in get_flashed_messages() %}
-    <p style="color:green">{{ message }}</p>
-  {% endfor %}
-
-  {% if session.username %}
-    <p>
-      Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
-    <form action="/logout" method="post">
-      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-      <button type="submit">Kirjaudu ulos</button>
-    </form>
-    </p>
-    <p>
-      <a href="/new_listing">Uusi ilmoitus</a>
-      <a href="/search_listings"> Etsi vuokrakohteita</a>
-      <a href="/user/{{ session.user_id }}">Omat sivut</a>
-    </p>
-  {% endif %}
-
+{% block content %}
   <h2>
     {{ listing.municipality }} {{ listing.rooms }} h
     {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
@@ -241,6 +217,4 @@
     <a href="javascript:history.back()">Takaisin</a>
   </p>
 
-</body>
-
-</html>
+{% endblock %}

@@ -1,16 +1,14 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Rekisteröinti</title>
-</head>
+{% block title %}Rekisteröinti{% endblock %}
+{% block guest_links %}
+      <p>
+        <a href="/login">Kirjaudu sisään</a>
+        <a href="/search_listings">Etsi vuokrakohteita</a>
+      </p>
+    {% endblock %}
 
-<body>
-  <h1><a href="/">RENTER</a></h1>
-  {% for message in get_flashed_messages() %}
-    <p style="color:red">{{ message }}</p>
-  {% endfor %}
-
+{% block content %}
   <h2>Rekisteröinti</h2>
 
   <form action="/create_account" method="post">
@@ -31,8 +29,5 @@
   </form>
   <p>
   <a href="/">Takaisin</a>
-  <a href="/login">Kirjaudu sisään</a>
   </p>
-</body>
-
-</html>
+{% endblock %}
