@@ -18,9 +18,19 @@
 
   {% if session.username %}
     <p>
-      Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a> (id: {{ session.user_id }})
+      Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
+    <form action="/logout" method="post">
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+      <button type="submit">Kirjaudu ulos</button>
+    </form>
+    </p>
+    <p>
+      <a href="/new_listing">Uusi ilmoitus</a>
+      <a href="/search_listings"> Etsi vuokrakohteita</a>
+      <a href="/user/{{ session.user_id }}">Omat sivut</a>
     </p>
   {% endif %}
+
   <h2>
     {{ listing.municipality }} {{ listing.rooms }} h
     {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
@@ -85,10 +95,12 @@
     {% else %}
       <h2>Vuokraa kohde:</h2>
 
-        {% if edit_offer %}
+      {% if edit_offer %}
         <form action="/create_offer" method="post">
-          Tarjous:<br>
-          <input type="text" name="price" size="8" pattern="^[1-9][0-9]{0,4}$" required> €
+          <p>
+            Tarjous:<br>
+            <input type="text" name="price" size="8" pattern="^[1-9][0-9]{0,4}$" required> €
+          </p>
           <input type="hidden" name="listing_id" value="{{ listing.id }}">
           <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
           <input type="submit" value="Lähetä hakemus">
@@ -105,24 +117,43 @@
   {% if session.user_id and session.user_id != listing.user_id %}
     {% if offers %}
       <h3>Oma hakemus:</h3>
-      <ul>
-        {% for offer in offers %}
-          <li>
-            {{ offer.price }} €
-            {% if offer.owner_accepted %}
-              (Hyväksytty)
-            {% else %}
-              (Odottaa)
-              <form action="/edit_offer/{{ offer.id }}" method="post" style="display:inline;">
-                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                <input type="text" name="price" value="{{ offer.price }}" size="6" pattern="^[1-9][0-9]{0,4}$" required>
-                <button type="submit" name="action" value="update">Päivitä</button>
-                <button type="submit" name="action" value="delete">Poista</button>
-              </form>
-            {% endif %}
-          </li>
-        {% endfor %}
-      </ul>
+
+      {% for offer in offers %}
+        <p>
+          Tarjous: {{ offer.price }} €
+          {% if offer.owner_accepted %}
+            (Hyväksytty)
+          {% else %}
+            (Odottaa)
+          {% endif %}
+        </p>
+
+        {% if not offer.owner_accepted %}
+          {% if edit_offer %}
+            <form action="/edit_offer/{{ offer.id }}" method="post">
+              <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+
+              <p>
+                Uusi tarjous:<br>
+                <input type="text" name="price" value="{{ offer.price }}" size="6" pattern="^[1-9][0-9]{0,4}$" required> €
+              </p>
+
+              <button type="submit" name="action" value="update">Päivitä</button>
+              <button type="submit" name="action" value="delete">Poista</button>
+            </form>
+          {% else %}
+            <form action="/listing/{{ listing.id }}" method="get">
+              <input type="hidden" name="edit_offer" value="1">
+              <button type="submit">Muokkaa hakemusta</button>
+            </form>
+
+            <form action="/edit_offer/{{ offer.id }}" method="post">
+              <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+              <button type="submit" name="action" value="delete">Poista hakemus</button>
+            </form>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
     {% endif %}
   {% endif %}
 
@@ -130,14 +161,17 @@
     <p>
       Ilmoittaja: <a href="/user/{{listing.user_id}}">{{ listing.username }}</a>
     </p>
-    <form action="/toggle_like/{{ listing.id }}" method="post">
+
+    {% if session.user_id and session.user_id != listing.user_id %}
+      <form action="/toggle_like/{{ listing.id }}" method="post">
       <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
       {% if likes.liked %}
         <button type="submit">Poista tykkäys</button>
       {% else %}
         <button type="submit">Tykkää</button>
       {% endif %}
-    </form>
+      </form>
+    {% endif %}
     <p>Tykkäyksiä: {{ likes.likes }}</p>
   {% endif %}
 

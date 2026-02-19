@@ -6,39 +6,59 @@
 </head>
 
 <body>
-  <h1>RENTER</h1>
+  <h1><a href="/">RENTER</a></h1>
+
   {% for message in get_flashed_messages() %}
-    <p style="color:red">{{ message }}</p>
+    <p style="color:green">{{ message }}</p>
   {% endfor %}
+
   {% if session.username %}
-  <p>
-    Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a> (id: {{ session.user_id }})
-  </p>
-  <form action="/logout" method="post">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <button type="submit">Kirjaudu ulos</button>
-  </form>
-  <p>
-  <a href="/">Takaisin</a>
-  </p>
-  {% else %}
-  <form action="/login" method="post">
     <p>
-      Tunnus: <br />
-      <input type="text" name="username" value="{{ username }}" maxlength="15" required/>
+      Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
+    <form action="/logout" method="post">
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+      <button type="submit">Kirjaudu ulos</button>
+    </form>
     </p>
     <p>
-      Salasana: <br />
-      <input type="password" name="password" required/>
+      <a href="/new_listing">Uusi ilmoitus</a>
+      <a href="/search_listings"> Etsi vuokrakohteita</a>
+      <a href="/user/{{ session.user_id }}">Omat sivut</a>
     </p>
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="submit" value="Kirjaudu" />
-  </form>
-  <p>
-  <a href="/">Takaisin</a>
-  <a href="/register">Luo tunnus</a>
-  </p>
   {% endif %}
+
+  <h2>Kirjautuminen</h2>
+
+    <form action="/logout" method="post">
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+      <button type="submit">Kirjaudu ulos</button>
+    </form>
+
+    <p>
+      <a href="/">Takaisin</a>
+    </p>
+
+  {% else %}
+    <form action="/login" method="post">
+      <p>
+        Tunnus: <br />
+        <input type="text" name="username" value="{{ username }}" maxlength="15" required />
+      </p>
+      <p>
+        Salasana: <br />
+        <input type="password" name="password" required />
+      </p>
+
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+      <input type="submit" value="Kirjaudu" />
+    </form>
+
+    <p>
+      <a href="/">Takaisin</a>
+      <a href="/register">Luo tunnus</a>
+    </p>
+  {% endif %}
+
 </body>
 
 </html>

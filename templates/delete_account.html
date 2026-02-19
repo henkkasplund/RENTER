@@ -2,11 +2,11 @@
 <html>
 
 <head>
-  <title>Etusivu</title>
+  <title>Poista käyttäjä</title>
 </head>
 
 <body>
-  <h1><a href="/">RENTER</a></h1>
+   <h1><a href="/">RENTER</a></h1>
 
   {% for message in get_flashed_messages() %}
     <p style="color:green">{{ message }}</p>
@@ -27,26 +27,13 @@
     </p>
   {% endif %}
 
-  <p>
-    {% if not session.username %}
-      <a href="/login">Kirjaudu sisään</a>
-      <a href="/register">Luo tunnus</a>
-    {% endif %}
-  </p>
-    <p>
-    <a href="/search_listings"> Etsi vuokrakohteita</a>
-  </p>
+  <h3>Haluatko varmasti poistaa käyttäjän {{ user.username }}?</h3>
 
-  <h2>Vuokrattavat kohteet</h2>
-
-  <ul>
-    {% for listing in listings %}
-      <li>
-        <a href="/listing/{{ listing.id }}">{{ listing.municipality }} {{ listing.rooms }} h
-          {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
-          {{ listing.rent }} €</a></li>
-    {% endfor %}
-  </ul>
+  <form action="/delete_account" method="post">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <button type="submit" name="delete">Poista</button>
+    <button type="submit" name="cancel">Peruuta</button>
+  </form>
 
 </body>
 

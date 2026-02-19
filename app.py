@@ -40,8 +40,8 @@ def user(user_id):
     user = users.get_user(user_id)
     user_listings = users.get_user_listings(user_id)
     liked = users.get_liked(user_id)
-    deals = users.get_deals(user_id)
-    user_offers = offers.get_user_offers(user_id)
+    sent_offers = offers.get_sent_offers(user_id)
+    received_offers = offers.get_received_offers(user_id)
     edit_contact = request.args.get("edit_contact") == "1"
     rating_permission = ratings.rating_permission(session["user_id"], user_id) if "user_id" in session else False
     user_rating = ratings.get_rating(session["user_id"], user_id) if rating_permission else None
@@ -57,8 +57,8 @@ def user(user_id):
         users.update_contact(user_id, phone, email)
         flash("Yhteystiedot päivitetty!")
         return redirect("/user/" + str(user_id))
-    return render_template("user.html", user=user, listings=user_listings, liked=liked,
-                                        deals=deals, user_offers=user_offers, edit_contact=edit_contact,
+    return render_template("user.html", user=user, listings=user_listings, liked=liked, sent_offers=sent_offers,
+                                        received_offers=received_offers, edit_contact=edit_contact,
                                         rating_permission=rating_permission, user_rating=user_rating)
 
 @app.route("/register")
@@ -89,6 +89,27 @@ def create_account():
     session["csrf_token"] = secrets.token_hex(16)
     flash("Tunnus luotu!")
     return redirect("/")
+
+@app.route("/delete_account", methods=["GET", "POST"])
+def delete_account():
+    demand_login()
+    user_id = session["user_id"]
+    user = users.get_user(user_id)
+    if not user:
+        abort(404)
+    if request.method == "GET":
+        return render_template("delete_account.html", user=user)
+    if request.method == "POST":
+        check_csrf()
+        if "delete" in request.form:
+            users.delete_user(user_id)
+            del session["user_id"]
+            del session["username"]
+            del session["csrf_token"]
+            flash("Käyttäjätili poistettu!")
+            return redirect("/")
+        else:
+            return redirect("/user/" + str(user_id))
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -295,6 +316,11 @@ def toggle_like(listing_id):
     demand_login()
     check_csrf()
     user_id = session["user_id"]
+    listing = listings.get_listing(listing_id)
+    if not listing:
+        abort(404)
+    if listing["user_id"] == user_id:
+        abort(403)
     likes = listings.get_likes(user_id, listing_id)
     if likes["liked"]:
         listings.like_unlike(user_id, listing_id, False)

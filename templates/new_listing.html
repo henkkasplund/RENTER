@@ -5,13 +5,27 @@
 </head>
 
 <body>
-
   <h1><a href="/">RENTER</a></h1>
-  <h2>Uusi ilmoitus</h2>
-  <p>
-    Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a> (id: {{ session.user_id }})
-  </p>
-  <h3>Asunnon tiedot</h3>
+
+  {% for message in get_flashed_messages() %}
+    <p style="color:green">{{ message }}</p>
+  {% endfor %}
+
+  {% if session.username %}
+    <p>
+      Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
+    <form action="/logout" method="post">
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+      <button type="submit">Kirjaudu ulos</button>
+    </form>
+    </p>
+    <p>
+      <a href="/search_listings"> Etsi vuokrakohteita</a>
+      <a href="/user/{{ session.user_id }}">Omat sivut</a>
+    </p>
+  {% endif %}
+
+  <h2>Asunnon tiedot</h2>
 
   <form action="/create_listing" method="post">
     <p>

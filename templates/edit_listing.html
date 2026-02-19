@@ -6,12 +6,29 @@
 </head>
 
 <body>
-
   <h1><a href="/">RENTER</a></h1>
-  <p>
-    Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a> (id: {{ session.user_id }})
-  </p>
+
+  {% for message in get_flashed_messages() %}
+    <p style="color:green">{{ message }}</p>
+  {% endfor %}
+
+  {% if session.username %}
+    <p>
+      Olet kirjautunut nimellä: <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
+    <form action="/logout" method="post">
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+      <button type="submit">Kirjaudu ulos</button>
+    </form>
+    </p>
+    <p>
+      <a href="/new_listing">Uusi ilmoitus</a>
+      <a href="/search_listings"> Etsi vuokrakohteita</a>
+      <a href="/user/{{ session.user_id }}">Omat sivut</a>
+    </p>
+  {% endif %}
+
   <h2>Ilmoituksen muokkaus</h2>
+
   <form action="/edit_listing/{{ listing.id }}" method="post">
     <p>
       Asuntotyyppi: <br />

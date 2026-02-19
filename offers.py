@@ -65,6 +65,7 @@ def modify_offer(offer_id, user_id, action, price=None):
         db.execute(sql, [offer_id])
     else:
         abort(403)
+
 def get_offers(listing_id, viewer_id, owner_id):
     if not viewer_id:
         return []
@@ -93,13 +94,10 @@ def get_offer(offer_id):
     result = db.query(sql, [offer_id])
     return result[0] if result else None
 
-def get_user_offers(user_id):
-    sql = """SELECT offers.id AS offer_id,
-                    offers.price,
-                    offers.owner_accepted,
+def get_sent_offers(user_id):
+    sql = """SELECT offers.id, offers.price, offers.owner_accepted,
                     listings.id AS listing_id,
-                    listings.rent,
-                    listings.size,
+                    listings.rent, listings.size,
                     m.value AS municipality,
                     r.value AS rooms
             FROM offers
@@ -107,5 +105,22 @@ def get_user_offers(user_id):
             JOIN classes m ON m.id = listings.municipality_id
             JOIN classes r ON r.id = listings.rooms_id
             WHERE offers.user_id = ?
+            ORDER BY offers.id DESC"""
+    return db.query(sql, [user_id])
+
+def get_received_offers(user_id):
+    sql = """SELECT offers.id, offers.price, offers.owner_accepted,
+                    offers.user_id AS tenant_id,
+                    users.username AS tenant_username,
+                    listings.id AS listing_id,
+                    listings.rent, listings.size,
+                    m.value AS municipality,
+                    r.value AS rooms
+            FROM offers
+            JOIN listings ON offers.listing_id = listings.id
+            JOIN users ON users.id = offers.user_id
+            JOIN classes m ON m.id = listings.municipality_id
+            JOIN classes r ON r.id = listings.rooms_id
+            WHERE listings.user_id = ?
             ORDER BY offers.id DESC"""
     return db.query(sql, [user_id])

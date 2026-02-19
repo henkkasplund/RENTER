@@ -10,29 +10,6 @@ def get_user(user_id):
     result = db.query(sql, [user_id])
     return result[0] if result else None
 
-def get_deals(user_id):
-    sql = """SELECT offers.id AS offer_id,
-                    offers.price,
-                    offers.owner_accepted,
-                    listings.id AS listing_id,
-                    listings.rent,
-                    listings.size,
-                    owner.id AS owner_id,
-                    owner.username AS owner_username,
-                    owner.phone AS owner_phone,
-                    owner.email AS owner_email,
-                    tenant.id AS tenant_id,
-                    tenant.username AS tenant_username,
-                    tenant.phone AS tenant_phone,
-                    tenant.email AS tenant_email
-            FROM offers
-            JOIN listings ON offers.listing_id = listings.id
-            JOIN users owner ON listings.user_id = owner.id
-            JOIN users tenant ON offers.user_id = tenant.id
-            WHERE offers.owner_accepted = 1 AND (offers.user_id = ? OR listings.user_id = ?)
-            ORDER BY offers.id DESC"""
-    return db.query(sql, [user_id, user_id])
-
 def update_contact(user_id, phone, email):
     if phone and not re.search("^[0-9+ -]{5,20}$", phone):
         abort(403)
@@ -72,6 +49,10 @@ def create_user(username, password):
     password_hash = generate_password_hash(password)
     sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
     db.execute(sql, [username, password_hash])
+
+def delete_user(user_id):
+    sql = "DELETE FROM users WHERE id = ?"
+    db.execute(sql, [user_id])
 
 def check_login(username, password):
     sql = "SELECT id, password_hash, rating FROM users WHERE username = ?"
