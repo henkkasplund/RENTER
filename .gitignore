@@ -3,3 +3,6 @@ venv
 database.db.DS_Store
 **/.DS_Store
 database.db
+*.png
+*.jpeg
+*.jpg

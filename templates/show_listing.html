@@ -31,6 +31,7 @@
     <p>
       <a href="/edit_listing/{{ listing.id }}">Muokkaa</a>
       <a href="/remove_listing/{{ listing.id }}">Poista</a>
+      <a href="/images/{{ listing.id }}">Kuvat</a>
     </p>
     <h2>Hakijat:</h2>
     <ul>
@@ -140,6 +141,10 @@
     <p>Tykkäyksiä: {{ likes.likes }}</p>
   {% endif %}
 
+  {% for image in images %}
+    <img src="/image/{{ image.id }}"/>
+  {% endfor %}
+
   <h3>Asunnon tiedot</h3>
 
   <p>
@@ -199,7 +204,7 @@
   {% endif %}
 
   <p>
-    <a href="/">Takaisin</a>
+    <a href="javascript:history.back()">Takaisin</a>
   </p>
 
 </body>

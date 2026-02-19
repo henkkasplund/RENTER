@@ -2,6 +2,10 @@ import db
 from flask import abort, request
 import re
 
+def get_classes(title):
+    sql = "SELECT id, value FROM classes WHERE title = ? ORDER BY id"
+    return db.query(sql, [title])
+
 def add_listing(user_id, listing_data):
     sql = """INSERT INTO listings (user_id, rooms_id, size, rent,
                                 address, postcode,floor, floors, sauna, balcony,
@@ -63,10 +67,6 @@ def get_listing(listing_id):
             WHERE listings.id = ?"""
     result = db.query(sql, [listing_id])
     return result[0] if result else None
-
-def get_classes(title):
-    sql = "SELECT id, value FROM classes WHERE title = ? ORDER BY id"
-    return db.query(sql, [title])
 
 def get_listings_data():
     rooms_id = request.form["rooms_id"]
@@ -137,24 +137,6 @@ def get_listings_data():
             "cellar": cellar,
             "pool": pool,
             "description": description}
-
-def like_unlike(user_id, listing_id, press_like):
-    if press_like:
-        sql = "INSERT OR IGNORE INTO likes (user_id, listing_id) VALUES (?, ?)"
-        db.execute(sql, [user_id, listing_id])
-    else:
-        sql = "DELETE FROM likes WHERE user_id = ? AND listing_id = ?"
-        db.execute(sql, [user_id, listing_id])
-
-def get_likes(user_id, listing_id):
-    if not user_id:
-        sql = "SELECT COUNT(*) AS likes FROM likes WHERE listing_id = ?"
-        likes = db.query(sql, [listing_id])[0]["likes"]
-        return {"likes": likes, "liked": 0}
-    sql = """SELECT (SELECT COUNT(*) FROM likes WHERE listing_id = ?) AS likes,
-            EXISTS(SELECT 1 FROM likes WHERE listing_id = ? AND user_id = ?) AS liked"""
-    result = db.query(sql, [listing_id, listing_id, user_id])
-    return result[0]
 
 def update_listing(listing_id, listing_data):
     sql = """UPDATE listings SET rooms_id = ?, size = ?, rent = ?,
@@ -233,3 +215,34 @@ def search_listings(user, size, min_rent, max_rent, rooms_id, property_type_id, 
         sql += " WHERE " + " AND ".join(criteria)
     sql += " ORDER BY listings.id DESC"
     return db.query(sql, values)
+
+def like_unlike(user_id, listing_id, press_like):
+    if press_like:
+        sql = "INSERT OR IGNORE INTO likes (user_id, listing_id) VALUES (?, ?)"
+        db.execute(sql, [user_id, listing_id])
+    else:
+        sql = "DELETE FROM likes WHERE user_id = ? AND listing_id = ?"
+        db.execute(sql, [user_id, listing_id])
+
+def get_likes(user_id, listing_id):
+    if not user_id:
+        sql = "SELECT COUNT(*) AS likes FROM likes WHERE listing_id = ?"
+        likes = db.query(sql, [listing_id])[0]["likes"]
+        return {"likes": likes, "liked": 0}
+    sql = """SELECT (SELECT COUNT(*) FROM likes WHERE listing_id = ?) AS likes,
+            EXISTS(SELECT 1 FROM likes WHERE listing_id = ? AND user_id = ?) AS liked"""
+    result = db.query(sql, [listing_id, listing_id, user_id])
+    return result[0]
+
+def add_images(listing_id, images, mimetype):
+    sql = "INSERT INTO images (listing_id, image, mimetype) VALUES (?, ?, ?)"
+    db.execute(sql, [listing_id, images, mimetype])
+
+def get_image(image_id):
+    sql = "SELECT image, mimetype FROM images WHERE id = ?"
+    result = db.query(sql, [image_id])
+    return result[0] if result else None
+
+def get_images(listing_id):
+    sql = "SELECT id FROM images WHERE listing_id = ?"
+    return db.query(sql, [listing_id])

@@ -4,7 +4,8 @@ CREATE TABLE users (
     rating INTEGER DEFAULT 5 CHECK(rating BETWEEN 0 AND 5),
     phone TEXT,
     email TEXT,
-    password_hash TEXT
+    password_hash TEXT,
+    image BLOB
 );
 CREATE TABLE ratings (
     id INTEGER PRIMARY KEY,
@@ -53,4 +54,10 @@ CREATE TABLE likes (
     user_id INTEGER REFERENCES users ON DELETE CASCADE,
     listing_id INTEGER REFERENCES listings ON DELETE CASCADE,
     UNIQUE(user_id, listing_id)
+);
+CREATE TABLE images (
+    id INTEGER PRIMARY KEY,
+    listing_id INTEGER REFERENCES listings ON DELETE CASCADE,
+    image BLOB,
+    mimetype TEXT
 );

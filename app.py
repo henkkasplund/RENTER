@@ -1,6 +1,6 @@
 import sqlite3
 from flask import Flask
-from flask import abort, redirect, render_template, request, session
+from flask import abort, redirect, render_template, make_response, request, session
 from flask import flash
 import db
 import config
@@ -34,22 +34,6 @@ def index():
     all_listings = listings.get_listings()
     return render_template("index.html", listings=all_listings)
 
-@app.route("/listing/<int:listing_id>")
-def show_listing(listing_id):
-    listing = listings.get_listing(listing_id)
-    if not listing:
-        abort(404)
-    viewer_id = session.get("user_id")
-    likes = listings.get_likes(viewer_id, listing_id)
-    listing_offers = offers.get_offers(listing_id, viewer_id, listing["user_id"])
-    user_offer = None
-    if viewer_id and viewer_id != listing["user_id"] and listing_offers:
-        user_offer = listing_offers[0]
-    rented = offers.rental_status(listing_id)
-    edit_offer = request.args.get("edit_offer") == "1"
-    return render_template("show_listing.html", listing=listing, likes=likes, offers=listing_offers,
-                                                user_offer=user_offer, rented=rented, edit_offer=edit_offer)
-
 @app.route("/user/<int:user_id>", methods=["GET", "POST"])
 def user(user_id):
     demand_login()
@@ -76,92 +60,6 @@ def user(user_id):
     return render_template("user.html", user=user, listings=user_listings, liked=liked,
                                         deals=deals, user_offers=user_offers, edit_contact=edit_contact,
                                         rating_permission=rating_permission, user_rating=user_rating)
-
-@app.route("/search_listings")
-def search_listings():
-    user = request.args.get("user", "")
-    size = request.args.get("size", "")
-    max_rent = request.args.get("max_rent", "")
-    min_rent = request.args.get("min_rent", "")
-    rooms_id = request.args.get("rooms_id", "" )
-    property_type_id = request.args.get("property_type_id", "")
-    municipality_id = request.args.get("municipality_id", "")
-    condition_id = request.args.get("condition_id", "")
-    searched = bool(request.args)
-    results = listings.search_listings(user, size, min_rent, max_rent, rooms_id,
-                                       property_type_id, municipality_id, condition_id)
-    return render_template("search_listings.html",
-                           user=user, size=size, max_rent=max_rent, min_rent=min_rent,
-                           rooms_id=rooms_id, property_type_id=property_type_id,
-                           municipality_id=municipality_id, condition_id=condition_id,
-                           searched = searched, results=results,
-                           rooms=listings.get_classes("rooms"),
-                           municipalities=listings.get_classes("municipality"),
-                           property_types=listings.get_classes("property_type"),
-                           conditions=listings.get_classes("condition"))
-
-@app.route("/new_listing")
-def new_listing():
-    demand_login()
-    municipalities = listings.get_classes("municipality")
-    conditions = listings.get_classes("condition")
-    property_types = listings.get_classes("property_type")
-    rooms = listings.get_classes("rooms")
-    return render_template("new_listing.html",
-                           municipalities=municipalities, conditions=conditions,
-                           property_types=property_types, rooms=rooms)
-
-@app.route("/create_listing", methods=["POST"])
-def create_listing():
-    print("SESSION:", dict(session))
-    print("FORM:", dict(request.form))
-
-    demand_login()
-    check_csrf()
-    user_id = session["user_id"]
-    listing_data = listings.get_listings_data()
-    listings.add_listing(user_id, listing_data)
-    return redirect("/")
-
-@app.route("/edit_listing/<int:listing_id>", methods=["GET", "POST"])
-def edit_listing(listing_id):
-    demand_login()
-    listing = listings.get_listing(listing_id)
-    if not listing:
-        abort(404)
-    if listing["user_id"] != session["user_id"]:
-        abort(403)
-    municipalities = listings.get_classes("municipality")
-    rooms = listings.get_classes("rooms")
-    conditions = listings.get_classes("condition")
-    property_types = listings.get_classes("property_type")
-    if request.method == "GET":
-        return render_template("edit_listing.html",
-                               listing=listing, municipalities=municipalities, rooms = rooms,
-                               conditions=conditions, property_types=property_types)
-    if request.method == "POST":
-        check_csrf()
-        listing_data = listings.get_listings_data()
-        listings.update_listing(listing_id, listing_data)
-        return redirect("/listing/" + str(listing_id))
-
-@app.route("/remove_listing/<int:listing_id>", methods=["GET", "POST"])
-def remove_listing(listing_id):
-    demand_login()
-    listing = listings.get_listing(listing_id)
-    if not listing:
-        abort(404)
-    if listing["user_id"] != session["user_id"]:
-        abort(403)
-    if request.method == "GET":
-        return render_template("remove_listing.html", listing=listing)
-    if request.method == "POST":
-        check_csrf()
-        if "remove" in request.form:
-            listings.remove_listing(listing_id)
-            return redirect("/")
-        else:
-            return redirect("/listing/" + str(listing_id))
 
 @app.route("/register")
 def register():
@@ -219,6 +117,153 @@ def logout():
     del session["username"]
     del session["csrf_token"]
     return redirect("/")
+
+@app.route("/new_listing")
+def new_listing():
+    demand_login()
+    municipalities = listings.get_classes("municipality")
+    conditions = listings.get_classes("condition")
+    property_types = listings.get_classes("property_type")
+    rooms = listings.get_classes("rooms")
+    return render_template("new_listing.html",
+                           municipalities=municipalities, conditions=conditions,
+                           property_types=property_types, rooms=rooms)
+
+@app.route("/create_listing", methods=["POST"])
+def create_listing():
+    print("SESSION:", dict(session))
+    print("FORM:", dict(request.form))
+
+    demand_login()
+    check_csrf()
+    user_id = session["user_id"]
+    listing_data = listings.get_listings_data()
+    listings.add_listing(user_id, listing_data)
+    return redirect("/")
+
+@app.route("/search_listings")
+def search_listings():
+    user = request.args.get("user", "")
+    size = request.args.get("size", "")
+    max_rent = request.args.get("max_rent", "")
+    min_rent = request.args.get("min_rent", "")
+    rooms_id = request.args.get("rooms_id", "" )
+    property_type_id = request.args.get("property_type_id", "")
+    municipality_id = request.args.get("municipality_id", "")
+    condition_id = request.args.get("condition_id", "")
+    searched = bool(request.args)
+    results = listings.search_listings(user, size, min_rent, max_rent, rooms_id,
+                                       property_type_id, municipality_id, condition_id)
+    return render_template("search_listings.html",
+                           user=user, size=size, max_rent=max_rent, min_rent=min_rent,
+                           rooms_id=rooms_id, property_type_id=property_type_id,
+                           municipality_id=municipality_id, condition_id=condition_id,
+                           searched = searched, results=results,
+                           rooms=listings.get_classes("rooms"),
+                           municipalities=listings.get_classes("municipality"),
+                           property_types=listings.get_classes("property_type"),
+                           conditions=listings.get_classes("condition"))
+
+@app.route("/listing/<int:listing_id>")
+def show_listing(listing_id):
+    listing = listings.get_listing(listing_id)
+    if not listing:
+        abort(404)
+    viewer_id = session.get("user_id")
+    likes = listings.get_likes(viewer_id, listing_id)
+    images = listings.get_images(listing_id)
+    listing_offers = offers.get_offers(listing_id, viewer_id, listing["user_id"])
+    user_offer = None
+    if viewer_id and viewer_id != listing["user_id"] and listing_offers:
+        user_offer = listing_offers[0]
+    rented = offers.rental_status(listing_id)
+    edit_offer = request.args.get("edit_offer") == "1"
+    return render_template("show_listing.html", listing=listing, likes=likes, images=images,
+                                                offers=listing_offers, user_offer=user_offer,
+                                                rented=rented, edit_offer=edit_offer)
+
+@app.route("/edit_listing/<int:listing_id>", methods=["GET", "POST"])
+def edit_listing(listing_id):
+    demand_login()
+    listing = listings.get_listing(listing_id)
+    if not listing:
+        abort(404)
+    if listing["user_id"] != session["user_id"]:
+        abort(403)
+    municipalities = listings.get_classes("municipality")
+    rooms = listings.get_classes("rooms")
+    conditions = listings.get_classes("condition")
+    property_types = listings.get_classes("property_type")
+    if request.method == "GET":
+        return render_template("edit_listing.html",
+                               listing=listing, municipalities=municipalities, rooms = rooms,
+                               conditions=conditions, property_types=property_types)
+    if request.method == "POST":
+        check_csrf()
+        listing_data = listings.get_listings_data()
+        listings.update_listing(listing_id, listing_data)
+        return redirect("/listing/" + str(listing_id))
+
+@app.route("/remove_listing/<int:listing_id>", methods=["GET", "POST"])
+def remove_listing(listing_id):
+    demand_login()
+    listing = listings.get_listing(listing_id)
+    if not listing:
+        abort(404)
+    if listing["user_id"] != session["user_id"]:
+        abort(403)
+    if request.method == "GET":
+        return render_template("remove_listing.html", listing=listing)
+    if request.method == "POST":
+        check_csrf()
+        if "remove" in request.form:
+            listings.remove_listing(listing_id)
+            return redirect("/")
+        else:
+            return redirect("/listing/" + str(listing_id))
+
+@app.route("/add_images", methods=["POST"])
+def add_images():
+    demand_login()
+    check_csrf()
+    listing_id = request.form["listing_id"]
+    listing = listings.get_listing(listing_id)
+    if not listing:
+        abort(404)
+    if listing["user_id"] != session["user_id"]:
+        abort(403)
+    files = request.files.getlist("images")
+    for file in files:
+        if not file.filename:
+            continue
+        mimetype = file.mimetype
+        if mimetype not in ["image/jpeg", "image/png"]:
+            return "VIRHE: väärä tiedostomuoto"
+        image = file.read()
+        if len(image) > 100 * 1024:
+            return "VIRHE: liian suuri kuva"
+        listings.add_images(listing_id, image, mimetype)
+    return redirect("/images/" + str(listing_id))
+
+@app.route("/image/<int:image_id>")
+def show_image(image_id):
+    image = listings.get_image(image_id)
+    if not image:
+        abort(404)
+    response = make_response(image["image"])
+    response.headers.set("Content-Type", image["mimetype"])
+    return response
+
+@app.route("/images/<int:listing_id>")
+def edit_images(listing_id):
+    demand_login()
+    listing = listings.get_listing(listing_id)
+    if not listing:
+        abort(404)
+    if listing["user_id"] != session["user_id"]:
+        abort(403)
+    images = listings.get_images(listing_id)
+    return render_template("images.html", listing=listing, images=images)
 
 @app.route("/toggle_like/<int:listing_id>", methods=["POST"])
 def toggle_like(listing_id):
