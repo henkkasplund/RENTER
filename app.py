@@ -233,6 +233,7 @@ def add_images():
     if listing["user_id"] != session["user_id"]:
         abort(403)
     files = request.files.getlist("images")
+    images_added = 0
     for file in files:
         if not file.filename:
             continue
@@ -243,6 +244,30 @@ def add_images():
         if len(image) > 100 * 1024:
             return "VIRHE: liian suuri kuva"
         listings.add_images(listing_id, image, mimetype)
+        images_added += 1
+    if images_added > 1:
+        flash("Kuvat lisätty!")
+    elif images_added == 1:
+        flash("Kuva lisätty!")
+    return redirect("/images/" + str(listing_id))
+
+@app.route("/remove_images", methods=["POST"])
+def remove_images():
+    demand_login()
+    check_csrf()
+    listing_id = request.form["listing_id"]
+    listing = listings.get_listing(listing_id)
+    if not listing:
+        abort(404)
+    if listing["user_id"] != session["user_id"]:
+        abort(403)
+    images = request.form.getlist("image_id")
+    for image_id in images:
+        listings.remove_image(listing_id, image_id)
+    if len(images) > 1:
+        flash("Kuvat poistettu!")
+    elif len(images) == 1:
+        flash("Kuva poistettu!")
     return redirect("/images/" + str(listing_id))
 
 @app.route("/image/<int:image_id>")

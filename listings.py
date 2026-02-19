@@ -246,3 +246,7 @@ def get_image(image_id):
 def get_images(listing_id):
     sql = "SELECT id FROM images WHERE listing_id = ?"
     return db.query(sql, [listing_id])
+
+def remove_image(listing_id, image_id):
+    sql = "DELETE FROM images WHERE id = ? and listing_id = ?"
+    db.execute(sql, [image_id, listing_id])
