@@ -1,16 +1,14 @@
 {% extends "layout.html" %}
 
-{% block title %}
-  Etusivu
-{% endblock %}
+{% block title %}Etusivu{% endblock %}
 
 {% block content %}
   <h2>Uusimmat vuokrakohteet</h2>
 
   {% if listings %}
-    <ul>
+    <ul style="list-style:none; padding:0;">
       {% for listing in listings %}
-        <li>
+        <li class="featured">
           <a href="/listing/{{ listing.id }}">
             {{ listing.municipality }} {{ listing.rooms }} h
             {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
