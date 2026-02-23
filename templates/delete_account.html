@@ -3,12 +3,17 @@
 {% block title %}Tilin poisto{% endblock %}
 
 {% block content %}
-  <h3>Haluatko varmasti poistaa tilin? {{ user.username }}?</h3>
+  <section class="medium center">
+    <h3>Haluatko varmasti poistaa tilin {{ user.username }}?</h3>
 
-  <form action="/delete_account" method="post">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <button type="submit" name="delete">Poista</button>
-    <button type="submit" name="cancel">Peruuta</button>
-  </form>
+    <form class="form-stack" action="/delete_account" method="post">
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+
+      <div class="narrow">
+        <button type="submit" name="delete" style="background:#c62828;">POISTA</button>
+        <button type="submit" name="cancel">Peruuta</button>
+      </div>
+    </form>
+  </section>
 
 {% endblock %}

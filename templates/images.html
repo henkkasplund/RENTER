@@ -3,34 +3,39 @@
 {% block title %}Kuvat{% endblock %}
 
 {% block content %}
+<section class="medium">
   <h2>Kuvien hallinointi</h2>
-  <p>
-    Ilmoituksessa on {{ images | count }} kuvaa
-  </p>
+  <p>Ilmoituksessa on {{ images|count }} kuvaa</p>
 
-  <form action="/remove_images" method="post">
-    {% for image in images %}
-      <input type="checkbox" name="image_id" value="{{ image.id }}">
-      <img src="/image/{{ image.id }}"/><br>
-    {% endfor %}
+  <form class="form-stack" action="/remove_images" method="post">
+
+    <div class="grid grid-small">
+      {% for image in images %}
+        <label class="image-item">
+          <input type="checkbox" name="image_id" value="{{ image.id }}">
+          <img src="/image/{{ image.id }}">
+        </label>
+      {% endfor %}
+    </div>
+
     <input type="hidden" name="listing_id" value="{{ listing.id }}">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <p>
-      <input type="submit" value="Poista valitut">
-    </p>
+
+    <button type="submit">Poista valitut</button>
   </form>
 
   <h3>Lisää uusi kuva</h3>
-    <form action="/add_images" method="post" enctype="multipart/form-data">
-        <p>
-        Kuva: <input type="file" name="images" accept="image/jpeg,image/png" multiple />
-        </p>
-        <input type="hidden" name="listing_id" value="{{ listing.id }}">
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-        <input type="submit" value="Lisää" />
-    </form>
 
-  <p>
-    <a href="/listing/{{ listing.id }}">Takaisin</a>
-  </p>
+  <form class="form-stack narrow" action="/add_images" method="post" enctype="multipart/form-data">
+    <input type="file" name="images" accept="image/jpeg,image/png" multiple>
+
+    <input type="hidden" name="listing_id" value="{{ listing.id }}">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+
+    <button type="submit">Lisää</button>
+  </form>
+
+  <p><a href="/listing/{{ listing.id }}">Takaisin</a></p>
+</section>
+
 {% endblock %}

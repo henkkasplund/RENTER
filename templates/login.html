@@ -2,30 +2,30 @@
 
 {% block title %}Kirjautuminen{% endblock %}
 
-{% block guest_links %}
-  <p>
-    <a href="/register">Luo tunnus</a>
-    <a href="/search_listings">Etsi vuokrakohteita</a>
-  </p>
-{% endblock %}
-
 {% block content %}
+<section class="narrow">
   <h2>Kirjautuminen</h2>
 
-  <form action="/login" method="post">
-    <p>
-      Tunnus:<br>
-      <input type="text" name="username" value="{{ username }}" maxlength="15" required>
-    </p>
+  <form class="form-stack" action="/login" method="post">
 
-    <p>
-      Salasana:<br>
+    <label>
+      Tunnus
+      <input type="text" name="username" value="{{ username }}" maxlength="15" required>
+    </label>
+
+    <label>
+      Salasana
       <input type="password" name="password" required>
-    </p>
+    </label>
 
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="submit" value="Kirjaudu">
+
+    <div class="center">
+      <button type="submit">Kirjaudu</button>
+    </div>
+
   </form>
-  <p>
-    <a href="/">Takaisin</a>
+
+</section>
+
 {% endblock %}

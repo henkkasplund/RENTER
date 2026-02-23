@@ -4,49 +4,67 @@
 <head>
   <title>{% block title %}{% endblock %}</title>
   <link rel="stylesheet" href="/static/main.css">
-
 </head>
 
 <body>
-  <h1><a href="/">RENTER</a></h1>
 
-  {% for message in get_flashed_messages() %}
-    <p style="color:green">{{ message }}</p>
-  {% endfor %}
+  <div class="layout">
 
-  {% if session.username %}
-    <p>
-      Olet kirjautunut nimellä:
-      <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
-    </p>
+    <div class="header">
+      <h1><a href="/">RENTER</a></h1>
 
-    <form action="/logout" method="post">
-      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-      <button type="submit">Kirjaudu ulos</button>
-    </form>
+      {% if session.username %}
+        <div class="login-info">
+          Käyttäjä:
+          <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
 
-    {% block links %}
-      <p>
-        <a href="/new_listing">Uusi ilmoitus</a>
-        <a href="/search_listings">Etsi vuokrakohteita</a>
-        <a href="/user/{{ session.user_id }}">Omat sivut</a>
-      </p>
-    {% endblock %}
-    
-  {% else %}
-    {% block guest_links %}
-      <p>
-        <a href="/login">Kirjaudu sisään</a>
-        <a href="/register">Luo tunnus</a>
-        <a href="/search_listings">Etsi vuokrakohteita</a>
-      </p>
-    {% endblock %}
-  {% endif %}
+          <form action="/logout" method="post">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            <button type="submit">Kirjaudu ulos</button>
+          </form>
+        </div>
+      {% else %}
+        <div class="login-info">
+          <form action="/login" method="get">
+            <button type="submit">Kirjaudu sisään</button>
+          </form>
+        </div>
+      {% endif %}
+    </div>
 
-  <hr>
+    <nav>
+      <ul>
+        <li class="{% if request.endpoint == 'index' %}active{% endif %}">
+          <a href="/">Etusivu</a>
+        </li>
+        <li class="{% if request.endpoint == 'search_listings' %}active{% endif %}">
+          <a href="/search_listings">Etsi vuokrakohteita</a>
+        </li>
 
-  {% block content %}{% endblock %}
+        {% if session.username %}
+          <li class="{% if request.endpoint == 'new_listing' %}active{% endif %}">
+            <a href="/new_listing">Uusi ilmoitus</a>
+          </li>
+          <li class="{% if request.endpoint == 'user' and user is defined and session.user_id == user.id %}active{% endif %}">
+            <a href="/user/{{ session.user_id }}">Omat sivut</a>
+          </li>
+        {% else %}
+          <li class="{% if request.endpoint == 'register' %}active{% endif %}">
+            <a href="/register">Luo tunnus</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+
+    {% for message in get_flashed_messages() %}
+      <p>{{ message }}</p>
+    {% endfor %}
+
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+
+  </div>
 
 </body>
-
 </html>

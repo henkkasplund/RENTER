@@ -3,16 +3,21 @@
 {% block title %}Ilmoituksen poisto{% endblock %}
 
 {% block content %}
-  <h2>Ilmoituksen poisto</h2>
-  <p>
-    Vuokrakohde: {{ listing.municipality }} {{ listing.rooms }} h
-                 {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
-                 {{ listing.rent }} €<br />
-    Haluatko varmasti poistaa tämän ilmoituksen?
-  </p>
-  <form action="/remove_listing/{{ listing.id }}" method="post">
-    <input type="submit" name="remove" value="Poista ilmoitus">
+<section class="medium center">
+  <h3>Haluatko varmasti poistaa tämän ilmoituksen?</h3>
+
+  <h2>
+    {{ listing.municipality }} {{ listing.rooms }} h
+    {{ listing.size | format_size }} m²
+    {{ listing.rent }} €
+  </h2>
+
+  <form class="narrow" action="/remove_listing/{{ listing.id }}" method="post">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="submit" name="back" value="Takaisin">
+
+    <button type="submit" name="remove" style="background:#c62828;">POISTA</button>
+    <button type="submit" name="back">Peruuta</button>
   </form>
+</section>
+
 {% endblock %}

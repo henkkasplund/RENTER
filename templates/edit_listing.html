@@ -3,110 +3,114 @@
 {% block title %}Ilmoituksen muokkaus{% endblock %}
 
 {% block content %}
+<section class="medium">
   <h2>Ilmoituksen muokkaus</h2>
 
-  <form action="/edit_listing/{{ listing.id }}" method="post">
-    <p>
-      Asuntotyyppi: <br />
-      <select name="property_type_id" required>
-        <option value="">Valitse</option>
-        {% for property_type in property_types %}
-          <option value="{{ property_type.id }}"
-          {% if property_type.id == listing.property_type_id %}selected{% endif %}>{{ property_type.value }}
-          </option>
-        {% endfor %}
-      </select>
-    </p>
-    <p>
-      Huonemäärä: <br />
-      <select name="rooms_id" required>
-        <option value="">Valitse</option>
-        {% for room in rooms %}
-          <option value="{{ room.id }}"
-          {% if room.id == listing.rooms_id %}selected{% endif %}>{{ room.value }}
-          </option>
-        {% endfor %}
-      </select>
-    </p>
-    <p>
-      Neliömäärä:<br />
-      <input type="text" name="size" maxlength="10" pattern="^[1-9][0-9]{0,3}(,5)?$"
-            value="{{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace('.', ',') }}"
-            required> m²
-    </p>
-    <p>
-      Vuokrahinta:<br />
-      <input type="text" name="rent" maxlength="10" pattern="^[1-9][0-9]{0,4}$" value="{{ listing.rent }}" required> €
-    </p>
-    <p>
-      Paikkakunta: <br />
-      <select name="municipality_id" required>
-        <option value="">Valitse</option>
-        {% for municipality in municipalities %}
-          <option value="{{ municipality.id }}"
-          {% if municipality.id == listing.municipality_id %}selected{% endif %}>{{ municipality.value }}
-        </option>
-        {% endfor %}
-      </select>
-    </p>
-    <p>
-      Katuosoite:<br />
-      <input type="text" name="address" maxlength="50" value="{{ listing.address }}" required>
-    </p>
-    <p>
-      Postinumero:<br />
-      <input type="text" name="postcode" maxlength="5" pattern="^[0-9]{5}$" value="{{ listing.postcode }}" required>
-    </p>
-    <p>
-      Kerros/kerroksia:<br />
-      <input type="text" name="floor" maxlength="2" pattern="^(-1|[0-9]{1,2})$" value="{{ listing.floor }}"> /
-      <input type="text" name="floors" maxlength="2" pattern="^[1-9][0-9]?$" value="{{ listing.floors }}" required>
-    </p>
-    <p>
-      Kunto: <br />
-      <select name="condition_id" required>
-        <option value="">Valitse</option>
+  <h4 class="required"> Pakollinen kenttä</h4>
+
+  <form class="form-stack" action="/edit_listing/{{ listing.id }}" method="post">
+
+    <div class="grid grid-dual">
+
+      <label class="required">
+        Asuntotyyppi
+        <select name="property_type_id" required>
+          <option value="">Valitse</option>
+          {% for property_type in property_types %}
+            <option value="{{ property_type.id }}"
+            {% if property_type.id == listing.property_type_id %}selected{% endif %}>
+              {{ property_type.value }}
+            </option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label class="required">
+        Paikkakunta
+        <select name="municipality_id" required>
+          <option value="">Valitse</option>
+          {% for municipality in municipalities %}
+            <option value="{{ municipality.id }}"
+            {% if municipality.id == listing.municipality_id %}selected{% endif %}>
+              {{ municipality.value }}
+            </option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label class="required">
+        Huonemäärä
+        <select name="rooms_id" required>
+          <option value="">Valitse</option>
+          {% for room in rooms %}
+            <option value="{{ room.id }}"
+            {% if room.id == listing.rooms_id %}selected{% endif %}>
+              {{ room.value }}
+            </option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label class="required">
+        Kunto
+        <select name="condition_id" required>
+          <option value="">Valitse</option>
           {% for condition in conditions %}
-        <option value="{{ condition.id }}"
-          {% if condition.id == listing.condition_id %}selected{% endif %}>
-          {{ condition.value }}
-        </option>
-      {% endfor %}
-      </select>
-    </p>
-    <p>
-      Sauna:
-      <input type="checkbox" name="sauna" {% if listing.sauna %}checked{% endif %}><br />
-      Parveke:
-      <input type="checkbox" name="balcony" {% if listing.balcony %}checked{% endif %}>
-    </p>
-    <p>
-      Kuvaus:<br/>
-      <textarea name="description" rows="10" cols="50" maxlength="2000" required>{{ listing.description }}</textarea>
-    </p>
+            <option value="{{ condition.id }}"
+            {% if condition.id == listing.condition_id %}selected{% endif %}>
+              {{ condition.value }}
+            </option>
+          {% endfor %}
+        </select>
+      </label>
 
-    <h3>Taloyhtiön tiedot</h3>
+      <label class="required">
+        Neliömäärä
+        <input type="text" name="size" value="{{ listing.size }}" maxlength="10" required>
+      </label>
 
-    <p>
-      Sauna:
-      <input type="checkbox" name="bath" {% if listing.bath %}checked{% endif %}><br />
-      Hissi:
-      <input type="checkbox" name="elevator" {% if listing.elevator %}checked{% endif %}><br />
-      Pyykkitupa:
-      <input type="checkbox" name="laundry" {% if listing.laundry %}checked{% endif %}><br />
-      Häkkikellari:
-      <input type="checkbox" name="cellar" {% if listing.cellar %}checked{% endif %}><br />
-      Uima-allas:
-      <input type="checkbox" name="pool" {% if listing.pool %}checked{% endif %}>
-    </p>
+      <label class="required">
+        Vuokrahinta
+        <input type="text" name="rent" value="{{ listing.rent }}" maxlength="10" required>
+      </label>
+
+      <label class="required">
+        Katuosoite
+        <input type="text" name="address" value="{{ listing.address }}" maxlength="50" required>
+      </label>
+
+      <label class="required">
+        Postinumero
+        <input type="text" name="postcode" value="{{ listing.postcode }}" maxlength="5" required>
+      </label>
+
+      <label>
+        Kerros
+        <input type="text" name="floor" value="{{ listing.floor or '' }}">
+      </label>
+
+      <label class="required">
+        Kerroksia
+        <input type="text" name="floors" value="{{ listing.floors }}" required>
+      </label>
+
+    </div>
+
+    <label class="required">
+      Kuvaus
+      <textarea name="description" rows="6" maxlength="2000" required>{{ listing.description }}</textarea>
+    </label>
 
     <input type="hidden" name="listing_id" value="{{ listing.id }}">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="submit" name="edit" value="Päivitä ilmoitusta">
+
+    <div class="medium grid grid-dual">
+      <button type="submit" name="update">Päivitä ilmoitusta</button>
+      <button type="submit" name="cancel">Peruuta</button>
+    </div>
 
   </form>
 
-  <p>
-  <a href="/listing/{{listing.id }}">Takaisin</a>
-  </p>
+</section>
+
 {% endblock %}

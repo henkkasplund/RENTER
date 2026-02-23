@@ -25,6 +25,16 @@ def show_lines(content):
     content = content.replace("\n", "<br />")
     return markupsafe.Markup(content)
 
+@app.template_filter()
+def format_size(value):
+    try:
+        value = float(value)
+        if value.is_integer():
+            return int(value)
+        return str(value).replace(".", ",")
+    except:
+        return value
+
 def demand_login():
     if "user_id" not in session:
         abort(403)
@@ -221,9 +231,12 @@ def edit_listing(listing_id):
                                conditions=conditions, property_types=property_types)
     if request.method == "POST":
         check_csrf()
-        listing_data = listings.get_listings_data()
-        listings.update_listing(listing_id, listing_data)
-        return redirect("/listing/" + str(listing_id))
+        if "update" in request.form:
+            listing_data = listings.get_listings_data()
+            listings.update_listing(listing_id, listing_data)
+            return redirect("/listing/" + str(listing_id))
+        else:
+            return redirect("/listing/" + str(listing_id))
 
 @app.route("/remove_listing/<int:listing_id>", methods=["GET", "POST"])
 def remove_listing(listing_id):

@@ -75,7 +75,7 @@ def get_listings_data():
     size = request.form["size"]
     if not size or len(size) > 20:
         abort(403)
-    if not re.search("^[1-9][0-9]{0,3}(,5)?$", size):
+    if not re.search("^[1-9][0-9]{0,3}([.,][0-9])?$", size):
         abort(403)
     size = size.replace(",", ".")
     rent = request.form["rent"]

@@ -3,21 +3,34 @@
 {% block title %}Etusivu{% endblock %}
 
 {% block content %}
-  <h2>Uusimmat vuokrakohteet</h2>
+
+<section class="hero">
+  <h2>Löydä uusi kotisi tästä</h2>
+  <p>Luotettava tapa vuokrata ja löytää asunto.</p>
+
+  <form action="/search_listings" method="get">
+    <button type="submit">Etsi vuokrakohteita</button>
+  </form>
+</section>
+
+<section class="wide">
+  <h3>Uusimmat vuokrakohteet</h3>
 
   {% if listings %}
-    <ul style="list-style:none; padding:0;">
+    <div class="grid grid-large">
       {% for listing in listings %}
-        <li class="featured">
+        <div class="listing-card">
           <a href="/listing/{{ listing.id }}">
-            {{ listing.municipality }} {{ listing.rooms }} h
-            {{ listing.size|float|int if listing.size|float == listing.size|float|int else listing.size|string|replace(".", ",") }} m²
-            {{ listing.rent }} €
+            <h4>{{ listing.municipality }} {{ listing.rooms }} h</h4>
+            <p>{{ listing.size | format_size }} m²</p>
+            <p class="price">{{ listing.rent }} €</p>
           </a>
-        </li>
+        </div>
       {% endfor %}
-    </ul>
+    </div>
   {% else %}
     <p>Ei ilmoituksia.</p>
   {% endif %}
+</section>
+
 {% endblock %}

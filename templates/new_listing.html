@@ -2,98 +2,116 @@
 
 {% block title %}Uusi ilmoitus{% endblock %}
 
-{% block links %}
-  <p>
-    <a href="/search_listings">Etsi vuokrakohteita</a>
-    <a href="/user/{{ session.user_id }}">Omat sivut</a>
-  </p>
-{% endblock %}
-
 {% block content %}
+<section class="medium">
   <h2>Asunnon tiedot</h2>
 
-  <form action="/create_listing" method="post">
-    <p>
-      Asuntotyyppi: <br />
-      <select name="property_type_id" required>
-        <option value="">Valitse</option>
-        {% for property_type in property_types %}
-        <option value="{{ property_type.id }}">{{ property_type.value }}</option>
-        {% endfor %}
-      </select>
-    </p>
-    <p>
-      Huonemäärä: <br />
-      <select name="rooms_id" required>
-        <option value="">Valitse</option>
-        {% for room in rooms %}
-        <option value="{{ room.id }}">{{ room.value }}</option>
-        {% endfor %}
-      </select>
-    </p>
-    <p>
-      Neliömäärä: <br />
-      <input type="text" name="size" size="6" maxlength="10" pattern="^[1-9][0-9]{0,3}(,5)?$" required/> m²
-    </p>
-    <p>
-      Vuokrahinta: <br />
-      <input type="text" name="rent" size="6" maxlength="10" pattern="^[1-9][0-9]{0,4}$" required /> €
-    </p>
-    <p>
-      Paikkakunta: <br />
-      <select name="municipality_id" required>
-        <option value="">Valitse</option>
-        {% for municipality in municipalities %}
-          <option value="{{ municipality.id }}">{{ municipality.value }}</option>
-        {% endfor %}
-      </select>
-    </p>
-    <p>
-      Katuosoite: <br />
-      <input type="text" name="address" size="24" maxlength="50" required />
-    </p>
-    <p>
-      Postinumero: <br />
-      <input type="text" name="postcode" size="5" maxlength="5" pattern="^[0-9]{5}$" required/>
-    </p>
-    <p>
-      Kerros/kerroksia: <br />
-      <input type="text" name="floor" size="3" maxlength="2" pattern="^(-1|[0-9]{1,2})$"/> /
-      <input type="text" name="floors" size="3" maxlength="2" pattern="^[1-9][0-9]?$" required/>
-    </p>
-    <p>
-      Kunto: <br />
-      <select name="condition_id" required>
-        <option value="">Valitse</option>
-        {% for condition in conditions %}
-          <option value="{{ condition.id }}">{{ condition.value }}</option>
-        {% endfor %}
-      </select>
-    </p>
-    <p>
-      Sauna: <input type="checkbox" name="sauna"/><br />
-      Parveke: <input type="checkbox" name="balcony"/>
-    </p>
-    <p>
-      Kuvaus: <br />
-      <textarea name="description" rows="20" cols="50" maxlength="2000" required></textarea>
-    </p>
+  <h4 class="required"> Pakollinen kenttä</h4>
+
+  <form class="form-stack" action="/create_listing" method="post">
+
+    <div class="grid grid-dual">
+
+      <label class="required">
+        Asuntotyyppi
+        <select name="property_type_id" required>
+          <option value="">Valitse</option>
+          {% for property_type in property_types %}
+            <option value="{{ property_type.id }}">{{ property_type.value }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label class="required">
+        Paikkakunta
+        <select name="municipality_id" required>
+          <option value="">Valitse</option>
+          {% for municipality in municipalities %}
+            <option value="{{ municipality.id }}">{{ municipality.value }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label class="required">
+        Huonemäärä
+        <select name="rooms_id" required>
+          <option value="">Valitse</option>
+          {% for room in rooms %}
+            <option value="{{ room.id }}">{{ room.value }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label class="required">
+        Kunto
+        <select name="condition_id" required>
+          <option value="">Valitse</option>
+          {% for condition in conditions %}
+            <option value="{{ condition.id }}">{{ condition.value }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label class="required">
+        Neliömäärä
+        <input type="text" name="size" maxlength="10" pattern="^[1-9][0-9]{0,3}(,5)?$" required>
+      </label>
+
+      <label class="required">
+        Vuokrahinta
+        <input type="text" name="rent" maxlength="10" pattern="^[1-9][0-9]{0,4}$" required>
+      </label>
+
+      <label class="required">
+        Katuosoite
+        <input type="text" name="address" maxlength="50" required>
+      </label>
+
+      <label class="required">
+        Postinumero
+        <input type="text" name="postcode" maxlength="5" pattern="^[0-9]{5}$" required>
+      </label>
+
+      <label>
+        Kerros
+        <input type="text" name="floor" pattern="^(-1|[0-9]{1,2})$">
+      </label>
+
+      <label class="required">
+        Kerroksia
+        <input type="text" name="floors" pattern="^[1-9][0-9]?$" required>
+      </label>
+
+    </div>
+
+    <label class="required">
+      Kuvaus
+      <textarea name="description" maxlength="2000" required></textarea>
+    </label>
+
+    <div class="grid grid-small">
+      <label><input type="checkbox" name="sauna"> Sauna</label>
+      <label><input type="checkbox" name="balcony"> Parveke</label>
+    </div>
 
     <h3>Taloyhtiön tiedot</h3>
 
-    <p>
-      Sauna: <input type="checkbox" name="bath"/><br />
-      Hissi: <input type="checkbox" name="elevator"/><br />
-      Pyykkitupa: <input type="checkbox" name="laundry"/><br />
-      Häkkikellari: <input type="checkbox" name="cellar"/><br />
-      Uima-allas: <input type="checkbox" name="pool"/>
-    </p>
+      <div class="grid grid-dual">
+        <label><input type="checkbox" name="bath"> Sauna</label>
+        <label><input type="checkbox" name="elevator"> Hissi</label>
+        <label><input type="checkbox" name="laundry"> Pyykkitupa</label>
+        <label><input type="checkbox" name="cellar"> Häkkikellari</label>
+        <label><input type="checkbox" name="pool"> Uima-allas</label>
+      </div>
+
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="submit" value="Luo ilmoitus" />
+
+    <div class="center">
+      <button type="submit">Luo ilmoitus</button>
+    </div>
+
   </form>
-  
-  <p>
-    <a href="javascript:history.back()">Takaisin</a>
-  </p>
+
+</section>
 
 {% endblock %}
