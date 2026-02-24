@@ -33,20 +33,20 @@
 
 {% if session.user_id == user.id %}
 <section class="wide">
-  <div class="listing-card left">
-    <h3>Yhteystiedot</h3>
+  <h3>Yhteystiedot</h3>
 
+  <div class="listing-card left">
     {% if edit_contact %}
       <form class="form-stack" action="/user/{{ user.id }}" method="post">
         <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 
         <label>
-          Puhelin
+          <strong>Puhelin</strong>
           <input type="text" name="phone" value="{{ user.phone or '' }}" maxlength="30">
         </label>
 
         <label>
-          Sähköposti
+          <strong>Sähköposti</strong>
           <input type="text" name="email" value="{{ user.email or '' }}" maxlength="50">
         </label>
 
@@ -59,10 +59,12 @@
       <p>Puhelin: {{ user.phone or "-" }}</p>
       <p>Sähköposti: {{ user.email or "-" }}</p>
 
-      <form action="/user/{{ user.id }}" method="get">
-        <input type="hidden" name="edit_contact" value="1">
-        <button type="submit">Muokkaa yhteystietoja</button>
-      </form>
+      <div class="center">
+        <form action="/user/{{ user.id }}" method="get">
+          <input type="hidden" name="edit_contact" value="1">
+          <button type="submit">Muokkaa yhteystietoja</button>
+        </form>
+      </div>
     {% endif %}
   </div>
 </section>
@@ -77,9 +79,8 @@
       {% for listing in listings %}
         <div class="listing-card">
           <a href="/listing/{{ listing.id }}">
-            <h4>{{ listing.municipality }} {{ listing.rooms }}h</h4>
-            <p>{{ listing.size | format_size }} m²</p>
-            <p class="price">{{ listing.rent }} €</p>
+            <h4>{{ listing.municipality }} {{ listing.rooms }}h {{ listing.size | format_size }} m²</h4>
+            <h4>{{ listing.rent }} €</h4>
           </a>
         </div>
       {% endfor %}
@@ -100,9 +101,8 @@
       {% for listing in listings %}
         <div class="listing-card">
           <a href="/listing/{{ listing.id }}">
-            <h4>{{ listing.municipality }} {{ listing.rooms }}h</h4>
-            <p>{{ listing.size | format_size }} m²</p>
-            <p class="price">{{ listing.rent }} €</p>
+            <h4>{{ listing.municipality }} {{ listing.rooms }}h {{ listing.size | format_size }} m²</h4>
+            <h4>{{ listing.rent }} €</h4>
           </a>
         </div>
       {% endfor %}
@@ -122,9 +122,8 @@
       {% for offer in sent_offers %}
         <div class="listing-card">
           <a href="/listing/{{ offer.listing_id }}">
-            <h4>{{ offer.municipality }} {{ offer.rooms }}h</h4>
-            <p>{{ offer.size | format_size }} m²</p>
-            <p class="price">{{ offer.rent }} €</p>
+            <h4>{{ offer.municipality }} {{ offer.rooms }}h {{ offer.size | format_size }} m²</h4>
+            <h4>{{ offer.rent }} €</h4>
           </a>
 
           <p>
@@ -152,19 +151,18 @@
       {% for offer in received_offers %}
         <div class="listing-card">
           <a href="/listing/{{ offer.listing_id }}">
-            <h4>{{ offer.municipality }} {{ offer.rooms }}h</h4>
-            <p>{{ offer.size | format_size }} m²</p>
-            <p class="price">{{ offer.rent }} €</p>
+            <h4>{{ offer.municipality }} {{ offer.rooms }}h {{ offer.size | format_size }} m²</h4>
+            <h4>{{ offer.rent }} €</h4>
           </a>
 
           <p>
-            Hakija:
+            <strong>Hakija:</strong>
             <a href="/user/{{ offer.tenant_id }}">
               {{ offer.tenant_username }}
             </a>
           </p>
 
-          <p>Tarjous: {{ offer.price }} €</p>
+          <p><strong>Tarjous:</strong> {{ offer.price }} €</p>
 
           {% if offer.owner_accepted %}
             <strong>Hyväksytty</strong>
@@ -184,7 +182,7 @@
 {% endif %}
 
 {% if session.user_id == user.id %}
-<section class="medium center">
+<section class="wide center">
   <form action="/delete_account" method="get">
     <button type="submit" style="background:#c62828;">Poista käyttäjätili</button>
   </form>

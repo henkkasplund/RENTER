@@ -7,7 +7,7 @@
 <section class="hero">
   <h2>Etsi vuokrakohteita</h2>
 
-  <form class="form-stack medium" action="/search_listings" method="get">
+  <form class="form-stack medium left" action="/search_listings" method="get">
 
     <div class="grid grid-dual">
 
@@ -102,7 +102,7 @@
           <div class="listing-card">
             <a href="/listing/{{ listing.id }}">
               <h4>{{ listing.municipality }} {{ listing.rooms }}h</h4>
-              <p>{{ listing.size }} m²</p>
+              <p>{{ listing.size | format_size }} m²</p>
               <p class="price">{{ listing.rent }} €</p>
             </a>
           </div>

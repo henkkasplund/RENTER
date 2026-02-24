@@ -27,13 +27,10 @@ def show_lines(content):
 
 @app.template_filter()
 def format_size(value):
-    try:
-        value = float(value)
-        if value.is_integer():
-            return int(value)
-        return str(value).replace(".", ",")
-    except:
-        return value
+    value = float(value)
+    if value.is_integer():
+        return int(value)
+    return str(value).replace(".", ",")
 
 def demand_login():
     if "user_id" not in session:
@@ -379,6 +376,8 @@ def edit_offer(offer_id):
     offer = offers.get_offer(offer_id)
     if not offer:
         abort(404)
+    if offer["user_id"] != user_id:
+        abort(403)
     if action == "update":
         price = request.form["price"]
         offers.modify_offer(offer_id, user_id, action, price)

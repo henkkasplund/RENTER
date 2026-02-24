@@ -96,8 +96,7 @@ textarea {
 }
 
 button {
-  margin-top: 1rem;
-  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
   padding: 0.7rem 1.5rem;
   background: #1a1a1a;
   color: white;
@@ -143,11 +142,6 @@ button:hover {
 .listing-card h4 {
   margin-top: 1rem;
   margin-bottom: 1rem;
-}
-
-.price {
-  font-weight: 600;
-  margin-top: 0.5rem;
 }
 
 .header {

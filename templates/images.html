@@ -3,39 +3,67 @@
 {% block title %}Kuvat{% endblock %}
 
 {% block content %}
-<section class="medium">
+<section class="hero">
   <h2>Kuvien hallinointi</h2>
-  <p>Ilmoituksessa on {{ images|count }} kuvaa</p>
+  <h4>
+    <a href="/listing/{{ listing.id }}">
+      {{ listing.municipality }} {{ listing.rooms }} h
+      {{ listing.size | format_size }} m²
+      {{ listing.rent }} €
+    </a>
+  </h4>
+</section>
 
-  <form class="form-stack" action="/remove_images" method="post">
+<section class="wide">
+  <h3>Nykyiset kuvat ({{ images|count }})</h3>
 
-    <div class="grid grid-small">
-      {% for image in images %}
-        <label class="image-item">
-          <input type="checkbox" name="image_id" value="{{ image.id }}">
-          <img src="/image/{{ image.id }}">
-        </label>
-      {% endfor %}
-    </div>
+  <div class="listing-card">
 
-    <input type="hidden" name="listing_id" value="{{ listing.id }}">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    {% if images %}
+      <form action="/remove_images" method="post">
 
-    <button type="submit">Poista valitut</button>
-  </form>
+        <div class="grid grid-small">
+          {% for image in images %}
+            <label class="image-item">
+              <input type="checkbox" name="image_id" value="{{ image.id }}">
+              <img src="/image/{{ image.id }}">
+            </label>
+          {% endfor %}
+        </div>
 
-  <h3>Lisää uusi kuva</h3>
+        <input type="hidden" name="listing_id" value="{{ listing.id }}">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 
-  <form class="form-stack narrow" action="/add_images" method="post" enctype="multipart/form-data">
-    <input type="file" name="images" accept="image/jpeg,image/png" multiple>
+        <div class="center">
+          <button type="submit">Poista valitut</button>
+        </div>
 
-    <input type="hidden" name="listing_id" value="{{ listing.id }}">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+      </form>
+    {% else %}
+      <p>Ilmoituksessa ei ole kuvia.</p>
+    {% endif %}
 
-    <button type="submit">Lisää</button>
-  </form>
+  </div>
+</section>
 
-  <p><a href="/listing/{{ listing.id }}">Takaisin</a></p>
+<section class="wide">
+  <div class="listing-card">
+    <h3>Lisää uusi kuva</h3>
+
+    <form action="/add_images" method="post" enctype="multipart/form-data">
+      <input type="file" name="images" accept="image/jpeg,image/png" multiple>
+      <input type="hidden" name="listing_id" value="{{ listing.id }}">
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+
+      <div class="center">
+        <button type="submit">Lisää</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="medium center">
+  <a href="/listing/{{ listing.id }}">Takaisin ilmoitukseen</a>
 </section>
 
 {% endblock %}
