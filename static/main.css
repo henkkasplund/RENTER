@@ -58,6 +58,14 @@ a:hover {
   text-align: center;
 }
 
+.right {
+  text-align: right;
+}
+
+.left {
+  text-align: left;
+}
+
 .grid {
   display: grid;
   gap: 1rem;
@@ -88,7 +96,8 @@ textarea {
 }
 
 button {
-  margin-top: 1.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
   padding: 0.7rem 1.5rem;
   background: #1a1a1a;
   color: white;
@@ -102,15 +111,22 @@ button:hover {
   opacity: 0.75;
 }
 
+.button-row {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
 .hero {
   text-align: center;
   padding: 1rem 0;
 }
 
 .hero h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
   font-size: 2.5rem;
   font-weight: 500;
-  margin-bottom: 1rem;
 }
 
 .listing-card {
@@ -119,9 +135,14 @@ button:hover {
   border-radius: 16px;
 }
 
+.listing-card p {
+  margin: 0.3rem 0;
+}
+
+.listing-card h3,
 .listing-card h4 {
-  margin-bottom: 0.5rem;
-  font-weight: 500;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .price {
@@ -157,6 +178,7 @@ button:hover {
 }
 
 .form-stack {
+  margin-top: 2rem;
   display: grid;
   gap: 0.6rem;
 }

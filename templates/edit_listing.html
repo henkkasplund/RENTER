@@ -6,7 +6,7 @@
 <section class="medium">
   <h2>Ilmoituksen muokkaus</h2>
 
-  <h4 class="required"> Pakollinen kenttä</h4>
+  <h4 class="right required"> Pakollinen kenttä</h4>
 
   <form class="form-stack" action="/edit_listing/{{ listing.id }}" method="post">
 
@@ -104,8 +104,8 @@
     <input type="hidden" name="listing_id" value="{{ listing.id }}">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 
-    <div class="medium grid grid-dual">
-      <button type="submit" name="update">Päivitä ilmoitusta</button>
+    <div class="button-row">
+      <button type="submit" name="update">Päivitä</button>
       <button type="submit" name="cancel">Peruuta</button>
     </div>
 
