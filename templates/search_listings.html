@@ -81,8 +81,16 @@
       </div>
 
       <div>
-        Ilmoittaja
-        <input type="text" name="user" value="{{ user }}">
+        Min luokitus
+        <select name="rating">
+          <option value="">Kaikki</option>
+          {% for i in range(0, 6) %}
+            <option value="{{ i }}"
+              {% if rating == i|string %}selected{% endif %}>
+              {{ i }}
+            </option>
+          {% endfor %}
+        </select>
       </div>
 
     </div>

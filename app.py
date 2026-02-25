@@ -171,7 +171,7 @@ def create_listing():
 
 @app.route("/search_listings")
 def search_listings():
-    user = request.args.get("user", "")
+    rating = request.args.get("rating", "")
     size = request.args.get("size", "")
     max_rent = request.args.get("max_rent", "")
     min_rent = request.args.get("min_rent", "")
@@ -180,13 +180,13 @@ def search_listings():
     municipality_id = request.args.get("municipality_id", "")
     condition_id = request.args.get("condition_id", "")
     searched = bool(request.args)
-    results = listings.search_listings(user, size, min_rent, max_rent, rooms_id,
+    results = listings.search_listings(rating, size, min_rent, max_rent, rooms_id,
                                        property_type_id, municipality_id, condition_id)
     return render_template("search_listings.html",
-                           user=user, size=size, max_rent=max_rent, min_rent=min_rent,
+                           size=size, max_rent=max_rent, min_rent=min_rent,
                            rooms_id=rooms_id, property_type_id=property_type_id,
                            municipality_id=municipality_id, condition_id=condition_id,
-                           searched = searched, results=results,
+                           searched = searched, results=results, rating=rating,
                            rooms=listings.get_classes("rooms"),
                            municipalities=listings.get_classes("municipality"),
                            property_types=listings.get_classes("property_type"),

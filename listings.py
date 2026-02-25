@@ -168,7 +168,7 @@ def update_listing(listing_id, listing_data):
 def remove_listing(listing_id):
     db.execute("DELETE FROM listings WHERE id = ?", [listing_id])
 
-def search_listings(user, size, min_rent, max_rent, rooms_id, property_type_id, municipality_id, condition_id):
+def search_listings(rating, size, min_rent, max_rent, rooms_id, property_type_id, municipality_id, condition_id):
     criteria = []
     values = []
     sql = """SELECT listings.id,
@@ -187,9 +187,9 @@ def search_listings(user, size, min_rent, max_rent, rooms_id, property_type_id, 
             JOIN classes m ON m.id = listings.municipality_id
             JOIN classes c ON c.id = listings.condition_id
             JOIN classes p ON p.id = listings.property_type_id"""
-    if user:
-        criteria.append("users.username LIKE ?")
-        values.append("%" + user + "%")
+    if rating:
+        criteria.append("users.rating >= ?")
+        values.append(rating)
     if size:
         criteria.append("listings.size >= ?")
         values.append(size.replace(",", "."))
