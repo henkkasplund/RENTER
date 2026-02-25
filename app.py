@@ -334,8 +334,10 @@ def toggle_like(listing_id):
     likes = listings.get_likes(user_id, listing_id)
     if likes["liked"]:
         listings.like_unlike(user_id, listing_id, False)
+        flash("Tykkäys poistettu!")
     else:
         listings.like_unlike(user_id, listing_id, True)
+        flash("Tykkäys lisätty!")
     return redirect(request.referrer)
 
 @app.route("/create_offer", methods=["POST"])

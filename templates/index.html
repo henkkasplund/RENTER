@@ -5,10 +5,15 @@
 {% block content %}
 
 <section class="hero">
-  <h2>Löydä uusi kotisi tästä</h2>
+  {% if session.username %}
+    <h2>Löydä unelmien vuokrasuhde</h2>
 
-  <h4>Luotettava tapa vuokrata asunto.</h4>
+    <p>Luotettava kumppani kodinhakuun</p>
+  {% else %}
+    <h2>Vuokraa uusi koti luotettavasti</h2>
 
+    <p>Kirjautuneena näet enemmän</p>
+  {% endif %}
   <form action="/search_listings" method="get">
     <button type="submit">Etsi vuokrakohteita</button>
   </form>
@@ -24,7 +29,7 @@
           <a href="/listing/{{ listing.id }}">
             <h4>{{ listing.municipality }} {{ listing.rooms }} h</h4>
             <p>{{ listing.size | format_size }} m²</p>
-            <p class="price">{{ listing.rent }} €</p>
+            <p><strong>{{ listing.rent }} €</strong></p>
           </a>
         </div>
       {% endfor %}

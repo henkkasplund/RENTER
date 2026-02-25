@@ -15,7 +15,7 @@
     {{ listing.rent }} €
   </h2>
   {% if session.username %}
-    <h3><a href="/user/{{ listing.user_id }}">{{ listing.username }}</a></h3>
+    <h2><a href="/user/{{ listing.user_id }}">{{ listing.username }}</a></h2>
     <h4>Tykkäyksiä: {{ likes.likes }}</h4>
 
     {% if session.user_id != listing.user_id %}
@@ -190,7 +190,7 @@
   <div class="listing-card">
     <h3>Asunnon tiedot</h3>
 
-    <div class="grid grid-dual">
+    <div class="grid grid-large">
       <p><strong>Asuntotyyppi:</strong> {{ listing.property_type }}</p>
       <p><strong>Huonemäärä:</strong> {{ listing.rooms }} h</p>
       <p><strong>Neliömäärä:</strong> {{ listing.size | format_size }} m²</p>
@@ -211,7 +211,7 @@
     {% if listing.property_type == "Kerrostalo" %}
       <h3>Taloyhtiön tiedot</h3>
 
-      <div class="grid grid-dual">
+      <div class="grid grid-large">
         <p><strong>Sauna:</strong> {{ "Kyllä" if listing.bath else "Ei" }}</p>
         <p><strong>Hissi:</strong> {{ "Kyllä" if listing.elevator else "Ei" }}</p>
         <p><strong>Pyykkitupa:</strong> {{ "Kyllä" if listing.laundry else "Ei" }}</p>

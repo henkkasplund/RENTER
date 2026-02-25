@@ -13,23 +13,18 @@
     <div class="header">
       <h1><a href="/">RENTER</a></h1>
 
-      {% if session.username %}
-        <div class="login-info">
-          Käyttäjä:
-          <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
-
+      <div class="login-info">
+        {% if session.username %}
           <form action="/logout" method="post">
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
             <button type="submit">Kirjaudu ulos</button>
           </form>
-        </div>
-      {% else %}
-        <div class="login-info">
+        {% else %}
           <form action="/login" method="get">
             <button type="submit">Kirjaudu sisään</button>
           </form>
-        </div>
-      {% endif %}
+        {% endif %}
+      </div>
     </div>
 
     <nav>
@@ -57,7 +52,11 @@
     </nav>
 
     {% for message in get_flashed_messages() %}
-      <p>{{ message }}</p>
+      <section class="wide">
+        <div class="listing-card center">
+          <p><strong>{{ message }}</strong></p>
+        </div>
+      </section>
     {% endfor %}
 
     <main>
