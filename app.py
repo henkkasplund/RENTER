@@ -52,6 +52,11 @@ def user(user_id):
     edit_contact = request.args.get("edit_contact") == "1"
     rating_permission = ratings.rating_permission(session["user_id"], user_id) if "user_id" in session else False
     user_rating = ratings.get_rating(session["user_id"], user_id) if rating_permission else None
+    rental_deal = False
+    for offer in sent_offers + received_offers:
+        if offer["status"] == "confirmed":
+            rental_deal = True
+            break
     if not user:
         abort(403)
     if request.method == "POST":
@@ -64,9 +69,10 @@ def user(user_id):
         users.update_contact(user_id, phone, email)
         flash("Yhteystiedot päivitetty!")
         return redirect("/user/" + str(user_id))
-    return render_template("user.html", user=user, listings=user_listings, liked=liked, sent_offers=sent_offers,
-                                        received_offers=received_offers, edit_contact=edit_contact,
-                                        rating_permission=rating_permission, user_rating=user_rating)
+    return render_template("user.html",
+                            user=user, listings=user_listings, liked=liked, sent_offers=sent_offers,
+                            received_offers=received_offers, edit_contact=edit_contact, rental_deal=rental_deal,
+                            rating_permission=rating_permission, user_rating=user_rating)
 
 @app.route("/register")
 def register():
@@ -159,9 +165,6 @@ def new_listing():
 
 @app.route("/create_listing", methods=["POST"])
 def create_listing():
-    print("SESSION:", dict(session))
-    print("FORM:", dict(request.form))
-
     demand_login()
     check_csrf()
     user_id = session["user_id"]
@@ -389,6 +392,22 @@ def edit_offer(offer_id):
         flash("Hakemus poistettu!")
     else:
         abort(403)
+    return redirect("/listing/" + str(offer["listing_id"]))
+
+@app.route("/confirm_offer/<int:offer_id>", methods=["POST"])
+def confirm_offer(offer_id):
+    demand_login()
+    check_csrf()
+    user_id = session["user_id"]
+    offer = offers.get_offer(offer_id)
+    if not offer:
+        abort(404)
+    if offer["user_id"] != user_id:
+        abort(403)
+    if offer["status"] != "accepted":
+        abort(403)
+    offers.confirm_rental(offer_id)
+    flash("Vuokraus vahvistettu!")
     return redirect("/listing/" + str(offer["listing_id"]))
 
 @app.route("/rate_user/<int:user_id>", methods=["POST"])

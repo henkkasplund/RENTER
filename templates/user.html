@@ -31,48 +31,58 @@
 </section>
 {% endif %}
 
-{% if session.user_id == user.id %}
+{% if session.user_id == user.id or rental_deal %}
 <section class="wide">
   <h3>Yhteystiedot</h3>
 
-  <div class="listing-card left">
-    {% if edit_contact %}
-      <form class="form-stack" action="/user/{{ user.id }}" method="post">
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+  {% if session.user_id == user.id %}
+    <div class="listing-card left">
+      {% if edit_contact %}
+        <form class="narrow form-stack" action="/user/{{ user.id }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 
-        <label>
-          <strong>Puhelin</strong>
-          <input type="text" name="phone" value="{{ user.phone or '' }}" maxlength="30">
-        </label>
+          <label>
+            <strong>Puhelin</strong>
+            <input type="text" name="phone" value="{{ user.phone or '' }}" maxlength="30">
+          </label>
 
-        <label>
-          <strong>Sähköposti</strong>
-          <input type="text" name="email" value="{{ user.email or '' }}" maxlength="50">
-        </label>
+          <label>
+            <strong>Sähköposti</strong>
+            <input type="text" name="email" value="{{ user.email or '' }}" maxlength="50">
+          </label>
+
+          <div class="center">
+            <button type="submit">Päivitä yhteystiedot</button>
+          </div>
+        </form>
+
+      {% else %}
+        <p>Puhelin: {{ user.phone or "-" }}</p>
+        <p>Sähköposti: {{ user.email or "-" }}</p>
 
         <div class="center">
-          <button type="submit">Päivitä yhteystiedot</button>
+          <form action="/user/{{ user.id }}" method="get">
+            <input type="hidden" name="edit_contact" value="1">
+            <button type="submit">Muokkaa yhteystietoja</button>
+          </form>
         </div>
-      </form>
-
+      {% endif %}
     {% else %}
+    <div class="listing-card left">
       <p>Puhelin: {{ user.phone or "-" }}</p>
       <p>Sähköposti: {{ user.email or "-" }}</p>
-
-      <div class="center">
-        <form action="/user/{{ user.id }}" method="get">
-          <input type="hidden" name="edit_contact" value="1">
-          <button type="submit">Muokkaa yhteystietoja</button>
-        </form>
-      </div>
+    </div>
     {% endif %}
   </div>
+
 </section>
 {% endif %}
 
+
+
 {% if session.user_id != user.id %}
 <section class="wide">
-  <h3>{{ user.username }}n ilmoitukset</h3>
+  <h3>Ilmoitukset ({{ listings|count }})</h3>
 
   {% if listings %}
     <div class="grid grid-large">
@@ -125,14 +135,37 @@
             <h4>{{ offer.municipality }} {{ offer.rooms }}h {{ offer.size | format_size }} m²</h4>
             <h4>{{ offer.rent }} €</h4>
           </a>
-
-          <p>
-            {% if offer.owner_accepted %}
-              <strong>Hyväksytty</strong>
-            {% else %}
-              <strong>Odottaa</strong>
-            {% endif %}
-          </p>
+          {% if offer.status == "pending" %}
+            <strong>Odottaa vastausta</strong>
+            <div class="button-row">
+              <form action="/listing/{{ offer.listing_id }}" method="get">
+                <button type="submit" name="edit_offer" value="1">Muokkaa</button>
+              </form>
+              <form action="/edit_offer/{{ offer.id }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                <button type="submit" name="action" value="delete" style="background:#c62828;">Peru hakemus</button>
+              </form>
+            </div>
+          {% elif offer.status == "accepted" %}
+            <strong>Odottaa vahvistustasi</strong>
+            <div class="button-row">
+              <form action="/confirm_offer/{{ offer.id }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                <button type="submit">Vahvista</button>
+              </form>
+              <form action="/edit_offer/{{ offer.id }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                <button type="submit" name="action" value="delete" style="background:#c62828;">Peru hakemus</button>
+              </form>
+            </div>
+          {% elif offer.status == "confirmed" %}
+            <strong>Onneksi olkoon! Vuokraus vahvistettu</strong>
+            <p><strong>Vuokranantajan yhteystiedot:</strong></p>
+            <p>Puhelin: {{ offer.owner_phone }}</p>
+            <p>Sähköposti: {{ offer.owner_email }}</p>
+          {% elif offer.status == "rejected" %}
+            <strong>Hylätty</strong>
+          {% endif %}
         </div>
       {% endfor %}
     </div>
@@ -155,20 +188,37 @@
             <h4>{{ offer.rent }} €</h4>
           </a>
 
-          <p>
-            <strong>Hakija:</strong>
-            <a href="/user/{{ offer.tenant_id }}">
-              {{ offer.tenant_username }}
-            </a>
-          </p>
-
+          <p><strong>Hakija:</strong><a href="/user/{{ offer.tenant_id }}">{{ offer.tenant_username }}</a></p>
           <p><strong>Tarjous:</strong> {{ offer.price }} €</p>
 
-          {% if offer.owner_accepted %}
-            <strong>Hyväksytty</strong>
-          {% else %}
-            <strong>Odottaa</strong>
-          {% endif %}
+            {% if offer.status == "pending" %}
+              <strong>Odottaa vastaustasi</strong>
+              <div class="button-row">
+                <form action="/handle_offer/{{ offer.id }}" method="post">
+                  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                  <button type="submit" name="decision" value="accept">Hyväksy</button>
+                </form>
+                <form action="/handle_offer/{{ offer.id }}" method="post">
+                  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                  <button type="submit" name="decision" value="reject" style="background:#c62828;">Hylkää</button>
+                </form>
+              </div>
+            {% elif offer.status == "accepted" %}
+              <strong>Odottaa vuokralaisen vahvistusta</strong>
+              <div class="button-row">
+                <form action="/handle_offer/{{ offer.id }}" method="post">
+                  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                  <button type="submit" name="decision" value="cancel_accept">Peru hyväksyntä</button>
+                </form>
+              </div>
+            {% elif offer.status == "confirmed" %}
+              <strong>Vuokraus vahvistettu</strong>
+              <p><strong>Hakijan yhteystiedot:</strong></p>
+              <p>Puhelin: {{ offer.phone }}</p>
+              <p>Sähköposti: {{ offer.email }}</p>
+            {% elif offer.status == "rejected" %}
+              <strong>Hylätty</strong>
+            {% endif %}
         </div>
       {% endfor %}
     </div>

@@ -10,9 +10,9 @@ def rating_permission(rater_id, target_id):
         return False
     sql = """SELECT 1 FROM offers
              JOIN listings ON offers.listing_id = listings.id
-             WHERE offers.owner_accepted = 1
+             WHERE offers.status = 'confirmed'
              AND ((offers.user_id = ? AND listings.user_id = ?)
-               OR (offers.user_id = ? AND listings.user_id = ?))"""    
+               OR (offers.user_id = ? AND listings.user_id = ?))"""
     return bool(db.query(sql, [rater_id, target_id, target_id, rater_id]))
 
 def calculate_rating(user_id):

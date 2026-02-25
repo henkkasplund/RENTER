@@ -4,7 +4,7 @@ import re
 
 
 def rental_status(listing_id):
-    sql = "SELECT 1 FROM offers WHERE listing_id = ? AND owner_accepted = 1"
+    sql = "SELECT 1 FROM offers WHERE listing_id = ? AND status = 'confirmed'"
     return bool(db.query(sql, [listing_id]))
 
 def add_offer(listing_id, user_id, price):
@@ -34,44 +34,63 @@ def handle_offer(offer_id, decision):
     if not offer:
         abort(404)
     if decision == "accept":
-        sql = "UPDATE offers SET owner_accepted = 1 WHERE id = ?"
+        if offer["status"] != "pending":
+            abort(403)
+        sql = "UPDATE offers SET status = 'accepted' WHERE id = ?"
         db.execute(sql, [offer_id])
-        sql = "DELETE FROM offers WHERE user_id = ? AND id != ?"
-        db.execute(sql, [offer["user_id"], offer_id])
-        sql = "DELETE FROM offers WHERE listing_id = ? AND id != ?"
-        db.execute(sql, [offer["listing_id"], offer_id])
     elif decision == "reject":
-        sql = "DELETE FROM offers WHERE id = ?"
+        sql = "UPDATE offers SET status = 'rejected' WHERE id = ?"
+        db.execute(sql, [offer_id])
+    elif decision == "cancel_accept":
+        if offer["status"] != "accepted":
+            abort(403)
+        sql = "UPDATE offers SET status = 'pending' WHERE id = ?"
         db.execute(sql, [offer_id])
     else:
         abort(403)
 
 def modify_offer(offer_id, user_id, action, price=None):
-    sql = """SELECT owner_accepted
+    sql = """SELECT status
              FROM offers
              WHERE id = ? AND user_id = ?"""
     offer = db.query(sql, [offer_id, user_id])
     if not offer:
         abort(403)
-    if offer[0]["owner_accepted"]:
+    status = offer[0]["status"]
+    if status not in ("pending", "accepted"):
         abort(403)
     if action == "update":
+        if status != "pending":
+            abort(403)
         if not price or not re.search("^[1-9][0-9]{0,4}$", price):
             abort(403)
         sql = "UPDATE offers SET price = ? WHERE id = ?"
         db.execute(sql, [int(price), offer_id])
     elif action == "delete":
-        sql = "DELETE FROM offers WHERE id = ?"
+        sql = "UPDATE offers SET status = 'rejected' WHERE id = ?"
         db.execute(sql, [offer_id])
     else:
         abort(403)
+
+def confirm_rental(offer_id):
+    offer = get_offer(offer_id)
+    if not offer:
+        abort(404)
+    if offer["status"] != "accepted":
+        abort(403)
+    if rental_status(offer["listing_id"]):
+        abort(403)
+    sql = "UPDATE offers SET status = 'confirmed' WHERE id = ?"
+    db.execute(sql, [offer_id])
+    sql = "UPDATE offers SET status = 'rejected' WHERE listing_id = ? AND id != ?"
+    db.execute(sql, [offer["listing_id"], offer_id])
 
 def get_offers(listing_id, viewer_id, owner_id):
     if not viewer_id:
         return []
     sql = """SELECT offers.id,
                     offers.price,
-                    offers.owner_accepted,
+                    offers.status,
                     users.id AS user_id,
                     users.username,
                     users.rating,
@@ -88,14 +107,14 @@ def get_offers(listing_id, viewer_id, owner_id):
     return db.query(sql, values)
 
 def get_offer(offer_id):
-    sql = """SELECT id, listing_id, user_id, price, owner_accepted
+    sql = """SELECT id, listing_id, user_id, price, status
              FROM offers
              WHERE id = ?"""
     result = db.query(sql, [offer_id])
     return result[0] if result else None
 
 def get_sent_offers(user_id):
-    sql = """SELECT offers.id, offers.price, offers.owner_accepted,
+    sql = """SELECT offers.id, offers.price, offers.status,
                     listings.id AS listing_id,
                     listings.rent, listings.size,
                     m.value AS municipality,
@@ -109,7 +128,7 @@ def get_sent_offers(user_id):
     return db.query(sql, [user_id])
 
 def get_received_offers(user_id):
-    sql = """SELECT offers.id, offers.price, offers.owner_accepted,
+    sql = """SELECT offers.id, offers.price, offers.status,
                     offers.user_id AS tenant_id,
                     users.username AS tenant_username,
                     listings.id AS listing_id,
