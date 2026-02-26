@@ -118,19 +118,25 @@ def get_sent_offers(user_id):
                     listings.id AS listing_id,
                     listings.rent, listings.size,
                     m.value AS municipality,
-                    r.value AS rooms
-            FROM offers
-            JOIN listings ON offers.listing_id = listings.id
-            JOIN classes m ON m.id = listings.municipality_id
-            JOIN classes r ON r.id = listings.rooms_id
-            WHERE offers.user_id = ?
-            ORDER BY offers.id DESC"""
+                    r.value AS rooms,
+                    users.username AS owner_username,
+                    users.phone AS owner_phone,
+                    users.email AS owner_email
+                FROM offers
+                JOIN listings ON offers.listing_id = listings.id
+                JOIN users ON users.id = listings.user_id
+                JOIN classes m ON m.id = listings.municipality_id
+                JOIN classes r ON r.id = listings.rooms_id
+                WHERE offers.user_id = ?
+                ORDER BY offers.id DESC"""
     return db.query(sql, [user_id])
 
 def get_received_offers(user_id):
     sql = """SELECT offers.id, offers.price, offers.status,
                     offers.user_id AS tenant_id,
                     users.username AS tenant_username,
+                    users.phone,
+                    users.email,
                     listings.id AS listing_id,
                     listings.rent, listings.size,
                     m.value AS municipality,
@@ -143,3 +149,12 @@ def get_received_offers(user_id):
             WHERE listings.user_id = ?
             ORDER BY offers.id DESC"""
     return db.query(sql, [user_id])
+
+def confirmed_deal(viewer_id, user_id):
+    sql = """SELECT 1 FROM offers
+            JOIN listings ON offers.listing_id = listings.id
+            WHERE offers.status = 'confirmed'
+            AND ((offers.user_id = ? AND listings.user_id = ?)
+            OR (offers.user_id = ? AND listings.user_id = ?))
+            LIMIT 1"""
+    return bool(db.query(sql, [viewer_id, user_id, user_id, viewer_id]))

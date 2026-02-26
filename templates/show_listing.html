@@ -64,13 +64,14 @@
           </form>
 
         {% elif user_offer.status == "confirmed" %}
-          <p><strong>Vuokraus vahvistettu.</strong></p>
+          <p><strong>Tila: Vuokraus vahvistettu.</strong></p>
           <p><strong>Ilmoittajan yhteystiedot:</strong></p>
+          <p>Nimi: {{ listing.username }}</p>
           <p>Puhelin: {{ listing.phone }}</p>
           <p>Sähköposti: {{ listing.email }}</p>
 
         {% elif user_offer.status == "rejected" %}
-          <p><strong>Tarjous hylätty.</strong></p>
+          <p><strong>Tila: Tarjous hylätty.</strong></p>
 
         {% elif user_offer.status == "pending" %}
           <p><strong>Tila:</strong> Odottaa vuokranantajan vahvistusta
@@ -150,7 +151,7 @@
                 </div>
 
             {% elif offer.status == "confirmed" %}
-              <p><strong>Tila:</strong> Vahvistettu</p>
+              <p><strong>Tila:</strong> Vuokraus vahvistettu</p>
               <p><strong>Hakijan yhteystiedot:</strong></p>
               <p>Puhelin: {{ offer.phone }}</p>
               <p>Sähköposti: {{ offer.email }}</p>
@@ -187,7 +188,7 @@
 
   <div class="listing-card">
 
-    <div class="grid grid-large">
+    <div class="grid grid-large center">
       {% if images %}
         {% for image in images %}
           <div>

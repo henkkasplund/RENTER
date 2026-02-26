@@ -20,8 +20,8 @@ def calculate_rating(user_id):
             FROM ratings
             WHERE target_id = ?"""
     result = db.query(sql, [user_id])[0]
-    count = result["count"] + 2
-    total = (result["total"] or 0) + 10
+    count = result["count"] + 1
+    total = (result["total"] or 0) + 5
     avg = total / count
     rating = int(avg)
     if rating < avg:

@@ -7,12 +7,12 @@
 <section class="hero">
   {% if session.username %}
     <h2>Löydä unelmiesi vuokrasuhde</h2>
+    <h4>Luotettava kumppani kodinhakuun</h4>
 
-    <p>Luotettava kumppani kodinhakuun</p>
   {% else %}
     <h2>Vuokraa uusi koti luotettavasti</h2>
+    <h4>Kirjautuneena näet enemmän</h4>
 
-    <p>Kirjautuneena näet enemmän</p>
   {% endif %}
   <form action="/search_listings" method="get">
     <button type="submit">Etsi vuokrakohteita</button>

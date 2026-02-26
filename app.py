@@ -52,11 +52,8 @@ def user(user_id):
     edit_contact = request.args.get("edit_contact") == "1"
     rating_permission = ratings.rating_permission(session["user_id"], user_id) if "user_id" in session else False
     user_rating = ratings.get_rating(session["user_id"], user_id) if rating_permission else None
-    rental_deal = False
-    for offer in sent_offers + received_offers:
-        if offer["status"] == "confirmed":
-            rental_deal = True
-            break
+    viewer_id = session["user_id"]
+    rental_deal = offers.confirmed_deal(viewer_id, user_id)
     if not user:
         abort(403)
     if request.method == "POST":
@@ -352,6 +349,8 @@ def create_offer():
     if not listing:
         abort(404)
     user_id = session["user_id"]
+    if listing["user_id"] == user_id:
+        abort(403)
     offers.add_offer(offer_data["listing_id"], user_id, offer_data["price"])
     return redirect("/listing/" + str(offer_data["listing_id"]))
 
