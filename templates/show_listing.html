@@ -41,7 +41,13 @@
       <div class="listing-card">
         {% for offer in offers %}
           {% if offer.status == "confirmed" and offer.user_id == session.user_id %}
-            <p><strong>Olet onnistuneesti vuokrannut kohteen!</strong></p>
+            <div class="center">
+              <h2>Onneksi olkoon vuokrauksesta!</h2>
+              <h4>Vuokranantajan yhteystiedot</h4>
+              <h2><a href="/user/{{ listing.user_id }}">{{ listing.username }}</a></h2>
+              <h4>
+                Puhelin: {{ listing.phone }}
+                Sähköposti: {{ listing.email }}</h4>
           {% elif offer.status == "confirmed" %}
             <p><strong>Kohde on jo vuokrattu.</strong></p>
           {% endif %}
@@ -62,8 +68,8 @@
 
         {% elif user_offer.status == "confirmed" %}
           <p><strong>Tila: Vuokraus vahvistettu.</strong></p>
-          <p><strong>Ilmoittajan yhteystiedot:</strong></p>
-          <p>Nimi: {{ listing.username }}</p>
+          <p><strong>Vuokranantajan yhteystiedot:</strong></p>
+          <p>Nimi: <a href="/user/"{{ listing.user_id }}>{{ listing.username }}</a></p>
           <p>Puhelin: {{ listing.phone }}</p>
           <p>Sähköposti: {{ listing.email }}</p>
 
@@ -84,7 +90,7 @@
 
               <div class="button-row">
                 <button type="submit" name="action" value="update">Päivitä</button>
-                <button type="submit" name="action" value="delete" style="background:#c62828;">Poista</button>
+                <button type="submit" name="action" value="delete" style="background:#bc1c1c;">Poista</button>
               </div>
             </form>
           {% else %}
@@ -136,20 +142,20 @@
           <div class="listing-card">
 
             <p><strong>Tarjous:</strong> {{ offer.price }} €</p>
-            <p><strong>Hakija:</strong><a href="/user/{{ offer.user_id }}">{{ offer.username }}</a></p>
+            <p><strong>Hakija:</strong><a href="/user/{{ offer.user_id }}"> {{ offer.username }}</a></p>
 
             {% if offer.status == "accepted" %}
               <p><strong>Tila:</strong> Odottaa vuokralaisen vahvistusta</p>
                 <div class="center">
                   <form action="/handle_offer/{{ offer.id }}" method="post">
                     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                    <button type="submit" name="decision" value="cancel_accept" style="background:#c62828;">Peru hyväksyntä</button>
+                    <button type="submit" name="decision" value="cancel_accept" style="background:#bc1c1c;">Peru hyväksyntä</button>
                   </form>
                 </div>
 
             {% elif offer.status == "confirmed" %}
               <p><strong>Tila:</strong> Vuokraus vahvistettu</p>
-              <p><strong>Hakijan yhteystiedot:</strong></p>
+              <p><strong>Vuokralaisen yhteystiedot:</strong></p>
               <p>Puhelin: {{ offer.phone }}</p>
               <p>Sähköposti: {{ offer.email }}</p>
 
@@ -162,7 +168,7 @@
                 </form>
                 <form action="/handle_offer/{{ offer.id }}" method="post">
                   <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                  <button type="submit" name="decision" style="background:#c62828;" value="reject">Hylkää</button>
+                  <button type="submit" name="decision" style="background:#bc1c1c;" value="reject">Hylkää</button>
                 </form>
               </div>
             {% elif offer.status == "rejected" %}
@@ -257,7 +263,7 @@
 {% if session.user_id == listing.user_id %}
   <section class="medium center">
     <form action="/remove_listing/{{ listing.id }}" method="get">
-      <button type="submit" style="background:#c62828;">Poista ilmoitus</button>
+      <button type="submit" style="background:#bc1c1c;">Poista ilmoitus</button>
     </form>
   </section>
 {% endif %}

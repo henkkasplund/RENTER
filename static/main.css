@@ -205,5 +205,5 @@ button:hover {
 
 .required::before {
   content: "*";
-  color: red;
+  color: #bc1c1c;
 }

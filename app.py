@@ -54,6 +54,7 @@ def user(user_id):
     user_rating = ratings.get_rating(session["user_id"], user_id) if rating_permission else None
     viewer_id = session["user_id"]
     rental_deal = offers.confirmed_deal(viewer_id, user_id)
+    view = request.args.get("view", "listings")
     if not user:
         abort(403)
     if request.method == "POST":
@@ -69,7 +70,7 @@ def user(user_id):
     return render_template("user.html",
                             user=user, listings=user_listings, liked=liked, sent_offers=sent_offers,
                             received_offers=received_offers, edit_contact=edit_contact, rental_deal=rental_deal,
-                            rating_permission=rating_permission, user_rating=user_rating)
+                            rating_permission=rating_permission, user_rating=user_rating, view=view)
 
 @app.route("/register")
 def register():

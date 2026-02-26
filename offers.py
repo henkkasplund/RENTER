@@ -121,7 +121,8 @@ def get_sent_offers(user_id):
                     r.value AS rooms,
                     users.username AS owner_username,
                     users.phone AS owner_phone,
-                    users.email AS owner_email
+                    users.email AS owner_email,
+                    users.id AS owner_id
                 FROM offers
                 JOIN listings ON offers.listing_id = listings.id
                 JOIN users ON users.id = listings.user_id
