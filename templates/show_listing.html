@@ -15,20 +15,17 @@
     {{ listing.rent }} €
   </h2>
   {% if session.username %}
-    <h2><a href="/user/{{ listing.user_id }}">{{ listing.username }}</a></h2>
-    <h4>Tykkäyksiä: {{ likes.likes }}</h4>
+    <h4><a href="/user/{{ listing.user_id }}">{{ listing.username }}</a></h4>
 
     {% if session.user_id != listing.user_id %}
       <form action="/toggle_like/{{ listing.id }}" method="post">
         <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-        <button type="submit">
-          {% if likes.liked %}
-            Poista tykkäys
-          {% else %}
-            Tykkää
-          {% endif %}
+        <button type="submit" class="heart">
+          {{ "♥️" if likes.liked else "♡" }} {{ likes.likes }}
         </button>
       </form>
+    {% else %}
+      <p class="heart"> ♥️ {{ likes.likes }}</p>
     {% endif %}
   {% endif %}
 </section>

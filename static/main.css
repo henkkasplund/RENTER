@@ -1,8 +1,8 @@
 body {
   margin: 0;
   font-family: sans-serif;
-  background: #f6f6f4;
-  color: #1a1a1a;
+  background: #f8f8f8;
+  color: #181818;
   line-height: 1.6;
   padding-bottom: 4rem;
 }
@@ -20,7 +20,7 @@ main {
 nav {
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid #666;
+  border-bottom: 2px solid #6a6a6a;
 }
 
 nav ul {
@@ -129,11 +129,19 @@ button:hover {
 }
 
 .stars {
-  color: #f5b301;
+  color: gold;
   font-size: 1.5rem;
   font-weight: 500;
   letter-spacing: 2px;
   margin-bottom: 0;
+}
+
+.heart {
+  background: none;
+  color: #181818;
+  font-size: 1.5rem;
+  font-weight: 400;
+  cursor: pointer;
 }
 
 .listing-card {

@@ -11,7 +11,7 @@
 
 {% if rating_permission %}
 <section class="narrow center">
-  <h3>Anna luokitus</h3>
+  <h3>Anna arvosana</h3>
 
   <form class="form-stack" action="/rate_user/{{ user.id }}" method="post">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
@@ -107,7 +107,7 @@
 {% if session.user_id == user.id %}
 
 <section class="wide">
-  <h3>Omat ilmoitukset</h3>
+  <h3>Omat ilmoitukset ({{ listings|count }})</h3>
 
   {% if listings %}
     <div class="grid grid-large">
@@ -129,7 +129,7 @@
 </section>
 
 <section class="wide">
-  <h3>Omat hakemukset</h3>
+  <h3>Omat hakemukset ({{ sent_offers|count }})</h3>
 
   {% if sent_offers %}
     <div class="grid grid-large">
@@ -186,7 +186,7 @@
 </section>
 
 <section class="wide">
-  <h3>Saapuneet hakemukset</h3>
+  <h3>Saapuneet hakemukset ({{ received_offers|count }})</h3>
 
   {% if received_offers %}
     <div class="grid grid-large">
