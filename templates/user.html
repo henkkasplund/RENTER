@@ -9,7 +9,7 @@
   <h3 class="stars">{{ "★" * user.rating }}{{ "☆" * (5 - user.rating) }}</h3>
 </section>
 
-{% if rating_permission %}
+{% if rental_deal %}
   <section class="narrow center">
     <h3>Anna arvosana</h3>
 
@@ -32,10 +32,10 @@
 {% endif %}
 
 {% if session.user_id == user.id %}
-  <nav class="wide">
+  <nav class="wide center">
     <ul>
       <li class="{% if view == 'listings' %}active{% endif %}">
-        <a href="?view=listings">Omat ilmoitukset</a>
+        <a href="?view=listings">Ilmoitukset</a>
       </li>
       <li class="{% if view == 'sent' %}active{% endif %}">
         <a href="?view=sent">Lähetetyt hakemukset</a>
@@ -44,13 +44,23 @@
         <a href="?view=received">Saapuneet hakemukset</a>
       </li>
       <li class="{% if view == 'liked' %}active{% endif %}">
-        <a href="?view=liked">Tykäämäsi ilmoitukset</a>
+        <a href="?view=liked">Suosikit</a>
+      </li>
+      <li class="{% if view == 'profile' %}active{% endif %}">
+        <a href="?view=profile">Omat tiedot</a>
       </li>
     </ul>
   </nav>
 {% endif %}
 
-{% if session.user_id == user.id or rental_deal %}
+{% if rental_deal %}
+  <div class="listing-card left">
+    <p>Puhelin: {{ user.phone or "-" }}</p>
+    <p>Sähköposti: {{ user.email or "-" }}</p>
+  </div>
+{% endif %}
+
+{% if session.user_id == user.id and view == "profile" %}
   <section class="wide">
     <h3>Yhteystiedot</h3>
 
@@ -97,6 +107,13 @@
       {% endif %}
 
     </div>
+
+    <div class="wide center">
+      <form action="/delete_account" method="get">
+        <button type="submit" style="background:#bc1c1c;">Poista käyttäjätili</button>
+      </form>
+    </div>
+
   </section>
 {% endif %}
 
@@ -285,14 +302,6 @@
         <p>Et ole tykännyt ilmoituksista</p>
       </div>
     {% endif %}
-  </section>
-{% endif %}
-
-{% if session.user_id == user.id %}
-  <section class="wide center">
-    <form action="/delete_account" method="get">
-      <button type="submit" style="background:#bc1c1c;">Poista käyttäjätili</button>
-    </form>
   </section>
 {% endif %}
 

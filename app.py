@@ -50,10 +50,9 @@ def user(user_id):
     sent_offers = offers.get_sent_offers(user_id)
     received_offers = offers.get_received_offers(user_id)
     edit_contact = request.args.get("edit_contact") == "1"
-    rating_permission = ratings.rating_permission(session["user_id"], user_id) if "user_id" in session else False
-    user_rating = ratings.get_rating(session["user_id"], user_id) if rating_permission else None
     viewer_id = session["user_id"]
     rental_deal = offers.confirmed_deal(viewer_id, user_id)
+    user_rating = ratings.get_rating(session["user_id"], user_id) if rental_deal else None
     view = request.args.get("view", "listings")
     if not user:
         abort(403)
@@ -69,8 +68,8 @@ def user(user_id):
         return redirect("/user/" + str(user_id))
     return render_template("user.html",
                             user=user, listings=user_listings, liked=liked, sent_offers=sent_offers,
-                            received_offers=received_offers, edit_contact=edit_contact, rental_deal=rental_deal,
-                            rating_permission=rating_permission, user_rating=user_rating, view=view)
+                            received_offers=received_offers, edit_contact=edit_contact,
+                            rental_deal=rental_deal, user_rating=user_rating, view=view)
 
 @app.route("/register")
 def register():
@@ -416,5 +415,5 @@ def rate_user(user_id):
     rating_value = request.form["rating"]
     ratings.set_rating(rater_id, user_id, rating_value)
     users.update_rating(user_id)
-    flash("Luokitus lisätty!")
+    flash("Arvosana annettu")
     return redirect("/user/" + str(user_id))

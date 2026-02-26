@@ -1,19 +1,8 @@
 import db
 from flask import abort
 import re
+import offers
 
-
-def rating_permission(rater_id, target_id):
-    if not rater_id or not target_id:
-        return False
-    if rater_id == target_id:
-        return False
-    sql = """SELECT 1 FROM offers
-             JOIN listings ON offers.listing_id = listings.id
-             WHERE offers.status = 'confirmed'
-             AND ((offers.user_id = ? AND listings.user_id = ?)
-               OR (offers.user_id = ? AND listings.user_id = ?))"""
-    return bool(db.query(sql, [rater_id, target_id, target_id, rater_id]))
 
 def calculate_rating(user_id):
     sql = """SELECT COUNT(*) AS count, SUM(rating) AS total
@@ -34,7 +23,8 @@ def get_rating(rater_id, target_id):
     return result[0]["rating"] if result else None
 
 def set_rating(rater_id, target_id, rating):
-    if not rating_permission(rater_id, target_id):
+    rating_permission = offers.confirmed_deal(rater_id, target_id)
+    if not rating_permission:
         abort(403)
     if not re.search("^[0-5]$", str(rating)):
         abort(403)
