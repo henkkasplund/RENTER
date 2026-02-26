@@ -11,7 +11,9 @@ def add_offer(listing_id, user_id, price):
     if rental_status(listing_id):
         abort(403)
     sql = """SELECT 1 FROM offers
-             WHERE listing_id = ? AND user_id = ?"""
+            WHERE listing_id = ?
+            AND user_id = ?
+            AND status IN ('pending', 'accepted', 'rejected')"""
     if db.query(sql, [listing_id, user_id]):
         abort(403)
     sql = """INSERT INTO offers (listing_id, user_id, price)
@@ -67,7 +69,7 @@ def modify_offer(offer_id, user_id, action, price=None):
         sql = "UPDATE offers SET price = ? WHERE id = ?"
         db.execute(sql, [int(price), offer_id])
     elif action == "delete":
-        sql = "UPDATE offers SET status = 'rejected' WHERE id = ?"
+        sql = "UPDATE offers SET status = 'cancelled' WHERE id = ?"
         db.execute(sql, [offer_id])
     else:
         abort(403)

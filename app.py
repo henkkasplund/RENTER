@@ -206,9 +206,10 @@ def show_listing(listing_id):
         user_offer = listing_offers[0]
     rented = offers.rental_status(listing_id)
     edit_offer = request.args.get("edit_offer") == "1"
+    view = request.args.get("view", "listing")
     return render_template("show_listing.html", listing=listing, likes=likes, images=images,
                                                 offers=listing_offers, user_offer=user_offer,
-                                                rented=rented, edit_offer=edit_offer)
+                                                rented=rented, edit_offer=edit_offer, view=view)
 
 @app.route("/edit_listing/<int:listing_id>", methods=["GET", "POST"])
 def edit_listing(listing_id):

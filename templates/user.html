@@ -35,7 +35,7 @@
   <nav class="wide center">
     <ul>
       <li class="{% if view == 'listings' %}active{% endif %}">
-        <a href="?view=listings">Ilmoitukset</a>
+        <a href="?view=listings">Omat ilmoitukset</a>
       </li>
       <li class="{% if view == 'sent' %}active{% endif %}">
         <a href="?view=sent">Lähetetyt hakemukset</a>
@@ -44,7 +44,7 @@
         <a href="?view=received">Saapuneet hakemukset</a>
       </li>
       <li class="{% if view == 'liked' %}active{% endif %}">
-        <a href="?view=liked">Suosikit</a>
+        <a href="?view=liked">Suosikki kohteet</a>
       </li>
       <li class="{% if view == 'profile' %}active{% endif %}">
         <a href="?view=profile">Omat tiedot</a>
@@ -119,7 +119,12 @@
 
 {% if session.user_id != user.id %}
   <section class="wide">
-    <h3>Ilmoitukset ({{ listings|count }})</h3>
+    <div class="hero">
+      <h4>
+        Käyttäjällä {{ user.username }} on {{ listings|count }}
+        {{ "ilmoitus" if listings|count == 1 else "ilmoitusta" }}
+      </h4>
+    </div>
 
     {% if listings %}
       <div class="grid grid-large">
@@ -140,7 +145,9 @@
 
 {% if session.user_id == user.id and view == "listings" %}
   <section class="wide">
-    <h3>Omat ilmoitukset ({{ listings|count }})</h3>
+    <div class="hero">
+      <h4>Olet julkaissut {{ listings|count }} {{ "ilmoituksen" if listings|count == 1 else "ilmoitusta" }} </h4>
+    </div>
 
     {% if listings %}
       <div class="grid grid-large">
@@ -237,7 +244,7 @@
             </a>
 
             <p><strong>Tarjous: {{ offer.price }} €</strong></p>
-            <p><strong>Hakija:</strong><a href="/user/{{ offer.tenant_id }}">{{ offer.tenant_username }}</a></p>
+            <p><strong>Hakija:</strong><a href="/user/{{ offer.tenant_id }}"> {{ offer.tenant_username }}</a></p>
 
               {% if offer.status == "pending" %}
                 <strong>Odottaa vastaustasi</strong>
@@ -284,7 +291,9 @@
 {% if session.user_id == user.id and view == "liked" %}
 
   <section class="wide">
-    <h3>Tykkäämäsi ilmoitukset</h3>
+    <div class="hero">
+      <h4>Tykkäsit näistä ilmoituksista</h4>
+    </div>
 
     {% if liked %}
       <div class="grid grid-large">

@@ -24,8 +24,7 @@ CREATE TABLE offers (
     listing_id INTEGER REFERENCES listings ON DELETE CASCADE,
     user_id INTEGER REFERENCES users ON DELETE CASCADE,
     price INTEGER,
-    status TEXT DEFAULT "pending",
-    UNIQUE(user_id, listing_id)
+    status TEXT DEFAULT "pending"
 );
 CREATE TABLE listings (
     id INTEGER PRIMARY KEY,
