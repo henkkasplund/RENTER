@@ -24,7 +24,14 @@ CREATE TABLE offers (
     listing_id INTEGER REFERENCES listings ON DELETE CASCADE,
     user_id INTEGER REFERENCES users ON DELETE CASCADE,
     price INTEGER,
-    status TEXT DEFAULT "pending"
+    status TEXT DEFAULT "pending",
+    UNIQUE(user_id, listing_id)
+);
+CREATE TABLE offer_history (
+    id INTEGER PRIMARY KEY,
+    offer_id INTEGER REFERENCES offers ON DELETE CASCADE,
+    price INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE listings (
     id INTEGER PRIMARY KEY,
@@ -46,7 +53,8 @@ CREATE TABLE listings (
     rooms_id INTEGER REFERENCES classes(id),
     municipality_id INTEGER REFERENCES classes(id),
     condition_id INTEGER REFERENCES classes(id),
-    property_type_id INTEGER REFERENCES classes(id)
+    property_type_id INTEGER REFERENCES classes(id),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE likes (
     id INTEGER PRIMARY KEY,

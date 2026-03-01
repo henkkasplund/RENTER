@@ -65,7 +65,7 @@ def user(user_id):
         email = request.form["email"]
         users.update_contact(user_id, phone, email)
         flash("Yhteystiedot päivitetty!")
-        return redirect("/user/" + str(user_id))
+        return redirect("/user/" + str(user_id) + "?view=profile")
     return render_template("user.html",
                             user=user, listings=user_listings, liked=liked, sent_offers=sent_offers,
                             received_offers=received_offers, edit_contact=edit_contact,
@@ -91,7 +91,6 @@ def create_account():
     except sqlite3.IntegrityError:
         flash("VIRHE: tunnus on jo varattu")
         return render_template("register.html")
-
     sql = "SELECT id, rating FROM users WHERE username = ?"
     user = db.query(sql, [username])[0]
     session["user_id"] = user["id"]
@@ -390,7 +389,7 @@ def edit_offer(offer_id):
         flash("Hakemus poistettu!")
     else:
         abort(403)
-    return redirect("/listing/" + str(offer["listing_id"]))
+    return redirect(request.referrer or "/listing/" + str(offer["listing_id"]))
 
 @app.route("/confirm_offer/<int:offer_id>", methods=["POST"])
 def confirm_offer(offer_id):

@@ -13,6 +13,8 @@
 
 Sovelluksen pääasiallinen tietokohde on asuntoilmoitus ja toissijainen on luokittelu.
 
+RENTER välittää vuokrakohteita, niin että käyttäjät voivat luoda ilmoituksia kohteista joista muut käyttäjät voivat tykätä ja lähettää tarjouksia. Lähetetyn tarjouksen jälkeen vuokranantaja voi joko hyväksyä tai hylätä tarjouksen. Hyväksytyn tarjouksen jälkeen vuokralainen voi edellen perua tarjouksen, mutta jos hän hyväksyy se niin vuokrasuhde on sitova. Hyväksytyn tarjouksen jälkeen molemmat osapuolet näkevät toistensa yhteystiedot sekä hakemuksessa että toisen käyttäjän omilla sivuilla. Jokaisella käyttäjällä on myös luokitus (1-5 tähteä), joka perustuu muiden käyttäjien antamiin arvosanoihin. Hyväksytyn tarjouksen jälkeen molemmat osapuolet voivat antaa arvosanan toisilleen. Kyseinen toiminnallisuus pysyy auki koko vuokrasuhteen ajan, jotta käyttäjä voi vielä muokata antamaansa arvosanaa.
+
 ## Sovelluksen asennus
 Asenna `flask`-kirjasto:
 ```bash

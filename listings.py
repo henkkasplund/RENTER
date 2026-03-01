@@ -52,6 +52,8 @@ def get_listing(listing_id):
                     listings.rooms_id,
                     listings.size,
                     listings.rent,
+                    listings.address,
+                    listings.postcode,
                     listings.condition_id,
                     listings.balcony,
                     listings.sauna,

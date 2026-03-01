@@ -10,15 +10,20 @@ def rental_status(listing_id):
 def add_offer(listing_id, user_id, price):
     if rental_status(listing_id):
         abort(403)
-    sql = """SELECT 1 FROM offers
+    sql = """SELECT id, status
+            FROM offers
             WHERE listing_id = ?
-            AND user_id = ?
-            AND status IN ('pending', 'accepted', 'rejected')"""
-    if db.query(sql, [listing_id, user_id]):
+            AND user_id = ?"""
+    result = db.query(sql, [listing_id, user_id])
+    if not result:
+        db.execute("INSERT INTO offers (listing_id, user_id, price) VALUES (?, ?, ?)",
+                   [listing_id, user_id, price])
+        return
+    offer = result[0]
+    if offer["status"] in ("pending", "accepted", "confirmed"):
         abort(403)
-    sql = """INSERT INTO offers (listing_id, user_id, price)
-             VALUES (?, ?, ?)"""
-    db.execute(sql, [listing_id, user_id, price])
+    db.execute("UPDATE offers SET price = ?, status = 'pending' WHERE id = ?",
+               [price, offer["id"]])
     
 def get_offer_data():
     price = request.form["price"]
@@ -38,39 +43,38 @@ def handle_offer(offer_id, decision):
     if decision == "accept":
         if offer["status"] != "pending":
             abort(403)
-        sql = "UPDATE offers SET status = 'accepted' WHERE id = ?"
-        db.execute(sql, [offer_id])
+        db.execute("UPDATE offers SET status = 'accepted' WHERE id = ?", [offer_id])
     elif decision == "reject":
-        sql = "UPDATE offers SET status = 'rejected' WHERE id = ?"
-        db.execute(sql, [offer_id])
+        if offer["status"] != "pending":
+            abort(403)
+        db.execute("UPDATE offers SET status = 'rejected' WHERE id = ?", [offer_id])
     elif decision == "cancel_accept":
         if offer["status"] != "accepted":
             abort(403)
-        sql = "UPDATE offers SET status = 'pending' WHERE id = ?"
-        db.execute(sql, [offer_id])
+        db.execute("UPDATE offers SET status = 'pending' WHERE id = ?", [offer_id])
     else:
         abort(403)
 
 def modify_offer(offer_id, user_id, action, price=None):
-    sql = """SELECT status
-             FROM offers
-             WHERE id = ? AND user_id = ?"""
-    offer = db.query(sql, [offer_id, user_id])
-    if not offer:
+    sql = "SELECT status FROM offers WHERE id = ? AND user_id = ?"
+    result = db.query(sql, [offer_id, user_id])
+    if not result:
         abort(403)
-    status = offer[0]["status"]
-    if status not in ("pending", "accepted"):
-        abort(403)
+    status = result[0]["status"]
     if action == "update":
         if status != "pending":
             abort(403)
         if not price or not re.search("^[1-9][0-9]{0,4}$", price):
             abort(403)
-        sql = "UPDATE offers SET price = ? WHERE id = ?"
-        db.execute(sql, [int(price), offer_id])
+        price = int(price)
+        db.execute(
+            "UPDATE offers SET price = ? WHERE id = ?", [price, offer_id])
+        db.execute(
+            "INSERT INTO offer_history (offer_id, price) VALUES (?, ?)", [offer_id, price])
     elif action == "delete":
-        sql = "UPDATE offers SET status = 'cancelled' WHERE id = ?"
-        db.execute(sql, [offer_id])
+        if status not in ("pending", "accepted"):
+            abort(403)
+        db.execute("UPDATE offers SET status = 'withdrawn' WHERE id = ?", [offer_id])
     else:
         abort(403)
 

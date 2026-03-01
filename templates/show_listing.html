@@ -35,13 +35,13 @@
 {% if session.user_id == listing.user_id and not rented %}
   <nav class="wide center">
     <ul>
-      <li class="{% if owner_view == 'listing' %}active{% endif %}">
+      <li class="{% if view == 'listing' %}active{% endif %}">
         <a href="?view=listing">Ilmoitus</a>
       </li>
-      <li class="{% if owner_view == 'incoming' %}active{% endif %}">
+      <li class="{% if view == 'incoming' %}active{% endif %}">
         <a href="?view=incoming">Saapuneet hakemukset</a>
       </li>
-      <li class="{% if owner_view == 'accepted' %}active{% endif %}">
+      <li class="{% if view == 'accepted' %}active{% endif %}">
         <a href="?view=accepted">Hyväksytyt hakemukset</a>
       </li>
     </ul>
@@ -73,7 +73,7 @@
           {% endfor %}
         </div>
 
-      {% elif user_offer and user_offer.status != "cancelled" %}
+      {% elif user_offer and user_offer.status != "withdrawn" %}
         <div class="listing-card">
           <p><strong>Tarjous:</strong> {{ user_offer.price }} €</p>
 
@@ -88,7 +88,7 @@
           {% elif user_offer.status == "confirmed" %}
             <p><strong>Tila: Vuokraus vahvistettu.</strong></p>
             <p><strong>Vuokranantajan yhteystiedot:</strong></p>
-            <p>Nimi: <a href="/user/"{{ listing.user_id }}>{{ listing.username }}</a></p>
+            <p>Nimi: <a href="/user/{{ listing.user_id }}">{{ listing.username }}</a></p>
             <p>Puhelin: {{ listing.phone }}</p>
             <p>Sähköposti: {{ listing.email }}</p>
 
@@ -121,7 +121,7 @@
           {% endif %}
         </div>
 
-      {% else %}
+      {% elif not user_offer or user_offer.status == "withdrawn" %}
         <div class="listing-card">
 
           {% if edit_offer %}

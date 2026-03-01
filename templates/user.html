@@ -93,8 +93,10 @@
 
           <div class="center">
             <form action="/user/{{ user.id }}" method="get">
-              <input type="hidden" name="edit_contact" value="1">
-              <button type="submit">Muokkaa yhteystietoja</button>
+              <input type="hidden" name="view" value="profile">
+              <button type="submit" name="edit_contact" value="1">
+                Muokkaa yhteystietoja
+              </button>
             </form>
           </div>
         {% endif %}
@@ -110,7 +112,9 @@
 
     <div class="wide center">
       <form action="/delete_account" method="get">
-        <button type="submit" style="background:#bc1c1c;">Poista käyttäjätili</button>
+        <button type="submit" style="background:#bc1c1c;">
+          Poista käyttäjätili
+        </button>
       </form>
     </div>
 
@@ -264,7 +268,7 @@
                 <div class="button-row">
                   <form action="/handle_offer/{{ offer.id }}" method="post">
                     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                    <button type="submit" name="decision" value="cancel_accept" style"backgound:#bc1c1c;">Peru hyväksyntä</button>
+                    <button type="submit" name="decision" value="cancel_accept" style="background:#bc1c1c;">Peru hyväksyntä</button>
                   </form>
                 </div>
 
@@ -273,6 +277,9 @@
                 <p><strong>Hakijan yhteystiedot:</strong></p>
                 <p>Puhelin: {{ offer.phone }}</p>
                 <p>Sähköposti: {{ offer.email }}</p>
+
+              {% elif offer.status == "withdrawn" %}
+                <strong>Tila: Peruttu</strong>
 
               {% elif offer.status == "rejected" %}
                 <strong>Tila: Hylätty</strong>
