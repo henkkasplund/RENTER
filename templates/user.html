@@ -62,7 +62,9 @@
 
 {% if session.user_id == user.id and view == "profile" %}
   <section class="wide">
-    <h3>Yhteystiedot</h3>
+    <div class="hero">
+      <h4>Omat yhteystiedot</h4>
+    </div>
 
     <div class="listing-card left">
 
@@ -175,7 +177,9 @@
 
 {% if session.user_id == user.id and view == "sent" %}
   <section class="wide">
-    <h3>Omat hakemukset ({{ sent_offers|count }})</h3>
+    <div class="hero">
+      <h4>Olet lähettänyt {{ sent_offers|count }} {{ "hakemuksen" if listings|count == 1 else "hakemusta" }} </h4>
+    </div>
 
     {% if sent_offers %}
       <div class="grid grid-large">
@@ -236,7 +240,9 @@
 
 {% if session.user_id == user.id and view == "received" %}
   <section class="wide">
-    <h3>Saapuneet hakemukset ({{ received_offers|count }})</h3>
+    <div class="hero">
+      <h4>Olet vastaanottanut {{ received_offers|count }} {{ "hakemuksen" if listings|count == 1 else "hakemusta" }} </h4>
+    </div>
 
     {% if received_offers %}
       <div class="grid grid-large">
