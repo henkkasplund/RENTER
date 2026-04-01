@@ -54,7 +54,7 @@
 {% endif %}
 
 {% if rental_deal %}
-  <div class="listing-card left wide">
+  <div class="card left wide">
     <p>Puhelin: {{ user.phone or "-" }}</p>
     <p>Sähköposti: {{ user.email or "-" }}</p>
   </div>
@@ -66,7 +66,7 @@
       <h4>Omat yhteystiedot</h4>
     </div>
 
-    <div class="listing-card left">
+    <div class="card left">
 
       {% if session.user_id == user.id %}
 
@@ -104,7 +104,7 @@
         {% endif %}
 
       {% else %}
-      <div class="listing-card left">
+      <div class="card left">
         <p>Puhelin: {{ user.phone or "-" }}</p>
         <p>Sähköposti: {{ user.email or "-" }}</p>
       </div>
@@ -135,7 +135,7 @@
     {% if listings %}
       <div class="grid grid-large">
         {% for listing in listings %}
-          <div class="listing-card">
+          <div class="card card--link">
             <a href="/listing/{{ listing.id }}">
               <h4>{{ listing.municipality }} {{ listing.rooms }}h {{ listing.size | format_size }} m²</h4>
               <h4>{{ listing.rent }} €</h4>
@@ -158,7 +158,7 @@
     {% if listings %}
       <div class="grid grid-large">
         {% for listing in listings %}
-          <div class="listing-card">
+          <div class="card card--link">
             <a href="/listing/{{ listing.id }}">
               <h4>{{ listing.municipality }} {{ listing.rooms }}h {{ listing.size | format_size }} m²</h4>
               <h4>{{ listing.rent }} €</h4>
@@ -168,7 +168,7 @@
       </div>
 
     {% else %}
-      <div class="listing-card">
+      <div class="card">
         <p>Sinulla ei ole aktiivisia ilmoituksia.</p>
       </div>
     {% endif %}
@@ -184,7 +184,7 @@
     {% if sent_offers %}
       <div class="grid grid-large">
         {% for offer in sent_offers %}
-          <div class="listing-card">
+          <div class="card card--link">
             <a href="/listing/{{ offer.listing_id }}">
               <h4>{{ offer.municipality }} {{ offer.rooms }}h {{ offer.size | format_size }} m²</h4>
               <h4>{{ offer.rent }} €</h4>
@@ -231,7 +231,7 @@
         {% endfor %}
       </div>
     {% else %}
-      <div class="listing-card">
+      <div class="card">
         <p>Et ole lähettänyt hakemuksia.</p>
       </div>
     {% endif %}
@@ -247,7 +247,7 @@
     {% if received_offers %}
       <div class="grid grid-large">
         {% for offer in received_offers %}
-          <div class="listing-card">
+          <div class="card card--link">
             <a href="/listing/{{ offer.listing_id }}">
               <h4>{{ offer.municipality }} {{ offer.rooms }}h {{ offer.size | format_size }} m²</h4>
               <h4>{{ offer.rent }} €</h4>
@@ -294,7 +294,7 @@
         {% endfor %}
       </div>
     {% else %}
-      <div class="listing-card">
+      <div class="card">
         <p>Ei saapuneita hakemuksia.</p>
       </div>
     {% endif %}
@@ -311,7 +311,7 @@
     {% if liked %}
       <div class="grid grid-large">
         {% for listing in liked %}
-          <div class="listing-card">
+          <div class="card card--link">
             <a href="/listing/{{ listing.id }}">
               <h4>{{ listing.municipality }} {{ listing.rooms }}h {{ listing.size | format_size }} m²</h4>
               <h4>{{ listing.rent }} €</h4>
@@ -320,7 +320,7 @@
         {% endfor %}
       </div>
     {% else %}
-      <div class="listing-card">
+      <div class="card">
         <p>Et ole tykännyt ilmoituksista</p>
       </div>
     {% endif %}

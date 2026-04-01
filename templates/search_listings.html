@@ -109,7 +109,7 @@
     {% if results %}
       <div class="grid grid-large">
         {% for listing in results %}
-          <div class="listing-card">
+          <div class="card card--link">
             <a href="/listing/{{ listing.id }}">
               <h4>{{ listing.municipality }} {{ listing.rooms }}h</h4>
               <p>{{ listing.size | format_size }} m²</p>

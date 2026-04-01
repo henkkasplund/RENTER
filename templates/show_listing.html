@@ -52,7 +52,7 @@
   {% if session.user_id and session.user_id != listing.user_id %}
 
     {% if rented %}
-      <div class="listing-card">
+      <div class="card">
         {% for offer in offers %}
           {% if offer.status == "confirmed" and offer.user_id == session.user_id %}
             <div class="center">
@@ -71,7 +71,7 @@
       </div>
 
     {% elif user_offer and user_offer.status != "withdrawn" %}
-      <div class="listing-card">
+      <div class="card">
         <p><strong>Tarjous:</strong> {{ user_offer.price }} €</p>
 
         {% if user_offer.status == "accepted" %}
@@ -116,7 +116,7 @@
       </div>
 
     {% elif not user_offer or user_offer.status == "withdrawn" %}
-      <div class="listing-card">
+      <div class="card">
         {% if edit_offer %}
           <form class="narrow form-stack" action="/create_offer" method="post">
             <label>
@@ -144,7 +144,7 @@
 
 <section class="wide">
   <h3>Kuvat</h3>
-  <div class="listing-card">
+  <div class="card">
     <div class="grid grid-large center">
       {% if images %}
         {% for image in images %}
@@ -169,7 +169,7 @@
 
 <section class="wide">
   <h3>Ilmoituksen tiedot</h3>
-  <div class="listing-card">
+  <div class="card">
     <h3>Asunnon tiedot</h3>
 
     <div class="grid grid-large">
