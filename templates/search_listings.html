@@ -110,6 +110,7 @@
       <div class="grid grid-large">
         {% for listing in results %}
           <div class="card card--link">
+            <span class="card--time">{{ listing.created_at | get_timespan }}</span>
             <a href="/listing/{{ listing.id }}">
               <h4>{{ listing.municipality }} {{ listing.rooms }}h</h4>
               <p>{{ listing.size | format_size }} m²</p>

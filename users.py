@@ -22,6 +22,7 @@ def get_user_listings(user_id):
     sql = """SELECT listings.id,
                     listings.rent,
                     listings.size,
+                    listings.created_at,
                     r.value AS rooms,
                     m.value AS municipality
              FROM listings
@@ -35,6 +36,7 @@ def get_liked(user_id):
     sql = """SELECT listings.id,
                     listings.rent,
                     listings.size,
+                    listings.created_at,
                     r.value AS rooms,
                     m.value AS municipality
             FROM likes

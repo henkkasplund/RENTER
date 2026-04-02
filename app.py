@@ -10,6 +10,7 @@ import offers
 import ratings
 import markupsafe
 import secrets
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -32,6 +33,29 @@ def format_size(value):
         return int(value)
     return str(value).replace(".", ",")
 
+@app.template_filter()
+def get_timespan(value):
+    dt = datetime.fromisoformat(value)
+    now = datetime.now()
+    diff = (now - dt).days
+    if diff == 0:
+        return "Tänään"
+    elif diff == 1:
+        return "Eilen"
+    elif diff < 7:
+        return f"{diff} pv sitten"
+    elif diff < 30:
+        return f"{diff // 7} vk sitten"
+    elif diff < 365:
+        return f"{diff // 30} kk sitten"
+    else:
+        return f"{diff // 365} v sitten"
+
+@app.template_filter()
+def get_date(value):
+    dt = datetime.fromisoformat(value)
+    return dt.strftime("%-d.%-m.%Y")
+
 def demand_login():
     if "user_id" not in session:
         abort(403)
@@ -50,6 +74,7 @@ def user(user_id):
     sent_offers = offers.get_sent_offers(user_id)
     received_offers = offers.get_received_offers(user_id)
     edit_contact = request.args.get("edit_contact") == "1"
+    edit_rating = request.args.get("edit_rating") == "1"
     viewer_id = session["user_id"]
     rental_deal = offers.confirmed_deal(viewer_id, user_id)
     user_rating = ratings.get_rating(session["user_id"], user_id) if rental_deal else None
@@ -68,8 +93,8 @@ def user(user_id):
         return redirect("/user/" + str(user_id) + "?view=profile")
     return render_template("user.html",
                             user=user, listings=user_listings, liked=liked, sent_offers=sent_offers,
-                            received_offers=received_offers, edit_contact=edit_contact,
-                            rental_deal=rental_deal, user_rating=user_rating, view=view)
+                            received_offers=received_offers, edit_contact=edit_contact, edit_rating=edit_rating,
+                            rental_deal=rental_deal, user_rating=user_rating ,view=view)
 
 @app.route("/register")
 def register():
@@ -342,6 +367,9 @@ def toggle_like(listing_id):
 def create_offer():
     demand_login()
     check_csrf()
+    if "back" in request.form:
+        listing_id = request.form["listing_id"]
+        return redirect("/listing/" + str(listing_id))
     offer_data = offers.get_offer_data()
     listing = listings.get_listing(offer_data["listing_id"])
     if not listing:

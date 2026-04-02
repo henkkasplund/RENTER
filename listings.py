@@ -36,6 +36,7 @@ def get_listings():
     sql = """SELECT listings.id,
                     listings.rent,
                     listings.size,
+                    listings.created_at,
                     r.value AS rooms,
                     m.value AS municipality
              FROM listings
@@ -60,6 +61,7 @@ def get_listing(listing_id):
                     listings.floor,
                     listings.floors,
                     listings.description,
+                    listings.created_at,
                     users.id AS user_id,
                     users.username,
                     users.phone,
@@ -189,6 +191,7 @@ def search_listings(rating, size, min_rent, max_rent, rooms_id, property_type_id
     sql = """SELECT listings.id,
                     listings.rent,
                     listings.size,
+                    listings.created_at,
                     users.username,
                     users.id AS user_id,
                     users.rating,

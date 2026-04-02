@@ -54,6 +54,13 @@ a:hover {
   opacity: 0.75;
 }
 
+a.undeline,
+.underline a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgb(195, 195, 195);
+}
+
 .center {
   text-align: center;
 }
@@ -68,11 +75,11 @@ a:hover {
 }
 
 .grid-small {
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
 }
 
 .grid-large {
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1rem;
   margin-bottom: 1.2rem;
 }
@@ -86,6 +93,8 @@ textarea {
   border: 1px solid #e5e5e5;
   border-radius: 8px;
   background: white;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 button {
@@ -109,6 +118,10 @@ button:hover {
   gap: 1rem;
 }
 
+.button-row button {
+  flex: 1;
+}
+
 .hero {
   text-align: center;
   padding: 1rem 0;
@@ -123,17 +136,18 @@ button:hover {
 
 .hero h4 {
   margin-top: 0;
-  margin-bottom: 1rem;
-  font-size: 1.3rem;
+  margin-bottom: 0rem;
+  font-size: 1.5rem;
   font-weight: 500;
 }
 
 .stars {
   color: gold;
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 500;
   letter-spacing: 2px;
-  margin-bottom: 0;
+  margin-bottom: 1.5rem;
+  margin-top: 0rem;
 }
 
 .heart {
@@ -148,6 +162,7 @@ button:hover {
   background: white;
   padding: 2rem;
   border-radius: 16px;
+  position: relative;
 }
 
 .card p {
@@ -156,12 +171,20 @@ button:hover {
 
 .card h3,
 .card h4 {
-  margin-top: 1rem;
+  margin-top: 0rem;
   margin-bottom: 1rem;
 }
 
 .card--link:hover {
   opacity: 0.75;
+}
+
+.card--time {
+  position: absolute;
+  bottom: 1rem;
+  right: 1.5rem;
+  font-size: 0.9rem;
+  color: #959595;
 }
 
 .header {
@@ -205,6 +228,8 @@ button:hover {
 
 .image-item img {
   width: 100%;
+  height: 200px;
+  object-fit: cover;
 }
 
 .required::before {

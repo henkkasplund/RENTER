@@ -7,28 +7,42 @@
 <section class="hero">
   <h2>{{ user.username }}</h2>
   <h3 class="stars">{{ "★" * user.rating }}{{ "☆" * (5 - user.rating) }}</h3>
+  {% if rental_deal %}
+    {% if edit_rating %}
+
+      <form class="form-stack narrow center" action="/rate_user/{{ user.id }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <select name="rating">
+          {% for i in range(0, 6) %}
+            <option value="{{ i }}" {% if user_rating == i %}selected{% endif %}>
+              {{ i }}
+            </option>
+          {% endfor %}
+        </select>
+
+        <div class="center">
+          <button type="submit">Tallenna arvosana</button>
+        </div>
+      </form>
+
+    {% else %}
+        <div class="center">
+        <form action="/user/{{ user.id }}" method="get">
+          <input type="hidden" name="view" value="profile">
+          <button type="submit" name="edit_rating" value="1">
+            Anna arvosana
+          </button>
+        </form>
+      </div>
+    {% endif %}
+  {% endif %}
 </section>
 
 {% if rental_deal %}
-  <section class="narrow center">
-    <h3>Anna arvosana</h3>
-
-    <form class="form-stack" action="/rate_user/{{ user.id }}" method="post">
-      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-
-      <select name="rating">
-        {% for i in range(0, 6) %}
-          <option value="{{ i }}" {% if user_rating == i %}selected{% endif %}>
-            {{ i }}
-          </option>
-        {% endfor %}
-      </select>
-
-      <div class="center">
-        <button type="submit">Tallenna luokitus</button>
-      </div>
-    </form>
-  </section>
+  <div class="card center medium">
+    <p>Puhelin: {{ user.phone or "-" }}</p>
+    <p>Sähköposti: {{ user.email or "-" }}</p>
+  </div>
 {% endif %}
 
 {% if session.user_id == user.id %}
@@ -51,13 +65,6 @@
       </li>
     </ul>
   </nav>
-{% endif %}
-
-{% if rental_deal %}
-  <div class="card left wide">
-    <p>Puhelin: {{ user.phone or "-" }}</p>
-    <p>Sähköposti: {{ user.email or "-" }}</p>
-  </div>
 {% endif %}
 
 {% if session.user_id == user.id and view == "profile" %}
@@ -159,6 +166,7 @@
       <div class="grid grid-large">
         {% for listing in listings %}
           <div class="card card--link">
+            <span class="card--time">{{ listing.created_at | get_timespan }}</span>
             <a href="/listing/{{ listing.id }}">
               <h4>{{ listing.municipality }} {{ listing.rooms }}h {{ listing.size | format_size }} m²</h4>
               <h4>{{ listing.rent }} €</h4>
@@ -312,6 +320,7 @@
       <div class="grid grid-large">
         {% for listing in liked %}
           <div class="card card--link">
+            <span class="card--time">{{ listing.created_at | get_timespan }}</span>
             <a href="/listing/{{ listing.id }}">
               <h4>{{ listing.municipality }} {{ listing.rooms }}h {{ listing.size | format_size }} m²</h4>
               <h4>{{ listing.rent }} €</h4>
