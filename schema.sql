@@ -9,8 +9,8 @@ CREATE TABLE users (
 );
 CREATE TABLE ratings (
     id INTEGER PRIMARY KEY,
-    rater_id INTEGER REFERENCES users ON DELETE SET NULL,
-    target_id INTEGER REFERENCES users ON DELETE CASCADE,
+    rater_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    target_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     rating INTEGER NOT NULL CHECK(rating BETWEEN 0 AND 5),
     UNIQUE(rater_id, target_id)
 );
@@ -21,21 +21,22 @@ CREATE TABLE classes (
 );
 CREATE TABLE offers (
     id INTEGER PRIMARY KEY,
-    listing_id INTEGER REFERENCES listings ON DELETE CASCADE,
-    user_id INTEGER REFERENCES users ON DELETE CASCADE,
+    listing_id INTEGER REFERENCES listings(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     price INTEGER,
     status TEXT DEFAULT "pending",
     UNIQUE(user_id, listing_id)
 );
 CREATE TABLE offer_history (
     id INTEGER PRIMARY KEY,
-    offer_id INTEGER REFERENCES offers ON DELETE CASCADE,
+    offer_id INTEGER REFERENCES offers(id) ON DELETE CASCADE,
     price INTEGER,
+    event TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE listings (
     id INTEGER PRIMARY KEY,
-    user_id INTEGER REFERENCES users,
+    user_id INTEGER REFERENCES users(id),
     size REAL,
     rent INTEGER,
     address TEXT,
@@ -44,10 +45,13 @@ CREATE TABLE listings (
     floors TEXT,
     sauna INTEGER,
     balcony INTEGER,
+    dishwasher INTEGER,
+    washing_machine INTEGER,
     bath INTEGER,
     elevator INTEGER,
     laundry INTEGER,
     cellar INTEGER,
+    gym INTEGER,
     pool INTEGER,
     description TEXT,
     rooms_id INTEGER REFERENCES classes(id),
@@ -59,12 +63,13 @@ CREATE TABLE listings (
 CREATE TABLE likes (
     id INTEGER PRIMARY KEY,
     user_id INTEGER REFERENCES users ON DELETE CASCADE,
-    listing_id INTEGER REFERENCES listings ON DELETE CASCADE,
+    listing_id INTEGER REFERENCES listings(id) ON DELETE CASCADE,
     UNIQUE(user_id, listing_id)
 );
 CREATE TABLE images (
     id INTEGER PRIMARY KEY,
-    listing_id INTEGER REFERENCES listings ON DELETE CASCADE,
+    listing_id INTEGER REFERENCES listings(id) ON DELETE CASCADE,
+    featured BOOLEAN DEFAULT false,
     image BLOB,
     mimetype TEXT
 );

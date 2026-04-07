@@ -8,10 +8,12 @@ def get_classes(title):
 
 def add_listing(user_id, listing_data):
     sql = """INSERT INTO listings (user_id, rooms_id, size, rent,
-                                address, postcode,floor, floors, sauna, balcony,
-                                bath, elevator, laundry, cellar, pool, description,
+                                address, postcode,floor, floors,
+                                description, sauna, balcony,
+                                dishwasher, washing_machine, bath,
+                                elevator, laundry, cellar, pool, gym,
                                 municipality_id, condition_id, property_type_id)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
     db.execute(sql, [user_id, listing_data["rooms_id"],
                      listing_data["size"],
@@ -20,14 +22,17 @@ def add_listing(user_id, listing_data):
                      listing_data["postcode"],
                      listing_data["floor"],
                      listing_data["floors"],
+                     listing_data["description"],
                      listing_data["sauna"],
                      listing_data["balcony"],
+                     listing_data["dishwasher"],
+                     listing_data["washing_machine"],
                      listing_data["bath"],
                      listing_data["elevator"],
                      listing_data["laundry"],
                      listing_data["cellar"],
                      listing_data["pool"],
-                     listing_data["description"],
+                     listing_data["gym"],
                      listing_data["municipality_id"],
                      listing_data["condition_id"],
                      listing_data["property_type_id"]])
@@ -58,9 +63,17 @@ def get_listing(listing_id):
                     listings.condition_id,
                     listings.balcony,
                     listings.sauna,
+                    listings.dishwasher,
+                    listings.washing_machine,
                     listings.floor,
                     listings.floors,
                     listings.description,
+                    listings.bath,
+                    listings.elevator,
+                    listings.laundry,
+                    listings.cellar,
+                    listings.pool,
+                    listings.gym,
                     listings.created_at,
                     users.id AS user_id,
                     users.username,
@@ -128,18 +141,23 @@ def get_listings_data():
     property_type_id = request.form["property_type_id"]
     if not re.search("^[0-9]+$", property_type_id):
         abort(403)
+    description = request.form["description"]
+    if len(description) > 2000:
+        abort(403)
     sauna = 1 if "sauna" in request.form else 0
     balcony = 1 if "balcony" in request.form else 0
+    dishwasher = 1 if "dishwasher" in request.form else 0
+    washing_machine = 1 if "washing_machine" in request.form else 0
     bath = 1 if "bath" in request.form else 0
     elevator = 1 if "elevator" in request.form else 0
     laundry = 1 if "laundry" in request.form else 0
     cellar = 1 if "cellar" in request.form else 0
     pool = 1 if "pool" in request.form else 0
-    description = request.form["description"]
-    if len(description) > 2000:
-        abort(403)
+    gym = 1 if "gym" in request.form else 0
+
     return {"rooms_id": rooms_id,
-            "size": size, "rent": rent,
+            "size": size,
+            "rent": rent,
             "municipality_id": municipality_id,
             "address": address,
             "postcode": postcode,
@@ -147,19 +165,25 @@ def get_listings_data():
             "floors": floors,
             "condition_id": condition_id,
             "property_type_id": property_type_id,
+            "description": description,
             "sauna": sauna,
             "balcony": balcony,
-            "bath": bath, "elevator": elevator,
+            "dishwasher": dishwasher,
+            "washing_machine": washing_machine,
+            "bath": bath,
+            "elevator": elevator,
             "laundry": laundry,
             "cellar": cellar,
             "pool": pool,
-            "description": description}
+            "gym": gym}
 
 def update_listing(listing_id, listing_data):
     sql = """UPDATE listings SET rooms_id = ?, size = ?, rent = ?,
                     address = ?, postcode = ?, floor = ?, floors = ?,
-                    sauna = ?, balcony = ?, bath = ?, elevator = ?, laundry = ?,
-                    cellar = ?, pool = ?, description = ?, municipality_id = ?,
+                    description = ?, sauna = ?, balcony = ?,
+                    dishwasher = ?, washing_machine = ?, bath = ?,
+                    elevator = ?, laundry = ?, cellar = ?, pool = ?,
+                    gym = ?, municipality_id = ?,
                     condition_id = ?, property_type_id = ?
             WHERE id = ?"""
     db.execute(sql, [listing_data["rooms_id"],
@@ -169,14 +193,17 @@ def update_listing(listing_id, listing_data):
                      listing_data["postcode"],
                      listing_data["floor"],
                      listing_data["floors"],
+                     listing_data["description"],
                      listing_data["sauna"],
                      listing_data["balcony"],
+                     listing_data["dishwasher"],
+                     listing_data["washing_machine"],
                      listing_data["bath"],
                      listing_data["elevator"],
                      listing_data["laundry"],
                      listing_data["cellar"],
                      listing_data["pool"],
-                     listing_data["description"],
+                     listing_data["gym"],
                      listing_data["municipality_id"],
                      listing_data["condition_id"],
                      listing_data["property_type_id"],

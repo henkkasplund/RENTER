@@ -101,6 +101,24 @@
       <textarea name="description" rows="6" maxlength="2000" required>{{ listing.description }}</textarea>
     </label>
 
+    <div class="grid grid-small">
+      <label><input type="checkbox" name="sauna" {% if listing.sauna %}checked{% endif %}> Sauna</label>
+      <label><input type="checkbox" name="balcony" {% if listing.balcony %}checked{% endif %}> Parveke</label>
+      <label><input type="checkbox" name="dishwasher" {% if listing.dishwasher %}checked{% endif %}> Tiskikone</label>
+      <label><input type="checkbox" name="washing_machine" {% if listing.washing_machine %}checked{% endif %}> Pyykinpesukone</label>
+    </div>
+
+    <h3>Taloyhtiön tiedot</h3>
+
+      <div class="grid grid-large">
+        <label><input type="checkbox" name="bath" {% if listing.bath %}checked{% endif %}> Sauna</label>
+        <label><input type="checkbox" name="elevator" {% if listing.elevator %}checked{% endif %}> Hissi</label>
+        <label><input type="checkbox" name="laundry" {% if listing.laundry %}checked{% endif %}> Pyykkitupa</label>
+        <label><input type="checkbox" name="cellar" {% if listing.cellar %}checked{% endif %}> Häkkikellari</label>
+        <label><input type="checkbox" name="pool" {% if listing.pool %}checked{% endif %}> Uima-allas</label>
+        <label><input type="checkbox" name="gym" {% if listing.gym %}checked{% endif %}> Kuntosali</label>
+      </div>
+
     <input type="hidden" name="listing_id" value="{{ listing.id }}">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 

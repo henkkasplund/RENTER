@@ -92,9 +92,10 @@ def user(user_id):
         flash("Yhteystiedot päivitetty!")
         return redirect("/user/" + str(user_id) + "?view=profile")
     return render_template("user.html",
-                            user=user, listings=user_listings, liked=liked, sent_offers=sent_offers,
-                            received_offers=received_offers, edit_contact=edit_contact, edit_rating=edit_rating,
-                            rental_deal=rental_deal, user_rating=user_rating ,view=view)
+                            user=user, listings=user_listings, liked=liked,
+                            sent_offers=sent_offers, received_offers=received_offers,
+                            edit_contact=edit_contact, edit_rating=edit_rating,
+                            rental_deal=rental_deal, user_rating=user_rating, view=view)
 
 @app.route("/register")
 def register():
@@ -225,6 +226,7 @@ def show_listing(listing_id):
     likes = listings.get_likes(viewer_id, listing_id)
     images = listings.get_images(listing_id)
     listing_offers = offers.get_offers(listing_id, viewer_id, listing["user_id"])
+    offer_history = {offer["id"]: offers.get_offer_history(offer["id"]) for offer in listing_offers}
     user_offer = None
     if viewer_id and viewer_id != listing["user_id"] and listing_offers:
         user_offer = listing_offers[0]
@@ -233,7 +235,8 @@ def show_listing(listing_id):
     view = request.args.get("view", "listing")
     return render_template("show_listing.html", listing=listing, likes=likes, images=images,
                                                 offers=listing_offers, user_offer=user_offer,
-                                                rented=rented, edit_offer=edit_offer, view=view)
+                                                rented=rented, edit_offer=edit_offer, view=view,
+                                                offer_history=offer_history)
 
 @app.route("/edit_listing/<int:listing_id>", methods=["GET", "POST"])
 def edit_listing(listing_id):
@@ -379,6 +382,24 @@ def create_offer():
         abort(403)
     offers.add_offer(offer_data["listing_id"], user_id, offer_data["price"])
     return redirect("/listing/" + str(offer_data["listing_id"]))
+
+@app.route("/offer/<int:offer_id>")
+def show_offer(offer_id):
+    demand_login()
+    offer = offers.get_offer(offer_id)
+    if not offer:
+        abort(404)
+    listing = listings.get_listing(offer["listing_id"])
+    if not listing:
+        abort(404)
+    if session["user_id"] not in (offer["user_id"], listing["user_id"]):
+        abort(403)
+    history = offers.get_offer_history(offer_id)
+    likes = listings.get_likes(session.get("user_id"), offer["listing_id"])
+    edit_offer = request.args.get("edit_offer") == "1"
+    return render_template("show_offer.html",
+                           offer=offer, listing=listing, history=history,
+                           likes=likes, edit_offer=edit_offer)
 
 @app.route("/handle_offer/<int:offer_id>", methods=["POST"])
 def handle_offer(offer_id):

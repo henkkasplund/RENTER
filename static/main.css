@@ -42,7 +42,8 @@ nav li.active a {
 h1 {
   font-size: 3.5rem;
   font-weight: 600;
-  margin: 0;
+  margin-top: 1rem;
+  margin-bottom: 0;
 }
 
 a {
@@ -76,6 +77,7 @@ a.undeline,
 
 .grid-small {
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  margin-bottom: 1rem;
 }
 
 .grid-large {
@@ -128,9 +130,16 @@ button:hover {
 }
 
 .hero h2 {
-  margin-top: 0;
+  margin-top: 0rem;
   margin-bottom: 1rem;
   font-size: 2.5rem;
+  font-weight: 500;
+}
+
+.hero h3 {
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
   font-weight: 500;
 }
 
@@ -187,6 +196,10 @@ button:hover {
   color: #959595;
 }
 
+.muted {
+  color: #959595;
+}
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -235,4 +248,16 @@ button:hover {
 .required::before {
   content: "*";
   color: #bc1c1c;
+}
+
+.positive {
+  color: #0a4a0a;
+}
+
+.neutral {
+  color: #f7b500;
+}
+
+.negative {
+ color: #bc1c1c;
 }

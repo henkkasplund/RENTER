@@ -12,7 +12,7 @@
     {{ listing.rent }} €
   </h2>
 
-  <form class="narrow" action="/remove_listing/{{ listing.id }}" method="post">
+  <form class="button-row narrow" action="/remove_listing/{{ listing.id }}" method="post">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 
     <button type="submit" name="remove" style="background:#bc1c1c;">Poista</button>

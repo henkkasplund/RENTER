@@ -89,9 +89,11 @@
       <textarea name="description" maxlength="2000" required></textarea>
     </label>
 
-    <div class="grid grid-small">
+    <div class="grid grid-large">
       <label><input type="checkbox" name="sauna"> Sauna</label>
       <label><input type="checkbox" name="balcony"> Parveke</label>
+      <label><input type="checkbox" name="dishwasher"> Tiskikone</label>
+      <label><input type="checkbox" name="washing_machine"> Pyykinpesukone</label>
     </div>
 
     <h3>Taloyhtiön tiedot</h3>
@@ -102,6 +104,7 @@
         <label><input type="checkbox" name="laundry"> Pyykkitupa</label>
         <label><input type="checkbox" name="cellar"> Häkkikellari</label>
         <label><input type="checkbox" name="pool"> Uima-allas</label>
+        <label><input type="checkbox" name="gym"> Kuntosali</label>
       </div>
 
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">

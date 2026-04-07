@@ -168,8 +168,9 @@
           <div class="card card--link">
             <span class="card--time">{{ listing.created_at | get_timespan }}</span>
             <a href="/listing/{{ listing.id }}">
-              <h4>{{ listing.municipality }} {{ listing.rooms }}h {{ listing.size | format_size }} m²</h4>
-              <h4>{{ listing.rent }} €</h4>
+              <h4>{{ listing.municipality }} {{ listing.rooms }} h</h4>
+              <p>{{ listing.size | format_size }} m²</p>
+              <p><strong>{{ listing.rent }} €</strong></p>
             </a>
           </div>
         {% endfor %}
@@ -186,23 +187,27 @@
 {% if session.user_id == user.id and view == "sent" %}
   <section class="wide">
     <div class="hero">
-      <h4>Olet lähettänyt {{ sent_offers|count }} {{ "hakemuksen" if listings|count == 1 else "hakemusta" }} </h4>
+      <h4>Olet lähettänyt {{ sent_offers|count }} {{ "hakemuksen" if sent_offers|count == 1 else "hakemusta" }} </h4>
     </div>
 
     {% if sent_offers %}
       <div class="grid grid-large">
         {% for offer in sent_offers %}
-          <div class="card card--link">
+          <div class="card">
             <a href="/listing/{{ offer.listing_id }}">
-              <h4>{{ offer.municipality }} {{ offer.rooms }}h {{ offer.size | format_size }} m²</h4>
-              <h4>{{ offer.rent }} €</h4>
+              <p>
+                <strong>{{ offer.address }}, {{ offer.municipality }}</strong>
+                <br />{{ offer.rooms }}h {{ offer.size | format_size }} m²
+                <br />{{ offer.rent }} €
+                <br /><strong>Tarjous {{ offer.price}} €</strong>
+              </p>
             </a>
             {% if offer.status == "pending" %}
-              <strong>Odottaa vastausta</strong>
+              <h3>Odottaa vuokranantajan vastausta</h3>
 
               <div class="button-row">
-                <form action="/listing/{{ offer.listing_id }}" method="get">
-                  <button type="submit" name="edit_offer" value="1">Muokkaa</button>
+                <form action="/offer/{{ offer.id }}" method="get">
+                  <button type="submit" name="edit_offer" value="1">Avaa hakemus</button>
                 </form>
 
                 <form action="/edit_offer/{{ offer.id }}" method="post">
@@ -249,7 +254,7 @@
 {% if session.user_id == user.id and view == "received" %}
   <section class="wide">
     <div class="hero">
-      <h4>Olet vastaanottanut {{ received_offers|count }} {{ "hakemuksen" if listings|count == 1 else "hakemusta" }} </h4>
+      <h4>Olet vastaanottanut {{ received_offers|count }} {{ "hakemuksen" if received_offers|count == 1 else "hakemusta" }} </h4>
     </div>
 
     {% if received_offers %}

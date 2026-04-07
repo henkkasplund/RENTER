@@ -10,7 +10,7 @@ def rental_status(listing_id):
 def add_offer(listing_id, user_id, price):
     if rental_status(listing_id):
         abort(403)
-    sql = """SELECT id, status
+    sql = """SELECT id, status, price
             FROM offers
             WHERE listing_id = ?
             AND user_id = ?"""
@@ -18,12 +18,20 @@ def add_offer(listing_id, user_id, price):
     if not result:
         db.execute("INSERT INTO offers (listing_id, user_id, price) VALUES (?, ?, ?)",
                    [listing_id, user_id, price])
+        offer_id = db.last_insert_id()
+        db.execute("INSERT INTO offer_history (offer_id, price, event) VALUES (?, ?, ?)",
+                   [offer_id, price, "sent"])
         return
     offer = result[0]
     if offer["status"] in ("pending", "accepted", "confirmed"):
         abort(403)
+    max_rejected = get_max_rejected_price(offer["id"])
+    if int(price) <= max_rejected:
+        abort(403)
     db.execute("UPDATE offers SET price = ?, status = 'pending' WHERE id = ?",
                [price, offer["id"]])
+    db.execute("INSERT INTO offer_history (offer_id, price, event) VALUES (?, ?, ?)",
+               [offer["id"], price, "sent"])
     
 def get_offer_data():
     price = request.form["price"]
@@ -44,37 +52,54 @@ def handle_offer(offer_id, decision):
         if offer["status"] != "pending":
             abort(403)
         db.execute("UPDATE offers SET status = 'accepted' WHERE id = ?", [offer_id])
+        db.execute("INSERT INTO offer_history (offer_id, price, event) VALUES (?, ?, ?)",
+               [offer_id, offer["price"], "accepted"])
     elif decision == "reject":
         if offer["status"] != "pending":
             abort(403)
         db.execute("UPDATE offers SET status = 'rejected' WHERE id = ?", [offer_id])
+        db.execute("INSERT INTO offer_history (offer_id, price, event) VALUES (?, ?, ?)",
+               [offer_id, offer["price"], "rejected"])
     elif decision == "cancel_accept":
         if offer["status"] != "accepted":
             abort(403)
         db.execute("UPDATE offers SET status = 'pending' WHERE id = ?", [offer_id])
+        db.execute("INSERT INTO offer_history (offer_id, price, event) VALUES (?, ?, ?)",
+               [offer_id, offer["price"], "cancel_accept"])
     else:
         abort(403)
 
 def modify_offer(offer_id, user_id, action, price=None):
-    sql = "SELECT status FROM offers WHERE id = ? AND user_id = ?"
+    sql = "SELECT id, status, price FROM offers WHERE id = ? AND user_id = ?"
     result = db.query(sql, [offer_id, user_id])
     if not result:
         abort(403)
-    status = result[0]["status"]
+    offer = result[0]
+    status = offer["status"]
     if action == "update":
-        if status != "pending":
+        if status not in ("pending", "rejected"):
             abort(403)
         if not price or not re.search("^[1-9][0-9]{0,4}$", price):
             abort(403)
-        price = int(price)
-        db.execute(
-            "UPDATE offers SET price = ? WHERE id = ?", [price, offer_id])
-        db.execute(
-            "INSERT INTO offer_history (offer_id, price) VALUES (?, ?)", [offer_id, price])
-    elif action == "delete":
-        if status not in ("pending", "accepted"):
+        max_rejected = get_max_rejected_price(offer["id"])
+        if int(price) <= max_rejected:
             abort(403)
-        db.execute("UPDATE offers SET status = 'withdrawn' WHERE id = ?", [offer_id])
+        db.execute("UPDATE offers SET price = ?, status = 'pending' WHERE id = ?", [price, offer_id])
+        db.execute("INSERT INTO offer_history (offer_id, price, event) VALUES (?, ?, ?)", [offer_id, price, "updated"])
+    elif action == "delete":
+        if status == ("pending"):
+            db.execute("""DELETE FROM offer_history WHERE id = (
+                SELECT id FROM offer_history
+                WHERE offer_id = ?
+                ORDER BY id DESC
+                LIMIT 1)""", [offer_id])
+            db.execute("UPDATE offers SET status = 'withdrawn' WHERE id = ?", [offer_id])
+        elif status == ("accepted"):
+            db.execute("UPDATE offers SET status = 'withdrawn' WHERE id = ?", [offer_id])
+            db.execute("INSERT INTO offer_history (offer_id, price, event) VALUES (?, ?, ?)",
+                    [offer_id, offer["price"], "withdrawn"])
+        else:
+            abort(403)
     else:
         abort(403)
 
@@ -88,6 +113,8 @@ def confirm_rental(offer_id):
         abort(403)
     sql = "UPDATE offers SET status = 'confirmed' WHERE id = ?"
     db.execute(sql, [offer_id])
+    db.execute("INSERT INTO offer_history (offer_id, price, event) VALUES (?, ?, ?)",
+           [offer_id, offer["price"], "confirmed"])
     sql = "UPDATE offers SET status = 'rejected' WHERE listing_id = ? AND id != ?"
     db.execute(sql, [offer["listing_id"], offer_id])
 
@@ -120,9 +147,13 @@ def get_offer(offer_id):
     return result[0] if result else None
 
 def get_sent_offers(user_id):
-    sql = """SELECT offers.id, offers.price, offers.status,
+    sql = """SELECT offers.id,
+                    offers.price,
+                    offers.status,
                     listings.id AS listing_id,
-                    listings.rent, listings.size,
+                    listings.rent,
+                    listings.size,
+                    listings.address,
                     m.value AS municipality,
                     r.value AS rooms,
                     users.username AS owner_username,
@@ -139,7 +170,9 @@ def get_sent_offers(user_id):
     return db.query(sql, [user_id])
 
 def get_received_offers(user_id):
-    sql = """SELECT offers.id, offers.price, offers.status,
+    sql = """SELECT offers.id,
+                    offers.price,
+                    offers.status,
                     offers.user_id AS tenant_id,
                     users.username AS tenant_username,
                     users.phone,
@@ -157,6 +190,13 @@ def get_received_offers(user_id):
             ORDER BY offers.id DESC"""
     return db.query(sql, [user_id])
 
+def get_offer_history(offer_id):
+    sql = """SELECT price, created_at, event
+             FROM offer_history
+             WHERE offer_id = ?
+             ORDER BY id DESC"""
+    return db.query(sql, [offer_id])
+
 def confirmed_deal(viewer_id, user_id):
     sql = """SELECT 1 FROM offers
             JOIN listings ON offers.listing_id = listings.id
@@ -165,3 +205,10 @@ def confirmed_deal(viewer_id, user_id):
             OR (offers.user_id = ? AND listings.user_id = ?))
             LIMIT 1"""
     return bool(db.query(sql, [viewer_id, user_id, user_id, viewer_id]))
+
+def get_max_rejected_price(offer_id):
+    sql = """SELECT MAX(price) as max_rejected_price
+             FROM offer_history
+             WHERE offer_id = ? AND event = 'rejected'"""
+    result = db.query(sql, [offer_id])
+    return result[0]["max_rejected_price"] if result[0]["max_rejected_price"] else 0
