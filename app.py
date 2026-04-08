@@ -72,7 +72,11 @@ def user(user_id):
     user_listings = users.get_user_listings(user_id)
     liked = users.get_liked(user_id)
     sent_offers = offers.get_sent_offers(user_id)
+    withdrawn_sent_offers = sum(1 for offer in sent_offers if offer['status'] == "withdrawn")
+    active_sent_offers = len(sent_offers) - withdrawn_sent_offers
     received_offers = offers.get_received_offers(user_id)
+    inactive_received_offers = sum(1 for offer in received_offers if offer['status'] in ("withdrawn", "rejected"))
+    active_received_offers = len(received_offers) - inactive_received_offers
     edit_contact = request.args.get("edit_contact") == "1"
     edit_rating = request.args.get("edit_rating") == "1"
     viewer_id = session["user_id"]
@@ -95,7 +99,11 @@ def user(user_id):
                             user=user, listings=user_listings, liked=liked,
                             sent_offers=sent_offers, received_offers=received_offers,
                             edit_contact=edit_contact, edit_rating=edit_rating,
-                            rental_deal=rental_deal, user_rating=user_rating, view=view)
+                            rental_deal=rental_deal, user_rating=user_rating, view=view,
+                            withdrawn_sent_offers=withdrawn_sent_offers,
+                            active_sent_offers=active_sent_offers,
+                            inactive_received_offers=inactive_received_offers,
+                            active_received_offers=active_received_offers)
 
 @app.route("/register")
 def register():
@@ -416,7 +424,7 @@ def handle_offer(offer_id):
     if listing["user_id"] != user_id:
         abort(403)
     offers.handle_offer(offer_id, decision)
-    return redirect("/listing/" + str(offer["listing_id"]))
+    return redirect(request.referrer or "/listing/" + str(offer["listing_id"]))
 
 @app.route("/edit_offer/<int:offer_id>", methods=["POST"])
 def edit_offer(offer_id):

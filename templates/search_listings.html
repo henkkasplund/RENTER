@@ -112,9 +112,12 @@
           <div class="card card--link">
             <span class="card--time">{{ listing.created_at | get_timespan }}</span>
             <a href="/listing/{{ listing.id }}">
-              <h4>{{ listing.municipality }} {{ listing.rooms }}h</h4>
-              <p>{{ listing.size | format_size }} m²</p>
-              <p class="price">{{ listing.rent }} €</p>
+            <p>
+              <strong>{{ listing.address }}, {{ listing.municipality }}</strong><br />
+              {{ listing.rooms }}h • {{ listing.size | format_size }} m² <br />
+              <hr>
+              <strong>{{ listing.rent }} €/kk</strong>
+            </p>
             </a>
           </div>
         {% endfor %}

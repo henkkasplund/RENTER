@@ -144,8 +144,12 @@
         {% for listing in listings %}
           <div class="card card--link">
             <a href="/listing/{{ listing.id }}">
-              <h4>{{ listing.municipality }} {{ listing.rooms }}h {{ listing.size | format_size }} m²</h4>
-              <h4>{{ listing.rent }} €</h4>
+              <span class="card--time">{{ listing.created_at | get_timespan }}</span>
+              <p>
+                <strong>{{ listing.address }}, {{ listing.municipality }}</strong><br />
+                {{ listing.rooms }}h • {{ listing.size | format_size }} m² <br />
+                <strong>{{ listing.rent }} €/kk</strong>
+              </p>
             </a>
           </div>
         {% endfor %}
@@ -168,9 +172,11 @@
           <div class="card card--link">
             <span class="card--time">{{ listing.created_at | get_timespan }}</span>
             <a href="/listing/{{ listing.id }}">
-              <h4>{{ listing.municipality }} {{ listing.rooms }} h</h4>
-              <p>{{ listing.size | format_size }} m²</p>
-              <p><strong>{{ listing.rent }} €</strong></p>
+            <p>
+              <strong>{{ listing.address }}, {{ listing.municipality }}</strong><br />
+              {{ listing.rooms }}h • {{ listing.size | format_size }} m² <br />
+              <strong>{{ listing.rent }} €/kk</strong>
+            </p>
             </a>
           </div>
         {% endfor %}
@@ -187,23 +193,31 @@
 {% if session.user_id == user.id and view == "sent" %}
   <section class="wide">
     <div class="hero">
-      <h4>Olet lähettänyt {{ sent_offers|count }} {{ "hakemuksen" if sent_offers|count == 1 else "hakemusta" }} </h4>
+      <h4>
+        {% if active_sent_offers == 1 %}
+            Olet lähettänyt 1 hakemuksen
+        {% elif active_sent_offers > 1 %}
+            Olet lähettänyt {{ active_sent_offers }} hakemusta
+        {% else %}
+            Sinulla ei ole aktiivisia lähetettyjä hakemuksia
+        {% endif %}
+      </h4>
     </div>
 
     {% if sent_offers %}
       <div class="grid grid-large">
-        {% for offer in sent_offers %}
-          <div class="card">
-            <a href="/listing/{{ offer.listing_id }}">
-              <p>
-                <strong>{{ offer.address }}, {{ offer.municipality }}</strong>
-                <br />{{ offer.rooms }}h {{ offer.size | format_size }} m²
-                <br />{{ offer.rent }} €
-                <br /><strong>Tarjous {{ offer.price}} €</strong>
-              </p>
-            </a>
+        {% for offer in sent_offers if offer.status in ("pending", "accepted", "rejected", "confirmed") %}
+          <div class="card center underline">
+
             {% if offer.status == "pending" %}
-              <h3>Odottaa vuokranantajan vastausta</h3>
+              <a href="/listing/{{ offer.listing_id }}">
+                <p><strong>{{ offer.address }}, {{ offer.municipality }}</strong></p>
+                <p><strong>{{ offer.rent }} €/kk • {{ offer.rooms }}h • {{ offer.size | format_size }} m²</strong></p>
+              </a>
+              <hr>
+              <h3>Hakemuksesi<br />{{ offer.price}} €/kk</h3>
+              <hr>
+              <h4 class="center neutral">Odottaa vuokranantajan vastausta</h4>
 
               <div class="button-row">
                 <form action="/offer/{{ offer.id }}" method="get">
@@ -217,35 +231,68 @@
               </div>
 
             {% elif offer.status == "accepted" %}
-              <strong>Odottaa vahvistustasi</strong>
+              <a href="/listing/{{ offer.listing_id }}">
+                <p><strong>{{ offer.address }}, {{ offer.municipality }}</strong></p>
+                <p><strong>{{ offer.rent }} €/kk • {{ offer.rooms }}h • {{ offer.size | format_size }} m²</strong></p>
+              </a>
+              <hr>
+              <h3>Hakemuksesi<br />{{ offer.price}} €/kk</h3>
+              <hr>
+              <h4 class="center positive">Hyväksytty<br /></h4>
+              <p><strong>HUOM! Vahvistamalla aloitat vuokrasuhteen</strong></p>
 
               <div class="button-row">
                 <form action="/confirm_offer/{{ offer.id }}" method="post">
                   <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                  <button type="submit">Vahvista</button>
+                  <button type="submit" style="background:#0a4a0a;">Vahvista</button>
+                </form>
+
+                <form action="/offer/{{ offer.id }}" method="get">
+                  <button type="submit" name="edit_offer" value="1">Avaa</button>
                 </form>
 
                 <form action="/edit_offer/{{ offer.id }}" method="post">
                   <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                  <button type="submit" name="action" value="delete" style="background:#bc1c1c;">Peru hakemus</button>
+                  <button type="submit" name="action" value="delete" style="background:#bc1c1c;">Hylkää</button>
                 </form>
               </div>
 
             {% elif offer.status == "confirmed" %}
-              <p><strong>Tila: Vuokraus vahvistettu</strong></p>
-              <p><strong>Vuokranantajan yhteystiedot:</strong></p>
-              <p>Nimi: <a href="/user/{{ offer.owner_id }}">{{ offer.owner_username }}</a></p>
-              <p>Puhelin: {{ offer.owner_phone }}</p>
-              <p>Sähköposti: {{ offer.owner_email }}</p>
+              <a href="/listing/{{ offer.listing_id }}">
+                <p><strong>{{ offer.address }}, {{ offer.municipality }}</strong></p>
+                <p><strong>{{ offer.rooms }}h • {{ offer.size | format_size }} m²</strong></p>
+              </a>
+                <h3 class="positive">{{ offer.rent }} €/kk</h3>
+              <hr>
+              <h4>Vuokranantajan yhteystiedot</h4>
+              <h3>
+                <a href="/user/{{ offer.owner_id }}"> {{ offer.owner_username }}</a>
+                <p style="color: gold;">{{ "★" * offer.owner_rating }}</p>
+              </h3>
+              <p><strong>Puhelin: {{ offer.owner_phone }}</strong></p>
+              <p><strong>Sähköposti: {{ offer.owner_email }}</strong></p>
+              <hr>
+              <h4 class="positive">Vuokraus vahvistettu</h4>
+              <form action="/offer/{{ offer.id }}" method="get">
+                <button type="submit" name="edit_offer" value="1">Avaa hakemus</button>
+              </form>
+
             {% elif offer.status == "rejected" %}
-              <strong>Tila: Hylätty</strong>
+              <a href="/listing/{{ offer.listing_id }}">
+                <p><strong>{{ offer.address }}, {{ offer.municipality }}</strong></p>
+                <p><strong>{{ offer.rent }} €/kk • {{ offer.rooms }}h • {{ offer.size | format_size }} m²</strong></p>
+              </a>
+              <hr>
+              <h3>Hakemuksesi<br />{{ offer.price}} €/kk</h3>
+              <hr>
+              <h4 class="center negative">Hylätty</h4>
+
+              <form action="/offer/{{ offer.id }}" method="get">
+                <button type="submit" name="edit_offer" value="1">Avaa hakemus</button>
+              </form>
             {% endif %}
           </div>
         {% endfor %}
-      </div>
-    {% else %}
-      <div class="card">
-        <p>Et ole lähettänyt hakemuksia.</p>
       </div>
     {% endif %}
   </section>
@@ -254,28 +301,46 @@
 {% if session.user_id == user.id and view == "received" %}
   <section class="wide">
     <div class="hero">
-      <h4>Olet vastaanottanut {{ received_offers|count }} {{ "hakemuksen" if received_offers|count == 1 else "hakemusta" }} </h4>
+      <h4>
+        {% if active_received_offers == 1 %}
+            Olet vastaanottanut 1 hakemuksen
+        {% elif active_received_offers > 1 %}
+            Olet vastaanottanut {{ active_received_offers }} hakemusta
+        {% else %}
+            Sinulla ei ole aktiivisia vastaanotettuja hakemuksia
+        {% endif %}
+      </h4>
     </div>
 
     {% if received_offers %}
       <div class="grid grid-large">
-        {% for offer in received_offers %}
-          <div class="card card--link">
+        {% for offer in received_offers if offer.status in ("pending", "accepted", "confirmed")%}
+          <div class="card center underline">
             <a href="/listing/{{ offer.listing_id }}">
-              <h4>{{ offer.municipality }} {{ offer.rooms }}h {{ offer.size | format_size }} m²</h4>
-              <h4>{{ offer.rent }} €</h4>
+              <p>
+                <strong>{{ offer.address }}, {{ offer.municipality }}</strong><br />
+                <strong>{{ offer.rent }} €/kk • {{ offer.rooms }}h • {{ offer.size | format_size }} m²</strong>
+                <hr>
+              </p>
             </a>
-
-            <p><strong>Tarjous: {{ offer.price }} €</strong></p>
-            <p><strong>Hakija:</strong><a href="/user/{{ offer.tenant_id }}"> {{ offer.tenant_username }}</a></p>
-
+            <h3>
+              <a href="/user/{{ offer.tenant_id }}"> {{ offer.tenant_username }}</a>
+              <p style="color: gold;">{{ "★" * offer.tenant_rating }}</p>
+              {{ offer.price }} €/kk
+            </h3>
               {% if offer.status == "pending" %}
-                <strong>Odottaa vastaustasi</strong>
+                <hr>
+                <h4 class="positive">Odottaa vastaustasi</h4>
                 <div class="button-row">
                   <form action="/handle_offer/{{ offer.id }}" method="post">
                     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                    <button type="submit" name="decision" value="accept">Hyväksy</button>
+                    <button type="submit" name="decision" value="accept" style="background:#0a4a0a;">Hyväksy</button>
                   </form>
+
+                  <form action="/offer/{{ offer.id }}" method="GET">
+                    <button type="submit">Avaa</button>
+                  </form>
+
                   <form action="/handle_offer/{{ offer.id }}" method="post">
                     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                     <button type="submit" name="decision" value="reject" style="background:#bc1c1c;">Hylkää</button>
@@ -283,8 +348,13 @@
                 </div>
 
               {% elif offer.status == "accepted" %}
-                <strong>Odottaa vuokralaisen vahvistusta</strong>
+                <hr>
+                <h4 class="neutral">Odottaa vuokralaisen vahvistusta</h4>
                 <div class="button-row">
+                  <form action="/offer/{{ offer.id }}" method="GET">
+                    <button type="submit">Avaa hakemus</button>
+                  </form>
+
                   <form action="/handle_offer/{{ offer.id }}" method="post">
                     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                     <button type="submit" name="decision" value="cancel_accept" style="background:#bc1c1c;">Peru hyväksyntä</button>
@@ -292,23 +362,17 @@
                 </div>
 
               {% elif offer.status == "confirmed" %}
-                <p><strong>Tila: Vuokraus vahvistettu</strong></p>
-                <p><strong>Hakijan yhteystiedot:</strong></p>
-                <p>Puhelin: {{ offer.phone }}</p>
-                <p>Sähköposti: {{ offer.email }}</p>
-
-              {% elif offer.status == "withdrawn" %}
-                <strong>Tila: Peruttu</strong>
-
-              {% elif offer.status == "rejected" %}
-                <strong>Tila: Hylätty</strong>
+                <h4>Hakijan yhteystiedot</h4>
+                <p><strong>Puhelin: {{ offer.tenant_phone }}</strong></p>
+                <p><strong>Sähköposti: {{ offer.tenant_email }}</strong></p>
+                <hr>
+                <h4 class="positive">Vuokraus vahvistettu</h4>
+                <form action="/offer/{{ offer.id }}" method="GET">
+                  <button type="submit">Avaa hakemus</button>
+                </form>
               {% endif %}
           </div>
         {% endfor %}
-      </div>
-    {% else %}
-      <div class="card">
-        <p>Ei saapuneita hakemuksia.</p>
       </div>
     {% endif %}
   </section>
@@ -318,7 +382,7 @@
 
   <section class="wide">
     <div class="hero">
-      <h4>Tykkäsit näistä ilmoituksista</h4>
+      <h4>{{ "Tykkäsit näistä ilmoituksista" if liked|count > 0 else "Et ole tykännyt yhdestäkään ilmoituksesta"}}</h4>
     </div>
 
     {% if liked %}
@@ -327,15 +391,14 @@
           <div class="card card--link">
             <span class="card--time">{{ listing.created_at | get_timespan }}</span>
             <a href="/listing/{{ listing.id }}">
-              <h4>{{ listing.municipality }} {{ listing.rooms }}h {{ listing.size | format_size }} m²</h4>
-              <h4>{{ listing.rent }} €</h4>
+              <p>
+                <strong>{{ listing.address }}, {{ listing.municipality }}</strong><br />
+                {{ listing.rooms }}h • {{ listing.size | format_size }} m² <br />
+                <strong>{{ listing.rent }} €/kk</strong>
+              </p>
             </a>
           </div>
         {% endfor %}
-      </div>
-    {% else %}
-      <div class="card">
-        <p>Et ole tykännyt ilmoituksista</p>
       </div>
     {% endif %}
   </section>

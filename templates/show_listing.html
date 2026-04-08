@@ -1,19 +1,17 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  {{ listing.municipality }} {{ listing.rooms }} h
-  {{ listing.size | format_size }} m²
+  {{ listing.address }}, {{ listing.municipality }}<br/>
+  {{ listing.rooms }}h {{ listing.size | format_size }} m²<br/>
   {{ listing.rent }} €
 {% endblock %}
 
 {% block content %}
 
 <section class="hero underline">
-  <h2>
-    {{ listing.municipality }} {{ listing.rooms }} h
-    {{ listing.size | format_size }} m²
-    {{ listing.rent }} €
-  </h2>
+  <h2>{{ listing.address }}, {{ listing.municipality }}</h2>
+  <h4>{{ listing.rent }} €/kk • {{ listing.rooms }}h • {{ listing.size | format_size }} m²</h4>
+
 
   {% if session.username %}
     <h4><a href="/user/{{ listing.user_id }}">{{ listing.username }}</a></h4>
@@ -100,7 +98,7 @@
               <div class="card center underline">
                 <h3><a href="/user/{{ offer.user_id }}">{{ offer.username }}</a></h3>
                 <h3>Tarjous {{ offer.price }} €</h3>
-                <h3 class="positive">Odottaa hakijan vahvistusta</h3>
+                <h3 class="neutral">Odottaa hakijan vahvistusta</h3>
                 <div class="button-row">
                   <form action="/handle_offer/{{ offer.id }}" method="post">
                     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
@@ -210,19 +208,18 @@
     <div class="card">
       <h3>Asunnon tiedot</h3>
       <div class="grid grid-large">
-        {% if session.user_id %}
-          <p><strong>Katuosoite:</strong> {{ listing.address }}</p>
-          <p><strong>Postinumero:</strong> {{ listing.postcode }}</p>
-        {% endif %}
+        <p><strong>Asuntotyyppi:</strong> {{ listing.property_type }}</p>
         {% if listing.floor %}
           <p><strong>Kerros:</strong> {{ listing.floor }} / {{ listing.floors }}</p>
         {% else %}
           <p><strong>Kerroksia:</strong> {{ listing.floors }}</p>
         {% endif %}
-        <p><strong>Asuntotyyppi:</strong> {{ listing.property_type }}</p>
         <p><strong>Huonemäärä:</strong> {{ listing.rooms }} h</p>
         <p><strong>Neliömäärä:</strong> {{ listing.size | format_size }} m²</p>
-        <p><strong>Vuokrahinta:</strong> {{ listing.rent }} €</p>
+        <p><strong>Vuokrahinta:</strong> {{ listing.rent }} €/kk</p>
+        <p><strong>Katusoite:</strong> {{ listing.address }}</p>
+        <p><strong>Paikkakunta:</strong> {{ listing.municipality }}</p>
+        <p><strong>Postinumero:</strong> {{ listing.postcode }}</p>
         <p><strong>Kunto:</strong> {{ listing.condition }}</p>
         <p><strong>Parveke:</strong> {{ "Kyllä" if listing.balcony else "Ei" }}</p>
         <p><strong>Sauna:</strong> {{ "Kyllä" if listing.sauna else "Ei" }}</p>

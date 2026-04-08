@@ -20,6 +20,7 @@ def update_contact(user_id, phone, email):
 
 def get_user_listings(user_id):
     sql = """SELECT listings.id,
+                    listings.address,
                     listings.rent,
                     listings.size,
                     listings.created_at,
@@ -34,6 +35,7 @@ def get_user_listings(user_id):
 
 def get_liked(user_id):
     sql = """SELECT listings.id,
+                    listings.address,
                     listings.rent,
                     listings.size,
                     listings.created_at,

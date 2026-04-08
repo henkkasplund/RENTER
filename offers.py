@@ -159,7 +159,8 @@ def get_sent_offers(user_id):
                     users.username AS owner_username,
                     users.phone AS owner_phone,
                     users.email AS owner_email,
-                    users.id AS owner_id
+                    users.id AS owner_id,
+                    users.rating AS owner_rating
                 FROM offers
                 JOIN listings ON offers.listing_id = listings.id
                 JOIN users ON users.id = listings.user_id
@@ -175,10 +176,13 @@ def get_received_offers(user_id):
                     offers.status,
                     offers.user_id AS tenant_id,
                     users.username AS tenant_username,
-                    users.phone,
-                    users.email,
+                    users.phone AS tenant_phone,
+                    users.email AS tenant_email,
+                    users.rating AS tenant_rating,
                     listings.id AS listing_id,
-                    listings.rent, listings.size,
+                    listings.rent,
+                    listings.size,
+                    listings.address,
                     m.value AS municipality,
                     r.value AS rooms
             FROM offers

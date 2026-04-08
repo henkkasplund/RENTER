@@ -39,6 +39,7 @@ def add_listing(user_id, listing_data):
 
 def get_listings():
     sql = """SELECT listings.id,
+                    listings.address,
                     listings.rent,
                     listings.size,
                     listings.created_at,
@@ -216,6 +217,7 @@ def search_listings(rating, size, min_rent, max_rent, rooms_id, property_type_id
     criteria = []
     values = []
     sql = """SELECT listings.id,
+                    listings.address,
                     listings.rent,
                     listings.size,
                     listings.created_at,
