@@ -7,11 +7,11 @@
 <section class="hero">
   {% if session.username %}
     <h2>Löydä unelmiesi vuokrasuhde</h2>
-    <h3>Luotettava kumppani kodinhakuun</h3>
+    <h3>Tuoreimmat kotiehdokkaat</h3>
 
   {% else %}
     <h2>Vuokraa uusi koti luotettavasti</h2>
-    <h4>Kirjautuneena näet enemmän</h4>
+    <h3>Kirjautuneena näet enemmän</h3>
 
   {% endif %}
   <form action="/search_listings" method="get">
@@ -20,8 +20,6 @@
 </section>
 
 <section class="wide">
-  <h3>Uusimmat vuokrakohteet</h3>
-
   {% if listings %}
     <div class="grid grid-large">
       {% for listing in listings %}
@@ -30,7 +28,7 @@
           <a href="/listing/{{ listing.id }}">
             <p>
               <strong>{{ listing.address }}, {{ listing.municipality }}</strong><br />
-              {{ listing.rooms }}h • {{ listing.size | format_size }} m² <br />
+              {{ listing.rooms }}h • {{ listing.size | format_size }} m²<br />
               <strong>{{ listing.rent }} €/kk</strong>
             </p>
           </a>

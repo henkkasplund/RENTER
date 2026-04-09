@@ -3,15 +3,16 @@
 {% block title %}Ilmoituksen muokkaus{% endblock %}
 
 {% block content %}
-<section class="medium">
-  <h2>Ilmoituksen muokkaus</h2>
+<section class="wide">
+  <div class="hero">
+    <h2>Ilmoituksen muokkaus</h2>
+    <h4 class="right required"> Pakollinen kenttä</h4>
+  </div>
 
-  <h4 class="right required"> Pakollinen kenttä</h4>
-
-  <form class="form-stack" action="/edit_listing/{{ listing.id }}" method="post">
+  <form class="card medium form-stack" action="/edit_listing/{{ listing.id }}" method="post">
+    <h4>Perustiedot</h4>
 
     <div class="grid grid-large">
-
       <label class="required">
         Asuntotyyppi
         <select name="property_type_id" required>
@@ -84,10 +85,12 @@
         <input type="text" name="postcode" value="{{ listing.postcode }}" maxlength="5" required>
       </label>
 
-      <label>
-        Kerros
-        <input type="text" name="floor" value="{{ listing.floor or '' }}">
-      </label>
+      {% if listing.property_type == "Kerrostalo" %}
+        <label>
+          Kerros
+          <input type="text" name="floor" value="{{ listing.floor or '' }}">
+        </label>
+      {% endif %}
 
       <label class="required">
         Kerroksia
@@ -103,30 +106,34 @@
 
     <div class="grid grid-small">
       <label><input type="checkbox" name="sauna" {% if listing.sauna %}checked{% endif %}> Sauna</label>
+      {% if listing.property_type == "Omakotitalo" %}
+        <label><input type="checkbox" name="pool" {% if listing.pool %}checked{% endif %}> Uima-allas</label>
+      {% endif %}
       <label><input type="checkbox" name="balcony" {% if listing.balcony %}checked{% endif %}> Parveke</label>
       <label><input type="checkbox" name="dishwasher" {% if listing.dishwasher %}checked{% endif %}> Tiskikone</label>
       <label><input type="checkbox" name="washing_machine" {% if listing.washing_machine %}checked{% endif %}> Pyykinpesukone</label>
     </div>
 
-    <h3>Taloyhtiön tiedot</h3>
+    {% if listing.property_type == "Kerrostalo" %}
+      <h4>Taloyhtiön tiedot</h4>
 
-      <div class="grid grid-large">
-        <label><input type="checkbox" name="bath" {% if listing.bath %}checked{% endif %}> Sauna</label>
-        <label><input type="checkbox" name="elevator" {% if listing.elevator %}checked{% endif %}> Hissi</label>
-        <label><input type="checkbox" name="laundry" {% if listing.laundry %}checked{% endif %}> Pyykkitupa</label>
-        <label><input type="checkbox" name="cellar" {% if listing.cellar %}checked{% endif %}> Häkkikellari</label>
-        <label><input type="checkbox" name="pool" {% if listing.pool %}checked{% endif %}> Uima-allas</label>
-        <label><input type="checkbox" name="gym" {% if listing.gym %}checked{% endif %}> Kuntosali</label>
-      </div>
+        <div class="grid grid-large">
+          <label><input type="checkbox" name="bath" {% if listing.bath %}checked{% endif %}> Sauna</label>
+          <label><input type="checkbox" name="elevator" {% if listing.elevator %}checked{% endif %}> Hissi</label>
+          <label><input type="checkbox" name="laundry" {% if listing.laundry %}checked{% endif %}> Pyykkitupa</label>
+          <label><input type="checkbox" name="cellar" {% if listing.cellar %}checked{% endif %}> Häkkikellari</label>
+          <label><input type="checkbox" name="pool" {% if listing.pool %}checked{% endif %}> Uima-allas</label>
+          <label><input type="checkbox" name="gym" {% if listing.gym %}checked{% endif %}> Kuntosali</label>
+        </div>
+    {% endif %}
 
     <input type="hidden" name="listing_id" value="{{ listing.id }}">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 
-    <div class="button-row">
+    <div class="button-row medium">
+      <button type="submit" name="cancel">Takaisin</button>
       <button type="submit" name="update">Päivitä</button>
-      <button type="submit" name="cancel">Peruuta</button>
     </div>
-
   </form>
 
 </section>

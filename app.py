@@ -212,6 +212,7 @@ def search_listings():
     property_type_id = request.args.get("property_type_id", "")
     municipality_id = request.args.get("municipality_id", "")
     condition_id = request.args.get("condition_id", "")
+    edit_search = request.args.get("edit_search") == "1"
     searched = bool(request.args)
     results = listings.search_listings(rating, size, min_rent, max_rent, rooms_id,
                                        property_type_id, municipality_id, condition_id)
@@ -220,7 +221,7 @@ def search_listings():
                            rooms_id=rooms_id, property_type_id=property_type_id,
                            municipality_id=municipality_id, condition_id=condition_id,
                            searched = searched, results=results, rating=rating,
-                           rooms=listings.get_classes("rooms"),
+                           edit_search=edit_search, rooms=listings.get_classes("rooms"),
                            municipalities=listings.get_classes("municipality"),
                            property_types=listings.get_classes("property_type"),
                            conditions=listings.get_classes("condition"))
@@ -234,6 +235,8 @@ def show_listing(listing_id):
     likes = listings.get_likes(viewer_id, listing_id)
     images = listings.get_images(listing_id)
     listing_offers = offers.get_offers(listing_id, viewer_id, listing["user_id"])
+    pending_offers = sum(1 for offer in listing_offers if offer['status'] == "pending")
+    accepted_offers = sum(1 for offer in listing_offers if offer['status'] == "accepted")
     offer_history = {offer["id"]: offers.get_offer_history(offer["id"]) for offer in listing_offers}
     user_offer = None
     if viewer_id and viewer_id != listing["user_id"] and listing_offers:
@@ -241,10 +244,12 @@ def show_listing(listing_id):
     rented = offers.rental_status(listing_id)
     edit_offer = request.args.get("edit_offer") == "1"
     view = request.args.get("view", "listing")
+    max_rejected = offers.get_max_rejected(user_offer["id"]) if user_offer else 0
     return render_template("show_listing.html", listing=listing, likes=likes, images=images,
                                                 offers=listing_offers, user_offer=user_offer,
                                                 rented=rented, edit_offer=edit_offer, view=view,
-                                                offer_history=offer_history)
+                                                offer_history=offer_history, pending_offers=pending_offers,
+                                                accepted_offers=accepted_offers, max_rejected=max_rejected)
 
 @app.route("/edit_listing/<int:listing_id>", methods=["GET", "POST"])
 def edit_listing(listing_id):
@@ -355,7 +360,8 @@ def edit_images(listing_id):
     if listing["user_id"] != session["user_id"]:
         abort(403)
     images = listings.get_images(listing_id)
-    return render_template("images.html", listing=listing, images=images)
+    add_images = request.args.get("add_images") == "1"
+    return render_template("images.html", listing=listing, images=images, add_images=add_images)
 
 @app.route("/toggle_like/<int:listing_id>", methods=["POST"])
 def toggle_like(listing_id):

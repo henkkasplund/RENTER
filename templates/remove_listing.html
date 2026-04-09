@@ -3,20 +3,32 @@
 {% block title %}Ilmoituksen poisto{% endblock %}
 
 {% block content %}
-<section class="medium center">
-  <h3>Haluatko varmasti poistaa tämän ilmoituksen?</h3>
+<section class="hero">
+  <h3><strong>Haluatko varmasti poistaa tämän ilmoituksen?</strong></h3>
+</section>
 
-  <h2>
-    {{ listing.municipality }} {{ listing.rooms }} h
-    {{ listing.size | format_size }} m²
-    {{ listing.rent }} €
-  </h2>
+<section class="center medium grid grid-narrow">
 
-  <form class="button-row narrow" action="/remove_listing/{{ listing.id }}" method="post">
+  <div class="card card--link">
+    <a href="/listing/{{ listing.id }}">
+      <h3>
+        <strong>
+          {{ listing.address }}, {{ listing.municipality }}<br />
+          {{ listing.rooms }} h • {{ listing.size | format_size }} m²<br />
+          {{ listing.rent }} € 
+        </strong>
+      </h3>
+      <p><strong>Lisätty {{ listing.created_at|get_date }}</strong></p>
+    </a>
+  </div>
+
+  <form action="/remove_listing/{{ listing.id }}" method="post">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 
-    <button type="submit" name="remove" style="background:#bc1c1c;">Poista</button>
-    <button type="submit" name="back">Peruuta</button>
+    <div class="button-row">
+      <button type="submit" name="back">Takaisin</button>
+      <button type="submit" name="remove" style="background:#bc1c1c;">Poista</button>
+    </div>
   </form>
 </section>
 

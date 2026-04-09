@@ -6,106 +6,111 @@
 
 <section class="hero">
   <h2>Löydä uusi vuokrakotisi tästä</h2>
-
   <h4>Luotettava koti painalluksen päässä</h4>
 
-  <form class="form-stack medium left" action="/search_listings" method="get">
+  {% if not searched or edit_search %}
+    <form class="form-stack medium left" action="/search_listings" method="get">
+      <div class="grid grid-large">
 
-    <div class="grid grid-large">
+        <div>
+          Asuntotyyppi
+          <select name="property_type_id">
+            <option value="">Kaikki</option>
+            {% for property in property_types %}
+              <option value="{{ property.id }}"
+                {% if property_type_id == property.id|string %}selected{% endif %}>
+                {{ property.value }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
 
-      <div>
-        Asuntotyyppi
-        <select name="property_type_id">
-          <option value="">Kaikki</option>
-          {% for property in property_types %}
-            <option value="{{ property.id }}"
-              {% if property_type_id == property.id|string %}selected{% endif %}>
-              {{ property.value }}
-            </option>
-          {% endfor %}
-        </select>
+        <div>
+          Paikkakunta
+          <select name="municipality_id">
+            <option value="">Kaikki</option>
+            {% for municipality in municipalities %}
+              <option value="{{ municipality.id }}"
+                {% if municipality_id == municipality.id|string %}selected{% endif %}>
+                {{ municipality.value }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          Min vuokra
+          <input type="text" name="min_rent" value="{{ min_rent }}">
+        </div>
+
+        <div>
+          Max vuokra
+          <input type="text" name="max_rent" value="{{ max_rent }}">
+        </div>
+
+        <div>
+          Neliömäärä
+          <input type="text" name="size" value="{{ size }}">
+        </div>
+
+        <div>
+          Huonemäärä
+          <select name="rooms_id">
+            <option value="">Kaikki</option>
+            {% for room in rooms %}
+              <option value="{{ room.id }}"
+                {% if rooms_id == room.id|string %}selected{% endif %}>
+                {{ room.value }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          Kunto
+          <select name="condition_id">
+            <option value="">Kaikki</option>
+            {% for condition in conditions %}
+              <option value="{{ condition.id }}"
+                {% if condition_id == condition.id|string %}selected{% endif %}>
+                {{ condition.value }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          Min luokitus
+          <select name="rating">
+            <option value="">Kaikki</option>
+            {% for i in range(0, 6) %}
+              <option value="{{ i }}"
+                {% if rating == i|string %}selected{% endif %}>
+                {{ i }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
       </div>
 
-      <div>
-        Paikkakunta
-        <select name="municipality_id">
-          <option value="">Kaikki</option>
-          {% for municipality in municipalities %}
-            <option value="{{ municipality.id }}"
-              {% if municipality_id == municipality.id|string %}selected{% endif %}>
-              {{ municipality.value }}
-            </option>
-          {% endfor %}
-        </select>
+      <div class="center">
+        <button type="submit">Suorita haku</button>
       </div>
+    </form>
 
-      <div>
-        Min vuokra
-        <input type="text" name="min_rent" value="{{ min_rent }}">
-      </div>
+  {% else %}
+    <br />
+    <form method="get">
+      <input type="hidden" name="edit_search" value="1">
+      <button type="submit">Muuta hakuehtoja</button>
+    </form>
 
-      <div>
-        Max vuokra
-        <input type="text" name="max_rent" value="{{ max_rent }}">
-      </div>
-
-      <div>
-        Neliömäärä
-        <input type="text" name="size" value="{{ size }}">
-      </div>
-
-      <div>
-        Huonemäärä
-        <select name="rooms_id">
-          <option value="">Kaikki</option>
-          {% for room in rooms %}
-            <option value="{{ room.id }}"
-              {% if rooms_id == room.id|string %}selected{% endif %}>
-              {{ room.value }}
-            </option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <div>
-        Kunto
-        <select name="condition_id">
-          <option value="">Kaikki</option>
-          {% for condition in conditions %}
-            <option value="{{ condition.id }}"
-              {% if condition_id == condition.id|string %}selected{% endif %}>
-              {{ condition.value }}
-            </option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <div>
-        Min luokitus
-        <select name="rating">
-          <option value="">Kaikki</option>
-          {% for i in range(0, 6) %}
-            <option value="{{ i }}"
-              {% if rating == i|string %}selected{% endif %}>
-              {{ i }}
-            </option>
-          {% endfor %}
-        </select>
-      </div>
-
-    </div>
-
-    <div class="center">
-      <button type="submit">Suorita haku</button>
-    </div>
-
-  </form>
+  {% endif %}
 </section>
 
 {% if searched %}
   <section class="wide">
-    <h3>Tulokset</h3>
-
     {% if results %}
       <div class="grid grid-large">
         {% for listing in results %}
@@ -115,7 +120,6 @@
             <p>
               <strong>{{ listing.address }}, {{ listing.municipality }}</strong><br />
               {{ listing.rooms }}h • {{ listing.size | format_size }} m² <br />
-              <hr>
               <strong>{{ listing.rent }} €/kk</strong>
             </p>
             </a>

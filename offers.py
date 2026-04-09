@@ -25,7 +25,7 @@ def add_offer(listing_id, user_id, price):
     offer = result[0]
     if offer["status"] in ("pending", "accepted", "confirmed"):
         abort(403)
-    max_rejected = get_max_rejected_price(offer["id"])
+    max_rejected = get_max_rejected(offer["id"])
     if int(price) <= max_rejected:
         abort(403)
     db.execute("UPDATE offers SET price = ?, status = 'pending' WHERE id = ?",
@@ -81,7 +81,7 @@ def modify_offer(offer_id, user_id, action, price=None):
             abort(403)
         if not price or not re.search("^[1-9][0-9]{0,4}$", price):
             abort(403)
-        max_rejected = get_max_rejected_price(offer["id"])
+        max_rejected = get_max_rejected(offer["id"])
         if int(price) <= max_rejected:
             abort(403)
         db.execute("UPDATE offers SET price = ?, status = 'pending' WHERE id = ?", [price, offer_id])
@@ -210,9 +210,9 @@ def confirmed_deal(viewer_id, user_id):
             LIMIT 1"""
     return bool(db.query(sql, [viewer_id, user_id, user_id, viewer_id]))
 
-def get_max_rejected_price(offer_id):
-    sql = """SELECT MAX(price) as max_rejected_price
+def get_max_rejected(offer_id):
+    sql = """SELECT MAX(price) as max_rejected
              FROM offer_history
              WHERE offer_id = ? AND event = 'rejected'"""
     result = db.query(sql, [offer_id])
-    return result[0]["max_rejected_price"] if result[0]["max_rejected_price"] else 0
+    return result[0]["max_rejected"] if result[0]["max_rejected"] else 0
