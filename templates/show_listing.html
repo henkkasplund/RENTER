@@ -98,13 +98,13 @@
             {% for offer in offers %}
               {% if offer.status == "pending" %}
                 <div class="card center underline">
-                  <h4>
+                  <h3>
                     <a href="/user/{{ offer.user_id }}">{{ offer.username }}</a>
                     <p style="color: gold;">{{ "★" * offer.rating }}{{ "☆" * (5 - offer.rating) }}</p>
                     {{ offer.price }} €/kk
-                  </h4>
+                  </h3>
                   <hr>
-                  <h4 class="positive">Odottaa vastaustasi</h4>
+                  <h3 class="positive">Odottaa vastaustasi</h3>
                   <div class="button-row">
                     <form action="/handle_offer/{{ offer.id }}" method="post">
                       <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
@@ -138,13 +138,13 @@
             {% for offer in offers %}
               {% if offer.status == "accepted" %}
                 <div class="card center underline">
-                  <h4>
+                  <h3>
                     <a href="/user/{{ offer.user_id }}">{{ offer.username }}</a>
                     <p style="color: gold;">{{ "★" * offer.rating }}{{ "☆" * (5 - offer.rating) }}</p>
                     {{ offer.price }} €/kk
-                  </h4>
+                  </h3>
                   <hr>
-                  <h4 class="neutral">Odottaa hakijan vahvistusta</h4>
+                  <h3 class="neutral">Odottaa hakijan vahvistusta</h3>
                   <div class="button-row">
                     <form action="/handle_offer/{{ offer.id }}" method="post">
                       <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
@@ -163,11 +163,12 @@
       <section class="wide">
         {% if user_offer and user_offer.status not in ("withdrawn", "rejected") %}
           <div class="card center">
-            <h4>Hakemuksesi<br />{{ user_offer.price }} €/kk</h4>
+            <h3>Hakemuksesi</h3>
+            <h3>{{ user_offer.price }} €/kk</h3>
             <hr>
 
             {% if user_offer.status == "pending" %}
-              <h4 class="neutral">Odottaa vuokranantajan päätöstä</h4>
+              <h2 class="neutral">Odottaa vuokranantajan päätöstä</h2>
               <div class="button-row">
                 <form action="/edit_offer/{{ user_offer.id }}" method="post">
                   <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
@@ -177,7 +178,7 @@
               </div>
 
             {% elif user_offer.status == "accepted" %}
-              <h4 class="positive">Hyväksytty</h4>
+              <h2 class="positive">Hyväksytty</h2>
               <div class="button-row">
                 <form action="/edit_offer/{{ user_offer.id }}" method="post">
                   <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
@@ -200,27 +201,43 @@
             {% if edit_offer %}
               <div class="card">
                 {% if max_rejected > 0 %}
-                  <h4>Korota tarjousta</h4>
-                  <p><strong>Edellinen hakemuksesi</strong></p>
-                  <h4 class="negative">{{ max_rejected }} €/kk hylättiin</h4>
-                  <p><strong>Uuden tarjouksen täytyy olla suurempi kuin {{ max_rejected }} €/kk.</strong></p>
+                  <h3>Hakemuksesi</h3>
+                  <h2>{{ user_offer.price }} €/kk</h2>
+                  <hr>
+                  {% if user_offer.status == "rejected" %}
+                    <h2 class="negative">Hylätty</h2>
+                  {% elif user_offer.status == "withdrawn" %}
+                    <h2 class="negative">Peruttu</h2>
+                  {% else %}
+                    <h2 class="neutral">Odottaa vuokranantajan vastausta</h2>
+                  {% endif %}
+                  <h4>
+                    Uusi tarjous oltava suurempi kuin edellinen hylätty</br>
+                    {{ max_rejected}} €/kk
+                  </h4>
                 {% else %}
                   <h4>Lähetä vuokratarjous</h4>
-                  <p><strong>Ilmoittaja joko hyväksyy tai hylkää hakemuksen.</strong></p>
-                  <p><strong>Kun ilmoittaja hyväksyy hakemuksen, voit vielä vahvistaa tai peruuttaa sen.</strong></p>
-                  <p><strong>Vahvistuksen jälkeen vuokrasuhde voi alkaa.</strong></p>
+                  <h4>Ilmoittaja joko hyväksyy tai hylkää hakemuksen.</h4>
+                  <h4>Kun ilmoittaja hyväksyy hakemuksen, voit vielä vahvistaa tai peruuttaa sen.</h4>
+                  <h4>Vahvistuksen jälkeen vuokrasuhde voi alkaa.</h4>
+                  <hr>
                 {% endif %}
-                <hr>
                 <form class="narrow form-stack" action="/create_offer" method="post">
                   <label>
-                    Tarjous
+                    {% if max_rejected > 0 %}
+                      Uusi tarjous
+                    {% else %}
+                      Tarjous
+                    {% endif %}
                     <input type="text" name="price" pattern="^[1-9][0-9]{0,4}$" required>
                   </label>
                   <input type="hidden" name="listing_id" value="{{ listing.id }}">
                   <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                   <div class="button-row">
-                    <button type="submit" name="back" style="background:#bc1c1c;" formnovalidate>Takaisin</button>
-                    <a href="/offer/{{ user_offer.id }}"><button type="button">Avaa</button></a>
+                    <button type="submit" name="back" formnovalidate>Takaisin</button>
+                    {% if user_offer %}
+                      <a href="/offer/{{ user_offer.id }}?edit_offer=1"><button type="button">Avaa</button></a>
+                    {% endif %}
                     <button type="submit" style="background:#095509;">Lähetä</button>
                   </div>
                 </form>
@@ -228,7 +245,7 @@
             {% else %}
               <form method="get">
                 <input type="hidden" name="edit_offer" value="1">
-                <button type="submit">{{ "Korota tarjousta" if max_rejected > 0 else "Lähetä hakemus" }}</button>
+                <button type="submit">{{ "Lähetä uusi hakemus" if max_rejected > 0 else "Lähetä hakemus" }}</button>
               </form>
             {% endif %}
           </div>

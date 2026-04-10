@@ -411,9 +411,10 @@ def show_offer(offer_id):
     history = offers.get_offer_history(offer_id)
     likes = listings.get_likes(session.get("user_id"), offer["listing_id"])
     edit_offer = request.args.get("edit_offer") == "1"
+    max_rejected = offers.get_max_rejected(offer["id"])
     return render_template("show_offer.html",
                            offer=offer, listing=listing, history=history,
-                           likes=likes, edit_offer=edit_offer)
+                           likes=likes, edit_offer=edit_offer, max_rejected=max_rejected)
 
 @app.route("/handle_offer/<int:offer_id>", methods=["POST"])
 def handle_offer(offer_id):

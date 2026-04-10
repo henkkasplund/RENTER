@@ -77,7 +77,7 @@ def modify_offer(offer_id, user_id, action, price=None):
     offer = result[0]
     status = offer["status"]
     if action == "update":
-        if status not in ("pending", "rejected"):
+        if status not in ("pending", "rejected", "withdrawn"):
             abort(403)
         if not price or not re.search("^[1-9][0-9]{0,4}$", price):
             abort(403)
@@ -140,9 +140,18 @@ def get_offers(listing_id, viewer_id, owner_id):
     return db.query(sql, values)
 
 def get_offer(offer_id):
-    sql = """SELECT id, listing_id, user_id, price, status
+    sql = """SELECT offers.id,
+                    offers.listing_id,
+                    offers.user_id,
+                    offers.price,
+                    offers.status,
+                    users.username,
+                    users.phone,
+                    users.email,
+                    users.rating
              FROM offers
-             WHERE id = ?"""
+             JOIN users ON offers.user_id = users.id
+             WHERE offers.id = ?"""
     result = db.query(sql, [offer_id])
     return result[0] if result else None
 

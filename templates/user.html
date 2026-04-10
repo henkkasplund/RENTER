@@ -233,7 +233,7 @@
               <div class="button-row">
                 <form action="/edit_offer/{{ offer.id }}" method="post">
                   <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                  <button type="submit" name="action" value="delete" style="background:#bc1c1c;">Hylkää</button>
+                  <button type="submit" name="action" value="delete" style="background:#bc1c1c;">Peruuta</button>
                 </form>
 
                 <form action="/offer/{{ offer.id }}" method="get">
