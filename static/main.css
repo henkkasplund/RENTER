@@ -274,3 +274,12 @@ button:hover {
 .negative {
  color: #bc1c1c;
 }
+
+table {
+  margin: 0 auto;
+}
+
+td {
+  padding-left: 5px;
+  padding-right: 5px;
+}

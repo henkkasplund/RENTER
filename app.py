@@ -20,6 +20,15 @@ def check_csrf():
     if request.form["csrf_token"] != session["csrf_token"]:
         abort(403)
 
+@app.before_request
+def last_visited():
+    if request.method == "GET" \
+        and not request.path.startswith("/image") \
+        and not request.path.startswith("/static") \
+        and not request.path.startswith("/.well-known"):
+        session["last_visited"] = session.get("visited")
+        session["visited"] = request.url
+
 @app.template_filter()
 def show_lines(content):
     content = str(markupsafe.escape(content))
@@ -378,7 +387,7 @@ def toggle_like(listing_id):
         listings.like_unlike(user_id, listing_id, False)
     else:
         listings.like_unlike(user_id, listing_id, True)
-    return redirect(request.referrer)
+    return redirect(session.get("last_visited") or "/")
 
 @app.route("/create_offer", methods=["POST"])
 def create_offer():
@@ -431,7 +440,7 @@ def handle_offer(offer_id):
     if listing["user_id"] != user_id:
         abort(403)
     offers.handle_offer(offer_id, decision)
-    return redirect(request.referrer or "/listing/" + str(offer["listing_id"]))
+    return redirect(session.get("last_visited") or "/listing/" + str(offer["listing_id"]))
 
 @app.route("/edit_offer/<int:offer_id>", methods=["POST"])
 def edit_offer(offer_id):
@@ -448,12 +457,13 @@ def edit_offer(offer_id):
         price = request.form["price"]
         offers.modify_offer(offer_id, user_id, action, price)
         flash("Hakemus päivitetty!")
+        return redirect("/offer/" + str(offer_id))
     elif action == "delete":
         offers.modify_offer(offer_id, user_id, action)
         flash("Hakemus poistettu!")
     else:
         abort(403)
-    return redirect(request.referrer or "/listing/" + str(offer["listing_id"]))
+    return redirect(session.get("last_visited") or "/listing/" + str(offer["listing_id"]))
 
 @app.route("/confirm_offer/<int:offer_id>", methods=["POST"])
 def confirm_offer(offer_id):
