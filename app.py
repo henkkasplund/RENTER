@@ -11,6 +11,9 @@ import ratings
 import markupsafe
 import secrets
 from datetime import datetime
+import math
+import time
+from flask import g
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -70,9 +73,18 @@ def demand_login():
         abort(403)
 
 @app.route("/")
-def index():
-    all_listings = listings.get_listings()
-    return render_template("index.html", listings=all_listings)
+@app.route("/<int:page>")
+def index(page=1):
+    page_size = 20
+    count = listings.listing_count()
+    page_count = max(math.ceil(count / page_size), 1)
+    if page < 1:
+        return redirect("/1")
+    if page > page_count:
+        return redirect("/" + str(page_count))
+    all_listings = listings.get_listings(page, page_size)
+    return render_template("index.html", listings=all_listings,
+                           page=page, page_count=page_count)
 
 @app.route("/user/<int:user_id>", methods=["GET", "POST"])
 def user(user_id):
@@ -223,8 +235,12 @@ def search_listings():
     condition_id = request.args.get("condition_id", "")
     edit_search = request.args.get("edit_search") == "1"
     searched = bool(request.args)
-    results = listings.search_listings(rating, size, min_rent, max_rent, rooms_id,
-                                       property_type_id, municipality_id, condition_id)
+    page = int(request.args.get("page", 1))
+    page_size = 20
+    results, count = listings.search_listings(rating, size, min_rent, max_rent,
+                                       rooms_id, property_type_id, municipality_id,
+                                       condition_id, page, page_size)
+    page_count = max(math.ceil(count / page_size), 1)
     return render_template("search_listings.html",
                            size=size, max_rent=max_rent, min_rent=min_rent,
                            rooms_id=rooms_id, property_type_id=property_type_id,
@@ -233,7 +249,8 @@ def search_listings():
                            edit_search=edit_search, rooms=listings.get_classes("rooms"),
                            municipalities=listings.get_classes("municipality"),
                            property_types=listings.get_classes("property_type"),
-                           conditions=listings.get_classes("condition"))
+                           conditions=listings.get_classes("condition"),
+                           page=page, page_count=page_count)
 
 @app.route("/listing/<int:listing_id>")
 def show_listing(listing_id):
@@ -491,3 +508,13 @@ def rate_user(user_id):
     users.update_rating(user_id)
     flash("Arvosana annettu")
     return redirect("/user/" + str(user_id))
+
+@app.before_request
+def before_request():
+    g.start_time = time.time()
+
+@app.after_request
+def after_request(response):
+    elapsed_time = round(time.time() - g.start_time, 2)
+    print("elapsed time:", elapsed_time, "s")
+    return response

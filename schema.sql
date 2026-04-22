@@ -73,3 +73,6 @@ CREATE TABLE images (
     image BLOB,
     mimetype TEXT
 );
+CREATE INDEX idx_listings_user ON listings (user_id);
+CREATE INDEX idx_offers_listing ON offers (listing_id);
+CREATE INDEX idx_offers_user ON offers (user_id);

@@ -38,6 +38,16 @@
   {% else %}
     <p>Ei ilmoituksia.</p>
   {% endif %}
+
+  <div class="center">
+    {% if page > 1 %}
+      <a href="/{{ page - 1 }}"><button type="button">˂</button></a>
+    {% endif %}
+    Sivu {{ page }}/{{ page_count }}
+    {% if page < page_count %}
+      <a href="/{{ page + 1 }}"><button type="button">˃</button></a>
+    {% endif %}
+  </div>
 </section>
 
 {% endblock %}

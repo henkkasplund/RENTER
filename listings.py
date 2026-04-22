@@ -37,7 +37,7 @@ def add_listing(user_id, listing_data):
                      listing_data["condition_id"],
                      listing_data["property_type_id"]])
 
-def get_listings():
+def get_listings(page, page_size):
     sql = """SELECT listings.id,
                     listings.address,
                     listings.rent,
@@ -48,8 +48,14 @@ def get_listings():
              FROM listings
              JOIN classes r ON r.id = listings.rooms_id
              JOIN classes m ON m.id = listings.municipality_id
-             ORDER BY listings.id DESC"""
-    return db.query(sql)
+             ORDER BY listings.id DESC
+             LIMIT ? OFFSET ?"""
+    offset = page_size * (page - 1)
+    return db.query(sql, [page_size, offset])
+
+def listing_count():
+    sql = "SELECT COUNT(*) count FROM listings"
+    return db.query(sql)[0]["count"]
 
 def get_listing(listing_id):
     sql = """SELECT listings.id,
@@ -213,7 +219,7 @@ def update_listing(listing_id, listing_data):
 def remove_listing(listing_id):
     db.execute("DELETE FROM listings WHERE id = ?", [listing_id])
 
-def search_listings(rating, size, min_rent, max_rent, rooms_id, property_type_id, municipality_id, condition_id):
+def search_listings(rating, size, min_rent, max_rent, rooms_id, property_type_id, municipality_id, condition_id, page, page_size):
     criteria = []
     values = []
     sql = """SELECT listings.id,
@@ -261,7 +267,12 @@ def search_listings(rating, size, min_rent, max_rent, rooms_id, property_type_id
     if criteria:
         sql += " WHERE " + " AND ".join(criteria)
     sql += " ORDER BY listings.id DESC"
-    return db.query(sql, values)
+    count_sql = "SELECT COUNT(*) count FROM (" + sql + ")"
+    count = db.query(count_sql, values)[0]["count"]
+    sql += " LIMIT ? OFFSET ?"
+    offset = page_size * (page - 1)
+    results = db.query(sql, values + [page_size, offset])
+    return results, count
 
 def like_unlike(user_id, listing_id, press_like):
     if press_like:
