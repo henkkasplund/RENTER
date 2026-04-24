@@ -1,4 +1,4 @@
-from flask import abort
+from validation import validation_error
 from werkzeug.security import check_password_hash, generate_password_hash
 import db
 import re
@@ -12,9 +12,9 @@ def get_user(user_id):
 
 def update_contact(user_id, phone, email):
     if phone and not re.search("^[0-9+ -]{5,20}$", phone):
-        abort(403)
+        validation_error("VIRHE: virheellinen puhelinnumero")
     if email and not re.search("^[^@]+@[^@]+\.[^@]+$", email):
-        abort(403)
+        validation_error("VIRHE: virheellinen sähköpostiosoite")
     sql = "UPDATE users SET phone = ?, email = ? WHERE id = ?"
     db.execute(sql, [phone, email, user_id])
 

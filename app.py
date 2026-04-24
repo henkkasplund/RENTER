@@ -14,6 +14,7 @@ from datetime import datetime
 import math
 import time
 from flask import g
+from validation import validation_error
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -117,9 +118,18 @@ def user(user_id):
             abort(403)
         phone = request.form["phone"]
         email = request.form["email"]
-        users.update_contact(user_id, phone, email)
-        flash("Yhteystiedot päivitetty!")
-        return redirect("/user/" + str(user_id) + "?view=profile")
+        try:
+            users.update_contact(user_id, phone, email)
+        except ValueError as error:
+            flash(str(error))
+            user = dict(user)
+            user["phone"] = phone
+            user["email"] = email
+            edit_contact = True
+            view = "profile"
+        else:
+            flash("Yhteystiedot päivitetty!")
+            return redirect("/user/" + str(user_id) + "?view=profile")
     return render_template("user.html",
                             user=user, listings=user_listings, liked=liked,
                             sent_offers=sent_offers, received_offers=received_offers,
@@ -144,6 +154,9 @@ def create_account():
     if not username or not password1:
         flash("VIRHE: tyhjä käyttäjänimi tai salasana")
         return render_template("register.html", username=username)
+    if len(password1) < 8:
+        flash("VIRHE: salasanan on oltava vähintään 8 merkkiä")
+        return render_template("register.html", username=username)
     if password1 != password2:
         flash("VIRHE: salasanat eivät ole samat")
         return render_template("register.html", username=username)
@@ -151,7 +164,7 @@ def create_account():
         users.create_user(username, password1)
     except sqlite3.IntegrityError:
         flash("VIRHE: tunnus on jo varattu")
-        return render_template("register.html")
+        return render_template("register.html", username=username)
     sql = "SELECT id, rating FROM users WHERE username = ?"
     user = db.query(sql, [username])[0]
     session.clear()
@@ -229,7 +242,10 @@ def create_listing():
     demand_login()
     check_csrf()
     user_id = session["user_id"]
-    listing_data = listings.get_listings_data()
+    try:
+        listing_data = listings.get_listings_data()
+    except ValueError:
+        abort(400)
     listings.add_listing(user_id, listing_data)
     return redirect("/")
 
@@ -347,10 +363,12 @@ def add_images():
             continue
         mimetype = file.mimetype
         if mimetype not in ["image/jpeg", "image/png"]:
-            return "VIRHE: väärä tiedostomuoto"
+            flash("VIRHE: väärä tiedostomuoto")
+            return redirect("/images/" + str(listing_id) + "?add_images=1")
         image = file.read()
         if len(image) > 100 * 1024:
-            return "VIRHE: liian suuri kuva"
+            flash("VIRHE: liian suuri kuva")
+            return redirect("/images/" + str(listing_id) + "?add_images=1")
         listings.add_images(listing_id, image, mimetype)
         images_added += 1
     if images_added > 1:
@@ -430,7 +448,11 @@ def create_offer():
     user_id = session["user_id"]
     if listing["user_id"] == user_id:
         abort(403)
-    offers.add_offer(offer_data["listing_id"], user_id, offer_data["price"])
+    try:
+        offers.add_offer(offer_data["listing_id"], user_id, offer_data["price"])
+    except ValueError as error:
+        flash(str(error))
+        return redirect("/listing/" + str(offer_data["listing_id"]) + "?edit_offer=1")
     return redirect("/listing/" + str(offer_data["listing_id"]))
 
 @app.route("/offer/<int:offer_id>")
@@ -482,7 +504,11 @@ def edit_offer(offer_id):
         abort(403)
     if action == "update":
         price = request.form["price"]
-        offers.modify_offer(offer_id, user_id, action, price)
+        try:
+            offers.modify_offer(offer_id, user_id, action, price)
+        except ValueError as error:
+            flash(str(error))
+            return redirect("/offer/" + str(offer_id) + "?edit_offer=1")
         flash("Hakemus päivitetty!")
         return redirect("/offer/" + str(offer_id))
     elif action == "delete":

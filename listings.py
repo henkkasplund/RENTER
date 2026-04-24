@@ -1,5 +1,6 @@
 import db
 from flask import abort, request
+from validation import validation_error
 import re
 
 def get_classes(title):
@@ -111,37 +112,37 @@ def get_listings_data():
         abort(403)
     size = request.form["size"]
     if not size or len(size) > 20:
-        abort(403)
+        validation_error("VIRHE: puuttuva tai liian iso neliömäärä")
     if not re.search("^[1-9][0-9]{0,3}([.,][0-9])?$", size):
-        abort(403)
+        validation_error("VIRHE: virheellinen neliömäärä (esim. 10 tai 10,5 kelpaavat)")
     size = size.replace(",", ".")
     rent = request.form["rent"]
     if not rent or len(rent) > 20:
-        abort(403)
+        validation_error("VIRHE: puuttuva tai liian suuri vuokra")
     if not re.search("^[1-9][0-9]{0,4}$", rent):
-        abort(403)
+        validation_error("VIRHE: vuokran pitää olla kokonaisluku välillä 1–99999)")
     municipality_id = request.form["municipality_id"]
     if not re.search("^[0-9]+$", municipality_id):
         abort(403)
     address = request.form["address"]
     if not address or len(address) > 50:
-        abort(403)
+        validation_error("VIRHE: puuttuva tai liian pitkä osoite")
     postcode = request.form["postcode"]
     if not postcode or len(postcode) > 5:
-        abort(403)
+        abort(f"puuttuva tai liian pitkä postinumero")
     if not re.search("^[0-9]{5}$", postcode):
-        abort(403)
+        validation_error("VIRHE: postinumeron tulee olla 5 numeroa")
     floor = request.form["floor"]
     if floor:
         if not re.search("^(-1|[0-9]{1,2})$", floor):
-            abort(403)
+            validation_error("VIRHE: virheellinen kerros")
     else:
         floor = None
     floors = request.form["floors"]
     if not floors or len(floors) > 10:
-        abort(403)
+        validation_error("VIRHE: kerrosten määrä puuttuu")
     if not re.search("^[1-9][0-9]?$", floors):
-        abort(403)
+        validation_error("VIRHE: virheellinen kerrosten määrä")
     condition_id = request.form["condition_id"]
     if not re.search("^[0-9]+$", condition_id):
         abort(403)
@@ -150,7 +151,7 @@ def get_listings_data():
         abort(403)
     description = request.form["description"]
     if len(description) > 2000:
-        abort(403)
+        validation_error("VIRHE: kuvaus on liian pitkä (max. 2000 merkkiä)")
     sauna = 1 if "sauna" in request.form else 0
     balcony = 1 if "balcony" in request.form else 0
     dishwasher = 1 if "dishwasher" in request.form else 0

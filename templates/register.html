@@ -12,12 +12,12 @@
 
     <label class="required">
       Tunnus
-      <input type="text" name="username" required>
+      <input type="text" name="username" value="{{ username or '' }}" required>
     </label>
 
     <label class="required">
-      Salasana
-      <input type="password" name="password1" required>
+      Salasana (≥ 8 merkkiä)
+      <input type="password" name="password1" minlength="8" required>
     </label>
 
     <label class="required">

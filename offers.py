@@ -1,6 +1,7 @@
 import db
 from flask import abort, request
 import re
+from validation import validation_error
 
 
 def rental_status(listing_id):
@@ -27,7 +28,7 @@ def add_offer(listing_id, user_id, price):
         abort(403)
     max_rejected = get_max_rejected(offer["id"])
     if int(price) <= max_rejected:
-        abort(403)
+        validation_error(f"VIRHE: uuden tarjouksen oltava suurempi kuin {max_rejected} €/kk")
     db.execute("UPDATE offers SET price = ?, status = 'pending' WHERE id = ?",
                [price, offer["id"]])
     db.execute("INSERT INTO offer_history (offer_id, price, event) VALUES (?, ?, ?)",
@@ -83,7 +84,7 @@ def modify_offer(offer_id, user_id, action, price=None):
             abort(403)
         max_rejected = get_max_rejected(offer["id"])
         if int(price) <= max_rejected:
-            abort(403)
+            validation_error(f"VIRHE: uuden tarjouksen oltava suurempi kuin {max_rejected} €/kk")
         db.execute("UPDATE offers SET price = ?, status = 'pending' WHERE id = ?", [price, offer_id])
         db.execute("INSERT INTO offer_history (offer_id, price, event) VALUES (?, ?, ?)", [offer_id, price, "updated"])
     elif action == "delete":

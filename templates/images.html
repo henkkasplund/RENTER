@@ -12,6 +12,7 @@
   {% if add_images %}
     <div class="card hero">
       <h3>Lisää kuvia</h3>
+      <p>(Kuvan koko maksimissaan 100 x 1024)</p>
 
       <form class="form-stack medium" action="/add_images" method="post" enctype="multipart/form-data">
         <input type="file" name="images" accept="image/jpeg,image/png" multiple>

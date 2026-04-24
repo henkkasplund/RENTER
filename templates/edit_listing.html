@@ -67,12 +67,12 @@
 
       <label class="required">
         Neliömäärä
-        <input type="text" name="size" value="{{ listing.size }}" maxlength="10" required>
+       <input type="text" name="size" value="{{ listing.size }}" maxlength="10" pattern="^[1-9][0-9]{0,3}(,5)?$" required>
       </label>
 
       <label class="required">
         Vuokrahinta
-        <input type="text" name="rent" value="{{ listing.rent }}" maxlength="10" required>
+        <input type="text" name="rent" value="{{ listing.rent }}" maxlength="10" pattern="^[1-9][0-9]{0,4}$" required>
       </label>
 
       <label class="required">
@@ -82,19 +82,19 @@
 
       <label class="required">
         Postinumero
-        <input type="text" name="postcode" value="{{ listing.postcode }}" maxlength="5" required>
+        <input type="text" name="postcode" value="{{ listing.postcode }}" maxlength="5" pattern="^[0-9]{5}$" required>
       </label>
 
       {% if listing.property_type == "Kerrostalo" %}
         <label>
           Kerros
-          <input type="text" name="floor" value="{{ listing.floor or '' }}">
+          <input type="text" name="floor" value="{{ listing.floor or '' }}" pattern="^(-1|[0-9]{1,2})$">
         </label>
       {% endif %}
 
       <label class="required">
         Kerroksia
-        <input type="text" name="floors" value="{{ listing.floors }}" required>
+        <input type="text" name="floors" value="{{ listing.floors }}" pattern="^[1-9][0-9]?$" required>
       </label>
 
     </div>
