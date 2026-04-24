@@ -95,6 +95,8 @@ def index(page=1):
 def user(user_id):
     demand_login()
     user = users.get_user(user_id)
+    if not user:
+        abort(404)
     user_listings = users.get_user_listings(user_id)
     liked = users.get_liked(user_id)
     sent_offers = offers.get_sent_offers(user_id)
@@ -109,10 +111,7 @@ def user(user_id):
     rental_deal = offers.confirmed_deal(viewer_id, user_id)
     user_rating = ratings.get_rating(session["user_id"], user_id) if rental_deal else None
     view = request.args.get("view", "listings")
-    if not user:
-        abort(403)
     if request.method == "POST":
-        demand_login()
         check_csrf()
         if session["user_id"] != user_id:
             abort(403)
@@ -317,16 +316,22 @@ def edit_listing(listing_id):
     property_types = listings.get_classes("property_type")
     if request.method == "GET":
         return render_template("edit_listing.html",
-                               listing=listing, municipalities=municipalities, rooms = rooms,
+                               listing=listing, municipalities=municipalities, rooms=rooms,
                                conditions=conditions, property_types=property_types)
     if request.method == "POST":
         check_csrf()
         if "update" in request.form:
-            listing_data = listings.get_listings_data()
-            listings.update_listing(listing_id, listing_data)
-            return redirect("/listing/" + str(listing_id))
-        else:
-            return redirect("/listing/" + str(listing_id))
+            try:
+                listing_data = listings.get_listings_data()
+            except ValueError as error:
+                flash(str(error))
+                return render_template("edit_listing.html",
+                                       listing=listing, municipalities=municipalities, rooms=rooms,
+                                       conditions=conditions, property_types=property_types)
+            else:
+                listings.update_listing(listing_id, listing_data)
+                return redirect("/listing/" + str(listing_id))
+        return redirect("/listing/" + str(listing_id))
 
 @app.route("/remove_listing/<int:listing_id>", methods=["GET", "POST"])
 def remove_listing(listing_id):
