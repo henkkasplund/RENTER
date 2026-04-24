@@ -19,6 +19,10 @@ app = Flask(__name__)
 app.secret_key = config.secret_key
 
 
+def guarantee_csrf():
+    if "csrf_token" not in session:
+        session["csrf_token"] = secrets.token_hex(16)
+
 def check_csrf():
     if request.form["csrf_token"] != session["csrf_token"]:
         abort(403)
@@ -128,10 +132,12 @@ def user(user_id):
 
 @app.route("/register")
 def register():
+    guarantee_csrf()
     return render_template("register.html")
 
 @app.route("/create_account", methods=["POST"])
 def create_account():
+    check_csrf()
     username = request.form["username"]
     password1 = request.form["password1"]
     password2 = request.form["password2"]
@@ -148,6 +154,7 @@ def create_account():
         return render_template("register.html")
     sql = "SELECT id, rating FROM users WHERE username = ?"
     user = db.query(sql, [username])[0]
+    session.clear()
     session["user_id"] = user["id"]
     session["username"] = username
     session["csrf_token"] = secrets.token_hex(16)
@@ -178,13 +185,16 @@ def delete_account():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
+        guarantee_csrf()
         username = request.args.get("username", "")
         return render_template("login.html", username=username)
     if request.method == "POST":
+        check_csrf()
         username = request.form["username"]
         password = request.form["password"]
         user = users.check_login(username, password)
         if user:
+            session.clear()
             session["user_id"] = user["id"]
             session["username"] = username
             session["rating"] = user["rating"]
