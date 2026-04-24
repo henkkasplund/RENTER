@@ -7,6 +7,11 @@ def get_classes(title):
     sql = "SELECT id, value FROM classes WHERE title = ? ORDER BY id"
     return db.query(sql, [title])
 
+def get_class_value(title, value_id):
+    sql = "SELECT value FROM classes WHERE title = ? AND id = ?"
+    result = db.query(sql, [title, value_id])
+    return result[0]["value"] if result else None
+
 def add_listing(user_id, listing_data):
     sql = """INSERT INTO listings (user_id, rooms_id, size, rent,
                                 address, postcode,floor, floors,
@@ -129,13 +134,22 @@ def get_listings_data():
         validation_error("VIRHE: puuttuva tai liian pitkä osoite")
     postcode = request.form["postcode"]
     if not postcode or len(postcode) > 5:
-        abort(f"puuttuva tai liian pitkä postinumero")
+        validation_error("VIRHE: puuttuva tai liian pitkä postinumero")
     if not re.search("^[0-9]{5}$", postcode):
         validation_error("VIRHE: postinumeron tulee olla 5 numeroa")
-    floor = request.form["floor"]
-    if floor:
-        if not re.search("^(-1|[0-9]{1,2})$", floor):
-            validation_error("VIRHE: virheellinen kerros")
+    property_type_id = request.form["property_type_id"]
+    if not re.search("^[0-9]+$", property_type_id):
+        abort(403)
+    property_type_name = get_class_value("property_type", property_type_id)
+    if not property_type_name:
+        abort(403)
+    if property_type_name == "Kerrostalo":
+        floor = request.form.get("floor", "")
+        if floor:
+            if not re.search("^(-1|[0-9]{1,2})$", floor):
+                validation_error("VIRHE: virheellinen kerros")
+        else:
+            floor = None
     else:
         floor = None
     floors = request.form["floors"]
@@ -146,9 +160,6 @@ def get_listings_data():
     condition_id = request.form["condition_id"]
     if not re.search("^[0-9]+$", condition_id):
         abort(403)
-    property_type_id = request.form["property_type_id"]
-    if not re.search("^[0-9]+$", property_type_id):
-        abort(403)
     description = request.form["description"]
     if len(description) > 2000:
         validation_error("VIRHE: kuvaus on liian pitkä (max. 2000 merkkiä)")
@@ -156,12 +167,19 @@ def get_listings_data():
     balcony = 1 if "balcony" in request.form else 0
     dishwasher = 1 if "dishwasher" in request.form else 0
     washing_machine = 1 if "washing_machine" in request.form else 0
-    bath = 1 if "bath" in request.form else 0
-    elevator = 1 if "elevator" in request.form else 0
-    laundry = 1 if "laundry" in request.form else 0
-    cellar = 1 if "cellar" in request.form else 0
-    pool = 1 if "pool" in request.form else 0
-    gym = 1 if "gym" in request.form else 0
+    if property_type_name == "Kerrostalo":
+        bath = 1 if "bath" in request.form else 0
+        elevator = 1 if "elevator" in request.form else 0
+        laundry = 1 if "laundry" in request.form else 0
+        cellar = 1 if "cellar" in request.form else 0
+        gym = 1 if "gym" in request.form else 0
+    else:
+        bath = elevator = laundry = cellar = gym = 0
+    if property_type_name in ("Kerrostalo", "Omakotitalo"):
+        pool = 1 if "pool" in request.form else 0
+    else:
+        pool = 0
+
 
     return {"rooms_id": rooms_id,
             "size": size,

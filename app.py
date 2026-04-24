@@ -347,6 +347,7 @@ def remove_listing(listing_id):
         check_csrf()
         if "remove" in request.form:
             listings.remove_listing(listing_id)
+            flash("Ilmoitus poistettu")
             return redirect("/")
         else:
             return redirect("/listing/" + str(listing_id))
