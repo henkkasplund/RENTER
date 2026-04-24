@@ -209,6 +209,14 @@ button:hover {
   color: #959595;
 }
 
+.card.error {
+  color: #bc1c1c;
+}
+
+.card.success {
+  color: #095509;
+}
+
 .header {
   display: flex;
   justify-content: space-between;

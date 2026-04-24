@@ -120,14 +120,14 @@ def user(user_id):
         try:
             users.update_contact(user_id, phone, email)
         except ValueError as error:
-            flash(str(error))
+            flash(str(error), "error")
             user = dict(user)
             user["phone"] = phone
             user["email"] = email
             edit_contact = True
             view = "profile"
         else:
-            flash("Yhteystiedot päivitetty!")
+            flash("Yhteystiedot päivitetty!", "success")
             return redirect("/user/" + str(user_id) + "?view=profile")
     return render_template("user.html",
                             user=user, listings=user_listings, liked=liked,
@@ -151,18 +151,18 @@ def create_account():
     password1 = request.form["password1"]
     password2 = request.form["password2"]
     if not username or not password1:
-        flash("VIRHE: tyhjä käyttäjänimi tai salasana")
+        flash("VIRHE: tyhjä käyttäjänimi tai salasana", "error")
         return render_template("register.html", username=username)
     if len(password1) < 8:
-        flash("VIRHE: salasanan on oltava vähintään 8 merkkiä")
+        flash("VIRHE: salasanan on oltava vähintään 8 merkkiä", "error")
         return render_template("register.html", username=username)
     if password1 != password2:
-        flash("VIRHE: salasanat eivät ole samat")
+        flash("VIRHE: salasanat eivät ole samat", "error")
         return render_template("register.html", username=username)
     try:
         users.create_user(username, password1)
     except sqlite3.IntegrityError:
-        flash("VIRHE: tunnus on jo varattu")
+        flash("VIRHE: tunnus on jo varattu", "error")
         return render_template("register.html", username=username)
     sql = "SELECT id, rating FROM users WHERE username = ?"
     user = db.query(sql, [username])[0]
@@ -170,7 +170,7 @@ def create_account():
     session["user_id"] = user["id"]
     session["username"] = username
     session["csrf_token"] = secrets.token_hex(16)
-    flash("Tunnus luotu!")
+    flash("Tunnus luotu!", "success")
     return redirect("/")
 
 @app.route("/delete_account", methods=["GET", "POST"])
@@ -189,7 +189,7 @@ def delete_account():
             del session["user_id"]
             del session["username"]
             del session["csrf_token"]
-            flash("Käyttäjätili poistettu!")
+            flash("Käyttäjätili poistettu!", "error")
             return redirect("/")
         else:
             return redirect("/user/" + str(user_id))
@@ -213,7 +213,7 @@ def login():
             session["csrf_token"] = secrets.token_hex(16)
             return redirect("/")
         else:
-            flash("VIRHE: väärä tunnus tai salasana")
+            flash("VIRHE: väärä tunnus tai salasana", "error")
             return render_template("login.html", username=username)
 
 @app.route("/logout", methods=["POST"])
@@ -324,7 +324,7 @@ def edit_listing(listing_id):
             try:
                 listing_data = listings.get_listings_data()
             except ValueError as error:
-                flash(str(error))
+                flash(str(error), "error")
                 return render_template("edit_listing.html",
                                        listing=listing, municipalities=municipalities, rooms=rooms,
                                        conditions=conditions, property_types=property_types)
@@ -347,7 +347,7 @@ def remove_listing(listing_id):
         check_csrf()
         if "remove" in request.form:
             listings.remove_listing(listing_id)
-            flash("Ilmoitus poistettu")
+            flash("Ilmoitus poistettu", "success")
             return redirect("/")
         else:
             return redirect("/listing/" + str(listing_id))
@@ -369,18 +369,18 @@ def add_images():
             continue
         mimetype = file.mimetype
         if mimetype not in ["image/jpeg", "image/png"]:
-            flash("VIRHE: väärä tiedostomuoto")
+            flash("VIRHE: väärä tiedostomuoto", "error")
             return redirect("/images/" + str(listing_id) + "?add_images=1")
         image = file.read()
         if len(image) > 100 * 1024:
-            flash("VIRHE: liian suuri kuva")
+            flash("VIRHE: liian suuri kuva", "error")
             return redirect("/images/" + str(listing_id) + "?add_images=1")
         listings.add_images(listing_id, image, mimetype)
         images_added += 1
     if images_added > 1:
-        flash("Kuvat lisätty!")
+        flash("Kuvat lisätty!", "success")
     elif images_added == 1:
-        flash("Kuva lisätty!")
+        flash("Kuva lisätty!", "success")
     return redirect("/images/" + str(listing_id))
 
 @app.route("/remove_images", methods=["POST"])
@@ -397,9 +397,9 @@ def remove_images():
     for image_id in images:
         listings.remove_image(listing_id, image_id)
     if len(images) > 1:
-        flash("Kuvat poistettu!")
+        flash("Kuvat poistettu!", "success")
     elif len(images) == 1:
-        flash("Kuva poistettu!")
+        flash("Kuva poistettu!", "success")
     return redirect("/images/" + str(listing_id))
 
 @app.route("/image/<int:image_id>")
@@ -457,7 +457,7 @@ def create_offer():
     try:
         offers.add_offer(offer_data["listing_id"], user_id, offer_data["price"])
     except ValueError as error:
-        flash(str(error))
+        flash(str(error), "error")
         return redirect("/listing/" + str(offer_data["listing_id"]) + "?edit_offer=1")
     return redirect("/listing/" + str(offer_data["listing_id"]))
 
@@ -513,13 +513,13 @@ def edit_offer(offer_id):
         try:
             offers.modify_offer(offer_id, user_id, action, price)
         except ValueError as error:
-            flash(str(error))
+            flash(str(error), "error")
             return redirect("/offer/" + str(offer_id) + "?edit_offer=1")
-        flash("Hakemus päivitetty!")
+        flash("Hakemus päivitetty!", "success")
         return redirect("/offer/" + str(offer_id))
     elif action == "delete":
         offers.modify_offer(offer_id, user_id, action)
-        flash("Hakemus poistettu!")
+        flash("Hakemus poistettu!", "success")
     else:
         abort(403)
     return redirect(session.get("last_visited") or "/listing/" + str(offer["listing_id"]))
@@ -537,7 +537,7 @@ def confirm_offer(offer_id):
     if offer["status"] != "accepted":
         abort(403)
     offers.confirm_rental(offer_id)
-    flash("Vuokraus vahvistettu!")
+    flash("Vuokraus vahvistettu!", "success")
     return redirect("/listing/" + str(offer["listing_id"]))
 
 @app.route("/rate_user/<int:user_id>", methods=["POST"])
@@ -548,7 +548,7 @@ def rate_user(user_id):
     rating_value = request.form["rating"]
     ratings.set_rating(rater_id, user_id, rating_value)
     users.update_rating(user_id)
-    flash("Arvosana annettu")
+    flash("Arvosana annettu", "success")
     return redirect("/user/" + str(user_id))
 
 @app.before_request

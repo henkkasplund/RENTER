@@ -51,10 +51,10 @@
       </ul>
     </nav>
 
-    {% for message in get_flashed_messages() %}
+    {% for category, message in get_flashed_messages(with_categories=true) %}
       <section class="wide">
-        <div class="card center">
-          <p><strong>{{ message }}</strong></p>
+        <div class="card center {{ category }}">
+          <h3>{{ message }}</h3>
         </div>
       </section>
     {% endfor %}
