@@ -326,7 +326,7 @@
                   <button type="submit" name="decision" value="reject" style="background:#bc1c1c;">Hylkää</button>
                 </form>
 
-                <form action="/offer/{{ offer.id }}" method="GET">
+                <form action="/offer/{{ offer.id }}" method="get">
                   <button type="submit">Avaa</button>
                 </form>
 
@@ -353,7 +353,7 @@
                   <button type="submit" name="decision" value="cancel_accept" style="background:#bc1c1c;">Peruuta</button>
                 </form>
 
-                <form action="/offer/{{ offer.id }}" method="GET">
+                <form action="/offer/{{ offer.id }}" method="get">
                   <button type="submit">Avaa</button>
                 </form>
               </div>
@@ -376,7 +376,7 @@
               </p>
               <hr>
               <h4 class="positive">Vuokraus vahvistettu</h4>
-              <form action="/offer/{{ offer.id }}" method="GET">
+              <form action="/offer/{{ offer.id }}" method="get">
                 <button type="submit">Avaa hakemus</button>
               </form>
             {% endif %}
