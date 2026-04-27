@@ -1,3 +1,6 @@
+# Seeds the database with initial data for development and testing.
+# Run: python seed.py
+
 import random
 import sqlite3
 
