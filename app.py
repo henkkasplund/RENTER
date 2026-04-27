@@ -142,8 +142,11 @@ def create_account():
     if not username or not password1:
         flash("VIRHE: tyhjä käyttäjänimi tai salasana", "error")
         return render_template("register.html", username=username)
-    if len(password1) < 8:
-        flash("VIRHE: salasanan on oltava vähintään 8 merkkiä", "error")
+    if len(username) < 4 or len(username) > 15:
+        flash("VIRHE: käyttäjänimen pituus oltava 4–15 merkkiä", "error")
+        return render_template("register.html", username=username)
+    if len(password1) < 8 or len(password1) > 50:
+        flash("VIRHE: salasanan pituus oltava 8–50 merkkiä", "error")
         return render_template("register.html", username=username)
     if password1 != password2:
         flash("VIRHE: salasanat eivät ole samat", "error")

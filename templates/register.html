@@ -12,17 +12,17 @@
 
     <label class="required">
       Tunnus
-      <input type="text" name="username" value="{{ username or '' }}" required>
+      <input type="text" name="username" value="{{ username or '' }}" minlength="4" maxlength="15" required>
     </label>
 
     <label class="required">
       Salasana (≥ 8 merkkiä)
-      <input type="password" name="password1" minlength="8" required>
+      <input type="password" name="password1" minlength="8" maxlength="50" required>
     </label>
 
     <label class="required">
       Salasana uudestaan
-      <input type="password" name="password2" required>
+      <input type="password" name="password2" maxlength="50" required>
     </label>
 
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
