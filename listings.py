@@ -121,8 +121,8 @@ def get_listings_data():
     size = request.form["size"]
     if not size or len(size) > 20:
         validation_error("VIRHE: puuttuva tai liian iso neliömäärä")
-    if not re.search(r"^[1-9][0-9]{0,3}([.,][0-9])?$", size):
-        validation_error("VIRHE: virheellinen neliömäärä (esim. 10 tai 10,5 kelpaavat)")
+    if not re.search(r"^[1-9][0-9]{0,3}([.,]5)?$", size):
+        validation_error("VIRHE: virheellinen neliömäärä (max. puolen desimaalin tarkkuus)")
     size = size.replace(",", ".")
     rent = request.form["rent"]
     if not rent or len(rent) > 20:
