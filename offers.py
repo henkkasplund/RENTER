@@ -90,14 +90,14 @@ def modify_offer(offer_id, user_id, action, price=None):
         db.execute("INSERT INTO offer_history (offer_id, price, event) VALUES (?, ?, ?)",
                     [offer_id, price, "updated"])
     elif action == "delete":
-        if status == ("pending"):
+        if status == "pending":
             db.execute("""DELETE FROM offer_history WHERE id = (
                 SELECT id FROM offer_history
                 WHERE offer_id = ?
                 ORDER BY id DESC
                 LIMIT 1)""", [offer_id])
             db.execute("UPDATE offers SET status = 'withdrawn' WHERE id = ?", [offer_id])
-        elif status == ("accepted"):
+        elif status == "accepted":
             db.execute("UPDATE offers SET status = 'withdrawn' WHERE id = ?", [offer_id])
             db.execute("INSERT INTO offer_history (offer_id, price, event) VALUES (?, ?, ?)",
                     [offer_id, offer["price"], "withdrawn"])
@@ -114,12 +114,17 @@ def confirm_rental(offer_id):
         abort(403)
     if rental_status(offer["listing_id"]):
         abort(403)
-    sql = "UPDATE offers SET status = 'confirmed' WHERE id = ?"
-    db.execute(sql, [offer_id])
+    other_offers = db.query(
+        "SELECT id, price FROM offers WHERE listing_id = ? AND id != ?",
+        [offer["listing_id"], offer_id])
+    db.execute("UPDATE offers SET status = 'confirmed' WHERE id = ?", [offer_id])
     db.execute("INSERT INTO offer_history (offer_id, price, event) VALUES (?, ?, ?)",
-           [offer_id, offer["price"], "confirmed"])
-    sql = "UPDATE offers SET status = 'rejected' WHERE listing_id = ? AND id != ?"
-    db.execute(sql, [offer["listing_id"], offer_id])
+               [offer_id, offer["price"], "confirmed"])
+    db.execute("UPDATE offers SET status = 'rejected' WHERE listing_id = ? AND id != ?",
+               [offer["listing_id"], offer_id])
+    for other in other_offers:
+        db.execute("INSERT INTO offer_history (offer_id, price, event) VALUES (?, ?, ?)",
+                   [other["id"], other["price"], "rejected"])
 
 def get_offers(listing_id, viewer_id, owner_id):
     if not viewer_id:
