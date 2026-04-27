@@ -1,8 +1,8 @@
-from validation import validation_error
+import re
 from werkzeug.security import check_password_hash, generate_password_hash
 import db
-import re
 import ratings
+from validation import validation_error
 
 
 def get_user(user_id):
@@ -11,9 +11,9 @@ def get_user(user_id):
     return result[0] if result else None
 
 def update_contact(user_id, phone, email):
-    if phone and not re.search("^[0-9+ -]{5,20}$", phone):
+    if phone and not re.search(r"^[0-9+ -]{5,20}$", phone):
         validation_error("VIRHE: virheellinen puhelinnumero")
-    if email and not re.search("^[^@]+@[^@]+\.[^@]+$", email):
+    if email and not re.search(r"^[^@]+@[^@]+\.[^@]+$", email):
         validation_error("VIRHE: virheellinen sähköpostiosoite")
     sql = "UPDATE users SET phone = ?, email = ? WHERE id = ?"
     db.execute(sql, [phone, email, user_id])

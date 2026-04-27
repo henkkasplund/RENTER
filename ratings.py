@@ -1,6 +1,6 @@
-import db
-from flask import abort
 import re
+from flask import abort
+import db
 import offers
 
 
@@ -26,7 +26,7 @@ def set_rating(rater_id, target_id, rating):
     rating_permission = offers.confirmed_deal(rater_id, target_id)
     if not rating_permission:
         abort(403)
-    if not re.search("^[0-5]$", str(rating)):
+    if not re.search(r"^[0-5]$", str(rating)):
         abort(403)
     rating = int(rating)
     sql = """INSERT INTO ratings (rater_id, target_id, rating)

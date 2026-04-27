@@ -1,6 +1,6 @@
-import db
-from flask import abort, request
 import re
+from flask import abort, request
+import db
 from validation import validation_error
 
 
@@ -33,15 +33,15 @@ def add_offer(listing_id, user_id, price):
                [price, offer["id"]])
     db.execute("INSERT INTO offer_history (offer_id, price, event) VALUES (?, ?, ?)",
                [offer["id"], price, "sent"])
-    
+
 def get_offer_data():
     price = request.form["price"]
     if not price or len(price) > 20:
         abort(403)
-    if not re.search("^[1-9][0-9]{0,4}$", price):
+    if not re.search(r"^[1-9][0-9]{0,4}$", price):
         abort(403)
     listing_id = request.form["listing_id"]
-    if not re.search("^[0-9]+$", listing_id):
+    if not re.search(r"^[0-9]+$", listing_id):
         abort(403)
     return {"price": int(price), "listing_id": int(listing_id)}
 
@@ -80,13 +80,15 @@ def modify_offer(offer_id, user_id, action, price=None):
     if action == "update":
         if status not in ("pending", "rejected", "withdrawn"):
             abort(403)
-        if not price or not re.search("^[1-9][0-9]{0,4}$", price):
+        if not price or not re.search(r"^[1-9][0-9]{0,4}$", price):
             abort(403)
         max_rejected = get_max_rejected(offer["id"])
         if int(price) <= max_rejected:
             validation_error(f"VIRHE: uuden tarjouksen oltava suurempi kuin {max_rejected} €/kk")
-        db.execute("UPDATE offers SET price = ?, status = 'pending' WHERE id = ?", [price, offer_id])
-        db.execute("INSERT INTO offer_history (offer_id, price, event) VALUES (?, ?, ?)", [offer_id, price, "updated"])
+        db.execute("UPDATE offers SET price = ?, status = 'pending' WHERE id = ?",
+                    [price, offer_id])
+        db.execute("INSERT INTO offer_history (offer_id, price, event) VALUES (?, ?, ?)",
+                    [offer_id, price, "updated"])
     elif action == "delete":
         if status == ("pending"):
             db.execute("""DELETE FROM offer_history WHERE id = (

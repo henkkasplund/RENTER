@@ -1,7 +1,8 @@
-import db
-from flask import abort, request
-from validation import validation_error
 import re
+from flask import abort, request
+import db
+from validation import validation_error
+
 
 def get_classes(title):
     sql = "SELECT id, value FROM classes WHERE title = ? ORDER BY id"
@@ -113,21 +114,21 @@ def get_listing(listing_id):
 
 def get_listings_data():
     rooms_id = request.form["rooms_id"]
-    if not re.search("^[0-9]+$", rooms_id):
+    if not re.search(r"^[0-9]+$", rooms_id):
         abort(403)
     size = request.form["size"]
     if not size or len(size) > 20:
         validation_error("VIRHE: puuttuva tai liian iso neliömäärä")
-    if not re.search("^[1-9][0-9]{0,3}([.,][0-9])?$", size):
+    if not re.search(r"^[1-9][0-9]{0,3}([.,][0-9])?$", size):
         validation_error("VIRHE: virheellinen neliömäärä (esim. 10 tai 10,5 kelpaavat)")
     size = size.replace(",", ".")
     rent = request.form["rent"]
     if not rent or len(rent) > 20:
         validation_error("VIRHE: puuttuva tai liian suuri vuokra")
-    if not re.search("^[1-9][0-9]{0,4}$", rent):
+    if not re.search(r"^[1-9][0-9]{0,4}$", rent):
         validation_error("VIRHE: vuokran pitää olla kokonaisluku välillä 1–99999)")
     municipality_id = request.form["municipality_id"]
-    if not re.search("^[0-9]+$", municipality_id):
+    if not re.search(r"^[0-9]+$", municipality_id):
         abort(403)
     address = request.form["address"]
     if not address or len(address) > 50:
@@ -135,10 +136,10 @@ def get_listings_data():
     postcode = request.form["postcode"]
     if not postcode or len(postcode) > 5:
         validation_error("VIRHE: puuttuva tai liian pitkä postinumero")
-    if not re.search("^[0-9]{5}$", postcode):
+    if not re.search(r"^[0-9]{5}$", postcode):
         validation_error("VIRHE: postinumeron tulee olla 5 numeroa")
     property_type_id = request.form["property_type_id"]
-    if not re.search("^[0-9]+$", property_type_id):
+    if not re.search(r"^[0-9]+$", property_type_id):
         abort(403)
     property_type_name = get_class_value("property_type", property_type_id)
     if not property_type_name:
@@ -146,7 +147,7 @@ def get_listings_data():
     if property_type_name == "Kerrostalo":
         floor = request.form.get("floor", "")
         if floor:
-            if not re.search("^(-1|[0-9]{1,2})$", floor):
+            if not re.search(r"^(-1|[0-9]{1,2})$", floor):
                 validation_error("VIRHE: virheellinen kerros")
         else:
             floor = None
@@ -155,10 +156,10 @@ def get_listings_data():
     floors = request.form["floors"]
     if not floors or len(floors) > 10:
         validation_error("VIRHE: kerrosten määrä puuttuu")
-    if not re.search("^[1-9][0-9]?$", floors):
+    if not re.search(r"^[1-9][0-9]?$", floors):
         validation_error("VIRHE: virheellinen kerrosten määrä")
     condition_id = request.form["condition_id"]
-    if not re.search("^[0-9]+$", condition_id):
+    if not re.search(r"^[0-9]+$", condition_id):
         abort(403)
     description = request.form["description"]
     if len(description) > 2000:
@@ -238,7 +239,9 @@ def update_listing(listing_id, listing_data):
 def remove_listing(listing_id):
     db.execute("DELETE FROM listings WHERE id = ?", [listing_id])
 
-def search_listings(rating, size, min_rent, max_rent, rooms_id, property_type_id, municipality_id, condition_id, page, page_size):
+def search_listings(rating, size, min_rent, max_rent, rooms_id,
+                    property_type_id, municipality_id,
+                    condition_id, page, page_size):
     criteria = []
     values = []
     sql = """SELECT listings.id,
