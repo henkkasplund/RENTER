@@ -116,6 +116,8 @@ def get_listings_data():
     rooms_id = request.form["rooms_id"]
     if not re.search(r"^[0-9]+$", rooms_id):
         abort(403)
+    if not get_class_value("rooms", rooms_id):
+        abort(403)
     size = request.form["size"]
     if not size or len(size) > 20:
         validation_error("VIRHE: puuttuva tai liian iso neliömäärä")
@@ -129,6 +131,8 @@ def get_listings_data():
         validation_error("VIRHE: vuokran pitää olla kokonaisluku välillä 1–99999)")
     municipality_id = request.form["municipality_id"]
     if not re.search(r"^[0-9]+$", municipality_id):
+        abort(403)
+    if not get_class_value("municipality", municipality_id):
         abort(403)
     address = request.form["address"]
     if not address or len(address) > 50:
@@ -161,6 +165,8 @@ def get_listings_data():
     condition_id = request.form["condition_id"]
     if not re.search(r"^[0-9]+$", condition_id):
         abort(403)
+    if not get_class_value("condition", condition_id):
+        abort(403)
     description = request.form["description"]
     if len(description) > 2000:
         validation_error("VIRHE: kuvaus on liian pitkä (max. 2000 merkkiä)")
@@ -180,7 +186,6 @@ def get_listings_data():
         pool = 1 if "pool" in request.form else 0
     else:
         pool = 0
-
 
     return {"rooms_id": rooms_id,
             "size": size,
