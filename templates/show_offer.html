@@ -118,7 +118,7 @@
               <h4>Voit muokata tarjousta siihen asti kun ilmoittaja hyväksyy hakemuksen</h4>
               <hr>
               <h3 class="neutral">Hakemus odottaa vuokranantajan päätöstä</h3>
-            {% if edit_offer %}
+            {% if editing_offer %}
               <form class="form-stack narrow" action="/edit_offer/{{ offer.id }}" method="post">
                 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                 <label>
@@ -186,7 +186,7 @@
               <h2>{{ offer.price }} €/kk</h2>
             {% endif %}
 
-            {% if edit_offer %}
+            {% if editing_offer %}
               <h4>
                 Voit lähettää uuden hakemuksen<br />
                 Uusi vuokratarjous oltava suurempi kuin edellinen hylätty

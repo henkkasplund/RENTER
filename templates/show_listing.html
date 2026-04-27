@@ -198,7 +198,7 @@
         {% else %}
           <div class="center">
             <span class="muted">Kohde lisätty {{ listing.created_at | get_date }}</span>
-            {% if edit_offer %}
+            {% if editing_offer %}
               <div class="card">
                 {% if max_rejected > 0 %}
                   <h3>Hakemuksesi</h3>

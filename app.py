@@ -283,13 +283,13 @@ def show_listing(listing_id):
     if viewer_id and viewer_id != listing["user_id"] and listing_offers:
         user_offer = listing_offers[0]
     rented = offers.rental_status(listing_id)
-    edit_offer = request.args.get("edit_offer") == "1"
+    editing_offer = request.args.get("edit_offer") == "1"
     view = request.args.get("view", "listing")
     max_rejected = offers.get_max_rejected(user_offer["id"]) if user_offer else 0
     return render_template("show_listing.html",
                            listing=listing, likes=likes, images=images,
                            offers=listing_offers, user_offer=user_offer,
-                           rented=rented, edit_offer=edit_offer, view=view,
+                           rented=rented, editing_offer=editing_offer, view=view,
                            offer_history=offer_history, pending_offers=pending_offers,
                            accepted_offers=accepted_offers, max_rejected=max_rejected)
 
@@ -411,8 +411,8 @@ def edit_images(listing_id):
     if listing["user_id"] != session["user_id"]:
         abort(403)
     images = listings.get_images(listing_id)
-    add_images = request.args.get("add_images") == "1"
-    return render_template("images.html", listing=listing, images=images, add_images=add_images)
+    adding_images = request.args.get("add_images") == "1"
+    return render_template("images.html", listing=listing, images=images, adding_images=adding_images)
 
 @app.route("/toggle_like/<int:listing_id>", methods=["POST"])
 def toggle_like(listing_id):
@@ -465,11 +465,11 @@ def show_offer(offer_id):
         abort(403)
     history = offers.get_offer_history(offer_id)
     likes = listings.get_likes(session.get("user_id"), offer["listing_id"])
-    edit_offer = request.args.get("edit_offer") == "1"
+    editing_offer = request.args.get("edit_offer") == "1"
     max_rejected = offers.get_max_rejected(offer["id"])
     return render_template("show_offer.html",
                            offer=offer, listing=listing, history=history,
-                           likes=likes, edit_offer=edit_offer, max_rejected=max_rejected)
+                           likes=likes, editing_offer=editing_offer, max_rejected=max_rejected)
 
 @app.route("/handle_offer/<int:offer_id>", methods=["POST"])
 def handle_offer(offer_id):
