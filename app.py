@@ -1,20 +1,18 @@
 import sqlite3
+import secrets
+import math
+from datetime import datetime
+import time
 from flask import Flask
-from flask import abort, redirect, render_template, make_response, request, session
-from flask import flash
+from flask import abort, redirect, render_template, make_response, request, session, flash, g
+import markupsafe
 import db
 import config
 import listings
 import users
 import offers
 import ratings
-import markupsafe
-import secrets
-from datetime import datetime
-import math
-import time
-from flask import g
-from validation import validation_error
+
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -93,8 +91,8 @@ def index(page=1):
 @app.route("/user/<int:user_id>", methods=["GET", "POST"])
 def user(user_id):
     demand_login()
-    user = users.get_user(user_id)
-    if not user:
+    account = users.get_user(user_id)
+    if not account:
         abort(404)
     user_listings = users.get_user_listings(user_id)
     liked = users.get_liked(user_id)
@@ -115,16 +113,16 @@ def user(user_id):
             users.update_contact(user_id, phone, email)
         except ValueError as error:
             flash(str(error), "error")
-            user = dict(user)
-            user["phone"] = phone
-            user["email"] = email
+            account = dict(account)
+            account["phone"] = phone
+            account["email"] = email
             edit_contact = True
             view = "profile"
         else:
             flash("Yhteystiedot päivitetty!", "success")
             return redirect("/user/" + str(user_id) + "?view=profile")
     return render_template("user.html",
-                            user=user, listings=user_listings, liked=liked,
+                            user=account, listings=user_listings, liked=liked,
                             edit_contact=edit_contact, edit_rating=edit_rating,
                             rental_deal=rental_deal, user_rating=user_rating,
                             view=view, offer_stats=offer_stats)
@@ -155,9 +153,9 @@ def create_account():
         flash("VIRHE: tunnus on jo varattu", "error")
         return render_template("register.html", username=username)
     sql = "SELECT id, rating FROM users WHERE username = ?"
-    user = db.query(sql, [username])[0]
+    account = db.query(sql, [username])[0]
     session.clear()
-    session["user_id"] = user["id"]
+    session["user_id"] = account["id"]
     session["username"] = username
     session["csrf_token"] = secrets.token_hex(16)
     flash("Tunnus luotu!", "success")
@@ -167,11 +165,9 @@ def create_account():
 def delete_account():
     demand_login()
     user_id = session["user_id"]
-    user = users.get_user(user_id)
-    if not user:
+    account = users.get_user(user_id)
+    if not account:
         abort(404)
-    if request.method == "GET":
-        return render_template("delete_account.html", user=user)
     if request.method == "POST":
         check_csrf()
         if "delete" in request.form:
@@ -181,30 +177,28 @@ def delete_account():
             del session["csrf_token"]
             flash("Käyttäjätili poistettu!", "error")
             return redirect("/")
-        else:
-            return redirect("/user/" + str(user_id))
+        return redirect("/user/" + str(user_id))
+    return render_template("delete_account.html", user=account)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "GET":
-        guarantee_csrf()
-        username = request.args.get("username", "")
-        return render_template("login.html", username=username)
     if request.method == "POST":
         check_csrf()
         username = request.form["username"]
         password = request.form["password"]
-        user = users.check_login(username, password)
-        if user:
+        account = users.check_login(username, password)
+        if account:
             session.clear()
-            session["user_id"] = user["id"]
+            session["user_id"] = account["id"]
             session["username"] = username
-            session["rating"] = user["rating"]
+            session["rating"] = account["rating"]
             session["csrf_token"] = secrets.token_hex(16)
             return redirect("/")
-        else:
-            flash("VIRHE: väärä tunnus tai salasana", "error")
-            return render_template("login.html", username=username)
+        flash("VIRHE: väärä tunnus tai salasana", "error")
+        return render_template("login.html", username=username)
+    guarantee_csrf()
+    username = request.args.get("username", "")
+    return render_template("login.html", username=username)
 
 @app.route("/logout", methods=["POST"])
 def logout():
@@ -257,15 +251,15 @@ def search_listings():
                                        condition_id, page, page_size)
     page_count = max(math.ceil(count / page_size), 1)
     return render_template("search_listings.html",
-                           size=size, max_rent=max_rent, min_rent=min_rent,
-                           rooms_id=rooms_id, property_type_id=property_type_id,
-                           municipality_id=municipality_id, condition_id=condition_id,
-                           searched = searched, results=results, rating=rating,
-                           edit_search=edit_search, rooms=listings.get_classes("rooms"),
-                           municipalities=listings.get_classes("municipality"),
-                           property_types=listings.get_classes("property_type"),
-                           conditions=listings.get_classes("condition"),
-                           page=page, page_count=page_count)
+                            size=size, max_rent=max_rent, min_rent=min_rent,
+                            rooms_id=rooms_id, property_type_id=property_type_id,
+                            municipality_id=municipality_id, condition_id=condition_id,
+                            searched = searched, results=results, rating=rating,
+                            edit_search=edit_search, rooms=listings.get_classes("rooms"),
+                            municipalities=listings.get_classes("municipality"),
+                            property_types=listings.get_classes("property_type"),
+                            conditions=listings.get_classes("condition"),
+                            page=page, page_count=page_count)
 
 @app.route("/listing/<int:listing_id>")
 def show_listing(listing_id):
@@ -287,11 +281,11 @@ def show_listing(listing_id):
     view = request.args.get("view", "listing")
     max_rejected = offers.get_max_rejected(user_offer["id"]) if user_offer else 0
     return render_template("show_listing.html",
-                           listing=listing, likes=likes, images=images,
-                           offers=listing_offers, user_offer=user_offer,
-                           rented=rented, editing_offer=editing_offer, view=view,
-                           offer_history=offer_history, pending_offers=pending_offers,
-                           accepted_offers=accepted_offers, max_rejected=max_rejected)
+                            listing=listing, likes=likes, images=images,
+                            offers=listing_offers, user_offer=user_offer,
+                            rented=rented, editing_offer=editing_offer, view=view,
+                            offer_history=offer_history, pending_offers=pending_offers,
+                            accepted_offers=accepted_offers, max_rejected=max_rejected)
 
 @app.route("/edit_listing/<int:listing_id>", methods=["GET", "POST"])
 def edit_listing(listing_id):
@@ -305,10 +299,6 @@ def edit_listing(listing_id):
     rooms = listings.get_classes("rooms")
     conditions = listings.get_classes("condition")
     property_types = listings.get_classes("property_type")
-    if request.method == "GET":
-        return render_template("edit_listing.html",
-                               listing=listing, municipalities=municipalities, rooms=rooms,
-                               conditions=conditions, property_types=property_types)
     if request.method == "POST":
         check_csrf()
         if "update" in request.form:
@@ -317,12 +307,14 @@ def edit_listing(listing_id):
             except ValueError as error:
                 flash(str(error), "error")
                 return render_template("edit_listing.html",
-                                       listing=listing, municipalities=municipalities, rooms=rooms,
-                                       conditions=conditions, property_types=property_types)
-            else:
-                listings.update_listing(listing_id, listing_data)
-                return redirect("/listing/" + str(listing_id))
+                                        listing=listing, municipalities=municipalities, rooms=rooms,
+                                        conditions=conditions, property_types=property_types)
+            listings.update_listing(listing_id, listing_data)
+            return redirect("/listing/" + str(listing_id))
         return redirect("/listing/" + str(listing_id))
+    return render_template("edit_listing.html",
+                            listing=listing, municipalities=municipalities, rooms=rooms,
+                            conditions=conditions, property_types=property_types)
 
 @app.route("/remove_listing/<int:listing_id>", methods=["GET", "POST"])
 def remove_listing(listing_id):
@@ -332,16 +324,14 @@ def remove_listing(listing_id):
         abort(404)
     if listing["user_id"] != session["user_id"]:
         abort(403)
-    if request.method == "GET":
-        return render_template("remove_listing.html", listing=listing)
     if request.method == "POST":
         check_csrf()
         if "remove" in request.form:
             listings.remove_listing(listing_id)
             flash("Ilmoitus poistettu", "success")
             return redirect("/")
-        else:
-            return redirect("/listing/" + str(listing_id))
+        return redirect("/listing/" + str(listing_id))
+    return render_template("remove_listing.html", listing=listing)
 
 @app.route("/add_images", methods=["POST"])
 def add_images():
@@ -412,7 +402,9 @@ def edit_images(listing_id):
         abort(403)
     images = listings.get_images(listing_id)
     adding_images = request.args.get("add_images") == "1"
-    return render_template("images.html", listing=listing, images=images, adding_images=adding_images)
+    return render_template("images.html",
+                            listing=listing, images=images,
+                            adding_images=adding_images)
 
 @app.route("/toggle_like/<int:listing_id>", methods=["POST"])
 def toggle_like(listing_id):
@@ -468,8 +460,9 @@ def show_offer(offer_id):
     editing_offer = request.args.get("edit_offer") == "1"
     max_rejected = offers.get_max_rejected(offer["id"])
     return render_template("show_offer.html",
-                           offer=offer, listing=listing, history=history,
-                           likes=likes, editing_offer=editing_offer, max_rejected=max_rejected)
+                            offer=offer, listing=listing, history=history,
+                            likes=likes, editing_offer=editing_offer,
+                            max_rejected=max_rejected)
 
 @app.route("/handle_offer/<int:offer_id>", methods=["POST"])
 def handle_offer(offer_id):
@@ -508,7 +501,7 @@ def edit_offer(offer_id):
             return redirect("/offer/" + str(offer_id) + "?edit_offer=1")
         flash("Hakemus päivitetty!", "success")
         return redirect("/offer/" + str(offer_id))
-    elif action == "delete":
+    if action == "delete":
         offers.modify_offer(offer_id, user_id, action)
         flash("Hakemus peruttu!", "success")
     else:
