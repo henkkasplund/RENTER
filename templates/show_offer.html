@@ -56,7 +56,7 @@
         <div class="center underline">
           {% if offer.status == "pending" %}
             <h4>Olet vastaanottanut hakemuksen käyttäjältä</h4>
-            <h3><a href="/listing/{{ offer.user_id }}">{{ offer.username }}</a></h3>
+            <h3><a href="/user/{{ offer.user_id }}">{{ offer.username }}</a></h3>
             <h4 class="stars-small">{{ "★" * offer.rating }}{{ "☆" * (5 - offer.rating) }}</h4>
             <h2>{{ offer.price }} €/kk</h2>
             <h4>Hyväksymällä hakemuksen lähetät vahvistuspyynnön hakijalle.</h4>
@@ -80,7 +80,7 @@
             </div>
           {% elif offer.status == "accepted" %}
             <h4>Olet hyväksynyt hakemuksen käyttäjältä</h4>
-            <h3><a href="/listing/{{ offer.user_id }}">{{ offer.username }}</a></h3>
+            <h3><a href="/user/{{ offer.user_id }}">{{ offer.username }}</a></h3>
             <h4 class="stars-small">{{ "★" * offer.rating }}{{ "☆" * (5 - offer.rating) }}</h4>
             <h2>{{ offer.price }} €/kk</h2>
             <h4>Hakijalta vaaditaan vahvistusta ennen vuokrasuhteen aloittamista</h4>
@@ -99,7 +99,7 @@
             </div>
           {% elif offer.status == "rejected" %}
             <h4>Olet hylännyt hakemuksen käyttäjältä</h4>
-              <h3><a href="/listing/{{ offer.user_id }}">{{ offer.username }}</a></h3>
+              <h3><a href="/user/{{ offer.user_id }}">{{ offer.username }}</a></h3>
               <h4 class="stars-small">{{ "★" * offer.rating }}{{ "☆" * (5 - offer.rating) }}</h4>
               <h2>{{ offer.price }} €/kk</h2>
               <hr>
@@ -232,25 +232,23 @@
             <td class="muted">{{ entry.created_at | get_date }}</td>
             {% if entry.event == "sent" %}
               <td>Hakemus lähetetty</td>
-              <td>{{ hakija }}</td>
             {% elif entry.event == "updated" %}
               <td>Hakemusta muokattu</td>
-              <td>{{ hakija }}</td>
             {% elif entry.event == "withdrawn" %}
               <td class="negative">Hakemus peruttu</td>
-              <td>{{ hakija }}</td>
             {% elif entry.event == "accepted" %}
               <td class="positive">Hakemus hyväksytty</td>
-              <td>{{ ilmoittaja  }}</td>
             {% elif entry.event == "rejected" %}
               <td class="negative">Hakemus hylätty</td>
-              <td>{{ ilmoittaja }}</td>
             {% elif entry.event == "cancel_accept" %}
               <td class="negative">Hyväksyntä peruttu</td>
-              <td>{{ ilmoittaja }}</td>
             {% elif entry.event == "confirmed" %}
               <td class="positive">Vuokraus vahvistettu</td>
-              <td>{{ hakija }}</td>
+            {% endif %}
+            {% if entry.event in ("sent", "updated", "withdrawn", "confirmed") %}
+              <td><a href="/user/{{ offer.user_id }}">{{ offer.username }}</a></td>
+            {% else %}
+              <td><a href="/user/{{ listing.user_id }}">{{ listing.username }}</a></td>
             {% endif %}
             <td>{{ entry.price }} €</td>
           </tr>
