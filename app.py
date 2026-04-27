@@ -57,16 +57,15 @@ def get_timespan(value):
     diff = (now - dt).days
     if diff == 0:
         return "Tänään"
-    elif diff == 1:
+    if diff == 1:
         return "Eilen"
-    elif diff < 7:
+    if diff < 7:
         return f"{diff} pv sitten"
-    elif diff < 30:
+    if diff < 30:
         return f"{diff // 7} vk sitten"
-    elif diff < 365:
+    if diff < 365:
         return f"{diff // 30} kk sitten"
-    else:
-        return f"{diff // 365} v sitten"
+    return f"{diff // 365} v sitten"
 
 @app.template_filter()
 def get_date(value):
@@ -89,7 +88,7 @@ def index(page=1):
         return redirect("/" + str(page_count))
     all_listings = listings.get_listings(page, page_size)
     return render_template("index.html", listings=all_listings,
-                           page=page, page_count=page_count)
+                            page=page, page_count=page_count)
 
 @app.route("/user/<int:user_id>", methods=["GET", "POST"])
 def user(user_id):
@@ -99,12 +98,7 @@ def user(user_id):
         abort(404)
     user_listings = users.get_user_listings(user_id)
     liked = users.get_liked(user_id)
-    sent_offers = offers.get_sent_offers(user_id)
-    withdrawn_sent_offers = sum(1 for offer in sent_offers if offer['status'] == "withdrawn")
-    active_sent_offers = len(sent_offers) - withdrawn_sent_offers
-    received_offers = offers.get_received_offers(user_id)
-    inactive_received_offers = sum(1 for offer in received_offers if offer['status'] in ("withdrawn", "rejected"))
-    active_received_offers = len(received_offers) - inactive_received_offers
+    offer_stats = offers.get_offer_stats(user_id)
     edit_contact = request.args.get("edit_contact") == "1"
     edit_rating = request.args.get("edit_rating") == "1"
     viewer_id = session["user_id"]
@@ -131,13 +125,9 @@ def user(user_id):
             return redirect("/user/" + str(user_id) + "?view=profile")
     return render_template("user.html",
                             user=user, listings=user_listings, liked=liked,
-                            sent_offers=sent_offers, received_offers=received_offers,
                             edit_contact=edit_contact, edit_rating=edit_rating,
-                            rental_deal=rental_deal, user_rating=user_rating, view=view,
-                            withdrawn_sent_offers=withdrawn_sent_offers,
-                            active_sent_offers=active_sent_offers,
-                            inactive_received_offers=inactive_received_offers,
-                            active_received_offers=active_received_offers)
+                            rental_deal=rental_deal, user_rating=user_rating,
+                            view=view, offer_stats=offer_stats)
 
 @app.route("/register")
 def register():
@@ -296,11 +286,12 @@ def show_listing(listing_id):
     edit_offer = request.args.get("edit_offer") == "1"
     view = request.args.get("view", "listing")
     max_rejected = offers.get_max_rejected(user_offer["id"]) if user_offer else 0
-    return render_template("show_listing.html", listing=listing, likes=likes, images=images,
-                                                offers=listing_offers, user_offer=user_offer,
-                                                rented=rented, edit_offer=edit_offer, view=view,
-                                                offer_history=offer_history, pending_offers=pending_offers,
-                                                accepted_offers=accepted_offers, max_rejected=max_rejected)
+    return render_template("show_listing.html",
+                           listing=listing, likes=likes, images=images,
+                           offers=listing_offers, user_offer=user_offer,
+                           rented=rented, edit_offer=edit_offer, view=view,
+                           offer_history=offer_history, pending_offers=pending_offers,
+                           accepted_offers=accepted_offers, max_rejected=max_rejected)
 
 @app.route("/edit_listing/<int:listing_id>", methods=["GET", "POST"])
 def edit_listing(listing_id):
@@ -438,7 +429,7 @@ def toggle_like(listing_id):
         listings.like_unlike(user_id, listing_id, False)
     else:
         listings.like_unlike(user_id, listing_id, True)
-    return redirect(session.get("last_visited") or "/")
+    return redirect("/listing/" + str(listing_id))
 
 @app.route("/create_offer", methods=["POST"])
 def create_offer():
@@ -519,7 +510,7 @@ def edit_offer(offer_id):
         return redirect("/offer/" + str(offer_id))
     elif action == "delete":
         offers.modify_offer(offer_id, user_id, action)
-        flash("Hakemus poistettu!", "success")
+        flash("Hakemus peruttu!", "success")
     else:
         abort(403)
     return redirect(session.get("last_visited") or "/listing/" + str(offer["listing_id"]))

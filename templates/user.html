@@ -52,13 +52,13 @@
         <a href="?view=listings">Omat ilmoitukset</a>
       </li>
       <li class="{% if view == 'sent' %}active{% endif %}">
-        <a href="?view=sent">Lähetetyt hakemukset</a>
+        <a href="?view=sent">Lähetetyt hakemukset ({{ offer_stats.active_sent }})</a>
       </li>
       <li class="{% if view == 'received' %}active{% endif %}">
-        <a href="?view=received">Saapuneet hakemukset</a>
+        <a href="?view=received">Saapuneet hakemukset ({{ offer_stats.active_received }})</a>
       </li>
       <li class="{% if view == 'liked' %}active{% endif %}">
-        <a href="?view=liked">Suosikki kohteet</a>
+        <a href="?view=liked">Suosikki kohteet ({{ liked|count }})</a>
       </li>
       <li class="{% if view == 'profile' %}active{% endif %}">
         <a href="?view=profile">Omat tiedot</a>
@@ -181,19 +181,19 @@
   <section class="wide">
     <div class="hero">
       <h4>
-        {% if active_sent_offers == 1 %}
+        {% if offer_stats.active_sent == 1 %}
             Olet lähettänyt yhden hakemuksen
-        {% elif active_sent_offers > 1 %}
-            Olet lähettänyt {{ active_sent_offers }} hakemusta
+        {% elif offer_stats.active_sent > 1 %}
+            Olet lähettänyt {{ offer_stats.active_sent }} hakemusta
         {% else %}
             Et ole lähettänyt yhtäkään hakemusta
         {% endif %}
       </h4>
     </div>
 
-    {% if sent_offers %}
+    {% if offer_stats.sent_offers %}
       <div class="grid grid-large">
-        {% for offer in sent_offers if offer.status in ("pending", "accepted", "rejected", "confirmed") %}
+        {% for offer in offer_stats.sent_offers if offer.status in ("pending", "accepted", "rejected", "confirmed") %}
           <div class="card center underline">
 
             {% if offer.status == "pending" %}
@@ -294,19 +294,19 @@
   <section class="wide">
     <div class="hero">
       <h4>
-        {% if active_received_offers == 1 %}
+        {% if offer_stats.active_received == 1 %}
             Olet vastaanottanut yhden hakemuksen
-        {% elif active_received_offers > 1 %}
-            Olet vastaanottanut {{ active_received_offers }} hakemusta
+        {% elif offer_stats.active_received > 1 %}
+            Olet vastaanottanut {{ offer_stats.active_received }} hakemusta
         {% else %}
             Sinulla ei ole vastaanotettuja hakemuksia
         {% endif %}
       </h4>
     </div>
 
-    {% if received_offers %}
+    {% if offer_stats.received_offers %}
       <div class="grid grid-large">
-        {% for offer in received_offers if offer.status in ("pending", "accepted", "confirmed")%}
+        {% for offer in offer_stats.received_offers if offer.status in ("pending", "accepted", "confirmed")%}
           <div class="card center underline">
             {% if offer.status == "pending" %}
               <a href="/listing/{{ offer.listing_id }}">

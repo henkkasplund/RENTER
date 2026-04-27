@@ -204,6 +204,22 @@ def get_received_offers(user_id):
             ORDER BY offers.id DESC"""
     return db.query(sql, [user_id])
 
+def get_offer_stats(user_id):
+    sent_offers = get_sent_offers(user_id)
+    received_offers = get_received_offers(user_id)
+    withdrawn_sent = sum(
+        1 for offer in sent_offers if offer['status'] == "withdrawn"
+    )
+    inactive_received = sum(
+        1 for offer in received_offers if offer['status'] in ("withdrawn", "rejected")
+    )
+    return {
+        "sent_offers": sent_offers,
+        "received_offers": received_offers,
+        "active_sent": len(sent_offers) - withdrawn_sent,
+        "active_received": len(received_offers) - inactive_received,
+    }
+
 def get_offer_history(offer_id):
     sql = """SELECT price, created_at, event
              FROM offer_history
