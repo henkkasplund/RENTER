@@ -244,7 +244,10 @@ def search_listings():
     condition_id = request.args.get("condition_id", "")
     edit_search = request.args.get("edit_search") == "1"
     searched = bool(request.args)
-    page = int(request.args.get("page", 1))
+    try:
+        page = int(request.args.get("page", 1))
+    except ValueError:
+        page = 1
     page_size = 20
     results, count = listings.search_listings(rating, size, min_rent, max_rent,
                                        rooms_id, property_type_id, municipality_id,
