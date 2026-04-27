@@ -1,3 +1,4 @@
+import re
 import sqlite3
 import secrets
 import math
@@ -172,9 +173,7 @@ def delete_account():
         check_csrf()
         if "delete" in request.form:
             users.delete_user(user_id)
-            del session["user_id"]
-            del session["username"]
-            del session["csrf_token"]
+            session.clear()
             flash("Käyttäjätili poistettu!", "error")
             return redirect("/")
         return redirect("/user/" + str(user_id))
@@ -204,9 +203,7 @@ def login():
 def logout():
     demand_login()
     check_csrf()
-    del session["user_id"]
-    del session["username"]
-    del session["csrf_token"]
+    session.clear()
     return redirect("/")
 
 @app.route("/new_listing")
@@ -533,6 +530,8 @@ def rate_user(user_id):
     check_csrf()
     rater_id = session["user_id"]
     rating_value = request.form["rating"]
+    if not re.search(r"^[0-5]$", rating_value):
+        abort(400)
     ratings.set_rating(rater_id, user_id, rating_value)
     users.update_rating(user_id)
     flash("Arvosana annettu", "success")
