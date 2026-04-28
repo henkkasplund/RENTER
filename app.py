@@ -462,10 +462,11 @@ def show_offer(offer_id):
     likes = listings.get_likes(session.get("user_id"), offer["listing_id"])
     editing_offer = request.args.get("edit_offer") == "1"
     max_rejected = offers.get_max_rejected(offer["id"])
+    rented = offers.rental_status(offer["listing_id"])
     return render_template("show_offer.html",
-                            offer=offer, listing=listing, history=history,
-                            likes=likes, editing_offer=editing_offer,
-                            max_rejected=max_rejected)
+                        offer=offer, listing=listing, history=history,
+                        likes=likes, editing_offer=editing_offer,
+                        max_rejected=max_rejected, rented=rented)
 
 @app.route("/handle_offer/<int:offer_id>", methods=["POST"])
 def handle_offer(offer_id):
@@ -482,7 +483,7 @@ def handle_offer(offer_id):
     if listing["user_id"] != user_id:
         abort(403)
     offers.handle_offer(offer_id, decision)
-    return redirect(session.get("last_visited") or "/listing/" + str(offer["listing_id"]))
+    return redirect(session.get("visited") or "/listing/" + str(offer["listing_id"]))
 
 @app.route("/edit_offer/<int:offer_id>", methods=["POST"])
 def edit_offer(offer_id):

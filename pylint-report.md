@@ -33,12 +33,12 @@ app.py:399:0: C0116: Missing function or method docstring (missing-function-docs
 app.py:413:0: C0116: Missing function or method docstring (missing-function-docstring)
 app.py:430:0: C0116: Missing function or method docstring (missing-function-docstring)
 app.py:451:0: C0116: Missing function or method docstring (missing-function-docstring)
-app.py:471:0: C0116: Missing function or method docstring (missing-function-docstring)
-app.py:488:0: C0116: Missing function or method docstring (missing-function-docstring)
-app.py:515:0: C0116: Missing function or method docstring (missing-function-docstring)
-app.py:531:0: C0116: Missing function or method docstring (missing-function-docstring)
-app.py:544:0: C0116: Missing function or method docstring (missing-function-docstring)
-app.py:548:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:472:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:489:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:516:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:532:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:545:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:549:0: C0116: Missing function or method docstring (missing-function-docstring)
 ************* Module config
 config.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 config.py:1:0: C0103: Constant name "secret_key" doesn't conform to UPPER_CASE naming style (invalid-name)
@@ -81,15 +81,15 @@ offers.py:11:0: C0116: Missing function or method docstring (missing-function-do
 offers.py:37:0: C0116: Missing function or method docstring (missing-function-docstring)
 offers.py:48:0: C0116: Missing function or method docstring (missing-function-docstring)
 offers.py:73:0: C0116: Missing function or method docstring (missing-function-docstring)
-offers.py:109:0: C0116: Missing function or method docstring (missing-function-docstring)
-offers.py:129:0: C0116: Missing function or method docstring (missing-function-docstring)
-offers.py:150:0: C0116: Missing function or method docstring (missing-function-docstring)
-offers.py:166:0: C0116: Missing function or method docstring (missing-function-docstring)
-offers.py:190:0: C0116: Missing function or method docstring (missing-function-docstring)
-offers.py:214:0: C0116: Missing function or method docstring (missing-function-docstring)
-offers.py:230:0: C0116: Missing function or method docstring (missing-function-docstring)
-offers.py:237:0: C0116: Missing function or method docstring (missing-function-docstring)
-offers.py:246:0: C0116: Missing function or method docstring (missing-function-docstring)
+offers.py:111:0: C0116: Missing function or method docstring (missing-function-docstring)
+offers.py:135:0: C0116: Missing function or method docstring (missing-function-docstring)
+offers.py:156:0: C0116: Missing function or method docstring (missing-function-docstring)
+offers.py:172:0: C0116: Missing function or method docstring (missing-function-docstring)
+offers.py:196:0: C0116: Missing function or method docstring (missing-function-docstring)
+offers.py:220:0: C0116: Missing function or method docstring (missing-function-docstring)
+offers.py:236:0: C0116: Missing function or method docstring (missing-function-docstring)
+offers.py:243:0: C0116: Missing function or method docstring (missing-function-docstring)
+offers.py:252:0: C0116: Missing function or method docstring (missing-function-docstring)
 ************* Module ratings
 ratings.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 ratings.py:7:0: C0116: Missing function or method docstring (missing-function-docstring)
@@ -145,7 +145,7 @@ validation.py:1:0: R0801: Similar lines in 2 files
                     listings.created_at, (duplicate-code)
 
 ------------------------------------------------------------------
-Your code has been rated at 8.79/10 (previous run: 8.78/10, +0.02)
+Your code has been rated at 8.80/10 (previous run: 8.79/10, +0.01)
 ```
 
 Raportin läpikäynti ja perustelut siihen miksi tiettyjä asioita ei ole korjattu sovelluksessa.

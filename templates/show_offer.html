@@ -48,6 +48,9 @@
           </h4>
           <hr>
           <h3 class="positive">Vuokrattu</h3>
+          <a href="{{ session.last_visited or '/listing/' + listing.id|string }}">
+            <button type="button">Takaisin</button>
+          </a>
         {% endif %}
       </div>
 
@@ -179,21 +182,26 @@
           {% elif offer.status in ("withdrawn", "rejected") %}
             {% if offer.status == "withdrawn" %}
               <h4>Olet peruuttanut hakemuksesi</h4>
-              <h2>{{ offer.price }} €/kk</h2>
-
+            {% elif rented %}
+              <h4>Ilmoitus on vuokrattu toiselle</h4>
             {% else %}
               <h4>Ilmoittaja on hylännyt hakemuksesi</h4>
-              <h2>{{ offer.price }} €/kk</h2>
             {% endif %}
+            <h2>{{ offer.price }} €/kk</h2>
+            <hr>
+            <h3 class="negative">{{ "Hakemus on hylätty" if offer.status == "rejected" else "Hakemus on peruttu" }}</h3>
 
-            {% if editing_offer %}
+            {% if rented %}
+              <a href="{{ session.last_visited or '/listing/' + listing.id|string }}">
+                <button type="button">Takaisin</button>
+              </a>
+
+            {% elif editing_offer %}
               <h4>
                 Voit lähettää uuden hakemuksen<br />
                 Uusi vuokratarjous oltava suurempi kuin edellinen hylätty
               </h4>
               <h4>{{ max_rejected }} €/kk</h4>
-              <hr>
-              <h3 class="negative">{{ "Hakemus on hylätty" if offer.status == 'rejected' else "Hakemus on peruttu" }}</h3>
 
               <form class="form-stack narrow" action="/edit_offer/{{ offer.id }}" method="post">
                 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
@@ -230,7 +238,9 @@
         {% for entry in history %}
           <tr>
             <td class="muted">{{ entry.created_at | get_date }}</td>
-            {% if entry.event == "sent" %}
+            {% if entry.event == "rented" %}
+              <td class="negative">Vuokrattu toiselle</td>
+            {% elif entry.event == "sent" %}
               <td>Hakemus lähetetty</td>
             {% elif entry.event == "updated" %}
               <td>Hakemusta muokattu</td>

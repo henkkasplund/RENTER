@@ -71,7 +71,7 @@ def handle_offer(offer_id, decision):
         abort(403)
 
 def modify_offer(offer_id, user_id, action, price=None):
-    sql = "SELECT id, status, price FROM offers WHERE id = ? AND user_id = ?"
+    sql = "SELECT id, listing_id, status, price FROM offers WHERE id = ? AND user_id = ?"
     result = db.query(sql, [offer_id, user_id])
     if not result:
         abort(403)
@@ -79,6 +79,8 @@ def modify_offer(offer_id, user_id, action, price=None):
     status = offer["status"]
     if action == "update":
         if status not in ("pending", "rejected", "withdrawn"):
+            abort(403)
+        if rental_status(offer["listing_id"]):
             abort(403)
         if not price or not re.search(r"^[1-9][0-9]{0,4}$", price):
             abort(403)
@@ -120,11 +122,15 @@ def confirm_rental(offer_id):
     db.execute("UPDATE offers SET status = 'confirmed' WHERE id = ?", [offer_id])
     db.execute("INSERT INTO offer_history (offer_id, price, event) VALUES (?, ?, ?)",
                [offer_id, offer["price"], "confirmed"])
-    db.execute("UPDATE offers SET status = 'rejected' WHERE listing_id = ? AND id != ?",
+    db.execute("""UPDATE offers SET status = 'rejected'
+                  WHERE listing_id = ? AND id != ?
+                  AND status NOT IN ('rejected', 'withdrawn', 'confirmed')""",
                [offer["listing_id"], offer_id])
     for other in other_offers:
         db.execute("INSERT INTO offer_history (offer_id, price, event) VALUES (?, ?, ?)",
-                   [other["id"], other["price"], "rejected"])
+                   [other["id"], other["price"], "rented"])
+    db.execute("UPDATE listings SET rent = ? WHERE id = ?",
+            [offer["price"], offer["listing_id"]])
 
 def get_offers(listing_id, viewer_id, owner_id):
     if not viewer_id:
