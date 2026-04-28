@@ -99,6 +99,8 @@ ratings.py:25:0: C0116: Missing function or method docstring (missing-function-d
 seed.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 seed.py:16:0: C0103: Constant name "user_count" doesn't conform to UPPER_CASE naming style (invalid-name)
 seed.py:17:0: C0103: Constant name "listing_count" doesn't conform to UPPER_CASE naming style (invalid-name)
+seed.py:18:0: C0103: Constant name "offer_count" doesn't conform to UPPER_CASE naming style (invalid-name)
+seed.py:19:0: C0103: Constant name "like_count" doesn't conform to UPPER_CASE naming style (invalid-name)
 ************* Module users
 users.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 users.py:8:0: C0116: Missing function or method docstring (missing-function-docstring)
@@ -171,6 +173,8 @@ Raportista löytyvät seuraavat vakion nimeen liittyvät ilmoitukset:
 config.py:1:0: C0103: Constant name "secret_key" doesn't conform to UPPER_CASE naming style (invalid-name)
 seed.py:16:0: C0103: Constant name "user_count" doesn't conform to UPPER_CASE naming style (invalid-name)
 seed.py:17:0: C0103: Constant name "listing_count" doesn't conform to UPPER_CASE naming style (invalid-name)
+seed.py:18:0: C0103: Constant name "offer_count" doesn't conform to UPPER_CASE naming style (invalid-name)
+seed.py:19:0: C0103: Constant name "like_count" doesn't conform to UPPER_CASE naming style (invalid-name)
 ```
 
 Pylint tulkitsee päätasolla määritellyt muuttujat vakioiksi, jotka tulisi kirjoittaa suurilla kirjaimilla. Ilmoitus on sivuutettu koska koodi näyttää paremmalta sekä on yhtenäisempää muun koodin kanssa, pienillä kirjaimilla kirjoitettuna. Alla näkyy miten koodeja käytetään sovelluksessa:

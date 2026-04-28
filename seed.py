@@ -13,8 +13,10 @@ db.execute("DELETE FROM images")
 db.execute("DELETE FROM listings")
 db.execute("DELETE FROM users")
 
-user_count = 100
-listing_count = 1000
+user_count = 1000
+listing_count = 10000
+offer_count = 20000
+like_count = 50000
 
 for i in range(1, user_count + 1):
     db.execute("INSERT INTO users (username, password_hash) VALUES (?, ?)",
@@ -43,6 +45,18 @@ for i in range(1, listing_count + 1):
                 random.randint(500, 3000),
                 str(random.randint(1, 8)),
                 f"Testikuvaus ilmoitukselle {i}"])
+
+for i in range(1, offer_count + 1):
+    db.execute("INSERT OR IGNORE INTO offers (listing_id, user_id, price, status) VALUES (?, ?, ?, ?)",
+               [random.randint(1, listing_count),
+                random.randint(1, user_count),
+                random.randint(500, 3000),
+                random.choice(["pending", "rejected", "withdrawn"])])
+
+for i in range(1, like_count + 1):
+    db.execute("INSERT OR IGNORE INTO likes (user_id, listing_id) VALUES (?, ?)",
+               [random.randint(1, user_count),
+                random.randint(1, listing_count)])
 
 db.commit()
 db.close()
