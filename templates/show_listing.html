@@ -212,7 +212,7 @@
                     <h2 class="neutral">Odottaa vuokranantajan vastausta</h2>
                   {% endif %}
                   <h4>
-                    Uusi tarjous oltava suurempi kuin edellinen hylätty</br>
+                    Uusi tarjous oltava suurempi kuin edellinen hylätty<br />
                     {{ max_rejected}} €/kk
                   </h4>
                 {% else %}
@@ -307,8 +307,8 @@
         <p><strong>Kunto:</strong> {{ listing.condition }}</p>
         <p><strong>Parveke:</strong> {{ "Kyllä" if listing.balcony else "Ei" }}</p>
         <p><strong>Sauna:</strong> {{ "Kyllä" if listing.sauna else "Ei" }}</p>
-        <p><strong>Tiskikone:</strong> {{ "Kyllä" if listing.washing_machine else "Ei" }}</p>
-        <p><strong>Pyykinpesukone:</strong> {{ "Kyllä" if listing.dishwasher else "Ei" }}</p>
+        <p><strong>Tiskikone:</strong> {{ "Kyllä" if listing.dishwasher else "Ei" }}</p>
+        <p><strong>Pyykinpesukone:</strong> {{ "Kyllä" if listing.washing_machine else "Ei" }}</p>
       </div>
 
       <p><strong>Kuvaus:</strong></p>

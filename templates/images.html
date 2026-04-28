@@ -45,7 +45,7 @@
           {% for image in images %}
           <div class="card card--link">
             <label class="image-item">
-              <img src="/image/{{ image.id }}">
+              <img src="/image/{{ image.id }}" alt="Kuva kohteesta {{ listing.municipality }}">
               <input type="checkbox" name="image_id" value="{{ image.id }}">
             </label>
           </div>
