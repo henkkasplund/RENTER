@@ -49,19 +49,25 @@
   <nav class="wide center">
     <ul>
       <li class="{% if view == 'listings' %}active{% endif %}">
-        <a href="?view=listings">Omat ilmoitukset</a>
+        <a href="?view=listings">Ilmoitukset</a>
       </li>
       <li class="{% if view == 'sent' %}active{% endif %}">
-        <a href="?view=sent">Lähetetyt hakemukset ({{ offer_stats.active_sent }})</a>
+        <a href="?view=sent">Lähetetyt hakemukset
+          {% if offer_stats.active_sent > 0 %}({{ offer_stats.active_sent }}){% endif %}
+        </a>
       </li>
       <li class="{% if view == 'received' %}active{% endif %}">
-        <a href="?view=received">Saapuneet hakemukset ({{ offer_stats.active_received }})</a>
+        <a href="?view=received">Saapuneet hakemukset
+          {% if offer_stats.active_received > 0 %}({{ offer_stats.active_received }}){% endif %}
+        </a>
       </li>
       <li class="{% if view == 'liked' %}active{% endif %}">
-        <a href="?view=liked">Suosikki kohteet ({{ liked|count }})</a>
+        <a href="?view=liked">Suosikki kohteet
+          {% if liked|count > 0 %}({{ liked|count }}){% endif %}
+        </a>
       </li>
       <li class="{% if view == 'profile' %}active{% endif %}">
-        <a href="?view=profile">Omat tiedot</a>
+        <a href="?view=profile">Tiedot</a>
       </li>
     </ul>
   </nav>
